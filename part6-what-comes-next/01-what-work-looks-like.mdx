@@ -1,0 +1,151 @@
+---
+title: "What Work Looks Like"
+---
+
+# What Work Looks Like
+
+The most common question about AI and work is "which jobs will be replaced?" It's the wrong question. The right question is: what does work look like when the full infrastructure stack exists -- when accountability, compute, exchange, trust, enforcement, identity, and marketplace layers all function together? Not the chatbot version, where a user types a question and gets a plausible answer. The complete version, where AI systems execute multi-step professional workflows with the same paperwork, the same audit trails, and the same governance boundaries that human professionals have always maintained.
+
+The difference between the chatbot version and the complete version is the difference between a demo and a deployable system. The demo impresses. The deployable system satisfies the regulator, the auditor, the insurer, and the client. Most industries are stuck at the demo stage -- not because the AI isn't good enough, but because the infrastructure around it isn't. The accountability layer doesn't exist. The governance boundaries aren't enforced. The cost attribution is invisible. The provenance chains are missing.
+
+Here's what changes when they aren't.
+
+## The Law Firm
+
+A junior associate at a mid-market law firm spends ten hours reviewing a stack of vendor contracts for a client preparing for an acquisition. The work is straightforward but voluminous: read each contract, extract key terms, identify deviations from the client's standard provisions, flag anything unusual in the indemnification, termination, and assignment clauses. The associate bills at $300 per hour. The client pays $3,000 for this portion of due diligence. The associate produces a redline markup and a summary memo.
+
+This work has been done the same way for decades. It's high-volume, high-precision reading that requires legal training to do correctly and attention to detail to do completely. It is also exactly the kind of work that a well-constructed AI workflow handles at near-human quality -- not because language models are smarter than lawyers, but because the task is pattern matching at scale, which is what language models are built for.
+
+Now consider the same work with the full infrastructure stack in place.
+
+The workflow begins when the client uploads the contracts to a secure ingestion endpoint. The documents never leave the firm's infrastructure -- they are processed on a local compute node under the firm's physical control. This isn't a privacy feature bolted onto a cloud service. It's a compute architecture where the hardware sits in the firm's server room, owned by the firm, subject to no external terms of service. The data sovereignty question -- "where does the data go?" -- has a one-word answer: nowhere.
+
+The first stage of the workflow is extraction. An agent reads each contract and extracts structured data: party names, effective dates, renewal terms, indemnification provisions, limitation of liability clauses, assignment restrictions, governing law, notice requirements. This isn't free-text summarization -- it's structured extraction against a defined schema. Each extracted field carries metadata: the source page and paragraph, the confidence score of the extraction, and the model version that performed it.
+
+The second stage is comparison. The extracted terms are compared against the client's standard provisions -- a reference set that the firm has codified from years of practice. Deviations are flagged. Not as vague alerts ("this clause seems unusual") but as specific, attributed findings: "Section 7.2(a) indemnification scope exceeds the client's standard by including consequential damages. Source: Page 14, paragraph 3 of Vendor Agreement #47. Confidence: 94%."
+
+Each flag is a citation chain. The reader can trace the finding from the summary memo to the specific clause in the specific document to the comparison rule that triggered it. This is the footnote layer -- the same documentation that a junior associate would produce, generated automatically, with source attribution that is verifiable rather than trusted.
+
+The third stage is human review. The workflow routes the flagged items to the supervising partner. Non-flagged items -- contracts where all terms match the client's standard, with high-confidence extractions -- proceed without human intervention. The partner reviews only the exceptions: the clauses that deviate, the extractions where confidence was below threshold, the provisions that the comparison rules couldn't classify.
+
+The governance envelope wraps the entire workflow. It records what data was processed, which models performed inference, what confidence thresholds were applied, which items were auto-approved versus human-reviewed, and who signed off. The cost tree decomposes the total spend: $2.30 in compute for document processing, $0.40 for comparison analysis, $0.15 for report generation. Total: $2.85.
+
+The client receives the same deliverable: a markup and a summary memo. But underneath it is a provenance chain that no human-only process has ever produced. Every finding is traceable. Every cost is attributable. Every data flow is documented. The client didn't pay $3,000 for ten hours of associate time. They paid a fraction of that for a result that is, in measurable ways, more accountable than the human version.
+
+The associate's role didn't disappear. It shifted. The associate is no longer the person who reads contracts. The associate is the person who designs the comparison rules, calibrates the confidence thresholds, reviews the edge cases, and improves the workflow based on what the partner catches. The expertise is the same. The work product is the same. The role is governance, not production.
+
+## The Police Department
+
+An officer in a mid-size Canadian police service responds to a domestic disturbance call. After resolving the situation on scene, the officer returns to the cruiser and begins the incident report. This is the part of the job that officers universally describe as the worst: forty-five minutes to an hour of typing on a laptop, translating what happened into the structured format that the records management system requires. Statute citations. Addresses. Involved party information. Narrative description. Evidence inventory.
+
+Officers spend an estimated 40% of their shift on administrative documentation. For a fifty-officer service, that represents roughly twenty officer-equivalents doing paperwork instead of policing. At fully-loaded cost, the administrative burden runs $2-3 million per year for a single mid-size department.
+
+The infrastructure-complete version looks different.
+
+The officer speaks into a phone or a body-worn device. The voice recording is transcribed locally -- on a device in the police service's own facility, not on a server in Virginia or California. Canadian data sovereignty isn't a marketing feature here; it's a legal requirement. Incident data, victim information, suspect identifiers -- none of it can leave Canadian infrastructure without creating compliance violations under PIPEDA and provincial privacy legislation. The compute is local. The data stays local.
+
+The transcription feeds into an extraction workflow. The agent parses the narrative and populates structured fields: date, time, location, involved parties, offence codes, statute citations. Each field carries a confidence score. The address extraction is 95% confident -- the officer mentioned "147 Main Street" clearly. The statute citation is 72% confident -- the officer described the offence in colloquial terms and the agent mapped it to the closest Criminal Code section, but the mapping is ambiguous.
+
+This is the difference between a system that generates text and a system that knows what it doesn't know. Confidence calibration -- developed through research partnerships with university labs specializing in calibrated extraction -- means the system never silently guesses. High-confidence fields are presented cleanly. Low-confidence fields are flagged, highlighted, and routed for human verification. The officer reviews a draft with five or six flagged items instead of writing the entire report from scratch.
+
+The supervisor receives the flagged items. The workflow routes them according to the department's own policies -- a configuration step, not a software limitation. Some departments want all statute citations reviewed regardless of confidence. Some want supervisor sign-off on any report involving a minor. The routing rules encode institutional knowledge about what matters and what doesn't.
+
+The audit trail records everything. Which officer initiated the report. What the AI drafted. What the officer modified. What the supervisor approved. Timestamps at every step. Model versions. Confidence scores on every extraction. This audit trail isn't a nice-to-have -- it's a requirement for reports that may become evidence in criminal proceedings. The chain of custody for the document itself must be demonstrable.
+
+Total time from end of call to completed report: ten minutes. Down from forty-five. The officer is back on the street thirty-five minutes sooner. Over a shift, that's hours of recovered patrol time. Over a year, for a fifty-officer service, the math translates to somewhere between $300,000 and $600,000 in recovered capacity -- not from doing less policing, but from spending less time on paperwork.
+
+The officer's role in report-writing shifts from author to editor. The expertise required doesn't decrease -- it concentrates. The officer still needs to know the statute codes, still needs to verify the facts, still needs to exercise judgment about what to include and how to characterize events. But the mechanical work of translating spoken observations into typed, formatted, correctly-cited documentation is handled by the infrastructure.
+
+Two things must be true for this to work in practice, and both are non-trivial. First, the technology must be genuinely reliable -- not demo-reliable, but reliable enough that officers trust it after weeks of daily use. Confidence calibration is the mechanism that builds that trust: the system earns credibility by accurately reporting its own uncertainty. Second, the institutional adoption must be managed carefully. Officers who feel that AI is monitoring or evaluating them will resist, and their resistance will be justified. The framing matters: this is a drafting tool that saves time, not a surveillance tool that second-guesses judgment. The chiefs who get this distinction right will see adoption. The ones who don't will see the devices sitting unused in cruisers.
+
+## The Government Department
+
+Federal procurement in Canada is a process designed for thoroughness and fairness, which in practice means it is slow, expensive, and paper-intensive. A typical Request for Proposals for a technology project generates twenty to forty vendor submissions, each running fifty to two hundred pages. Evaluation committees spend weeks reading, scoring, and comparing these submissions against weighted criteria published in the RFP.
+
+The process is slow because it must be fair. Every submission must be evaluated against the same criteria by the same committee. Every score must be defensible. Every decision must be documented in case of a vendor challenge. The documentation requirements exist because public money is at stake and losing bidders have legal standing to challenge the process. This is not bureaucratic waste -- it is the cost of accountability in public spending.
+
+The cost of the evaluation process itself is substantial. A committee of five evaluators spending three weeks on a major procurement represents roughly 600 person-hours of senior government employee time. At fully-loaded cost, that's $50,000-$80,000 in evaluation labor for a single procurement -- before the contract is even signed.
+
+With the full infrastructure stack, the workflow changes shape without changing the accountability requirements. In fact, it strengthens them.
+
+Vendor submissions are ingested into a processing pipeline on government-owned infrastructure. Each submission is parsed, and the workflow extracts structured data aligned with the RFP's evaluation criteria. Technical requirements: does the vendor's proposed solution meet each mandatory requirement? Scored criteria: how does the vendor's approach compare to the evaluation framework's weighting? Financial submissions: are the cost breakdowns internally consistent? Do they meet the budget parameters?
+
+The extraction produces a comparative matrix. For each criterion, each vendor's response is summarized, scored, and annotated with the source passage. The evaluator sees a structured comparison rather than forty binders of unstructured text. Every score is linked to the specific passage in the specific submission that generated it. The citation chain goes all the way down.
+
+This doesn't replace the evaluation committee. The committee still makes the judgment calls -- which vendor's technical approach is most credible, which cost estimate is most realistic, which risk mitigation strategy is most convincing. But the committee's time is spent on judgment, not on reading. The three weeks of evaluation compress to three days. The quality of the evaluation improves because the committee works from structured comparisons rather than from individual memories of what they read last Tuesday.
+
+The governance envelope is particularly critical here. Vendor data must be completely isolated -- Vendor A's proprietary approach cannot be visible to the evaluators reviewing Vendor B, and no vendor data can be accessible outside the evaluation team. The enforcement layer manages this: data classification labels on every document, access controls enforced at every processing step, audit logs recording every access. If a losing vendor challenges the process, the government can produce a complete record of who saw what, when, and how the scores were derived. The accountability infrastructure doesn't just support the procurement process -- it produces documentation that is more comprehensive than any human process has ever generated.
+
+The cost tree shows the full picture. Processing forty submissions against weighted criteria: $47 in compute. Comparative analysis generation: $12. Report formatting: $3. Total compute cost: $62. Compare that to $50,000-$80,000 in committee labor. The cost isn't the point -- the quality of the documentation is. But the cost difference is too large to ignore.
+
+## The Twenty-Person Company
+
+A small manufacturing company in southern Ontario has twenty employees, annual revenue of $4 million, and exactly zero data scientists. The office manager handles invoicing, purchase orders, and accounts payable using QuickBooks and a collection of Excel spreadsheets. The company processes about 300 invoices per month -- some from a handful of regular suppliers, others from one-off vendors. Manual data entry takes approximately 60 hours per month across two employees.
+
+This company will never hire a data scientist. They will never engage a consulting firm for an AI strategy. They will never build a custom machine learning pipeline. The economics don't justify it. A data scientist costs $120,000 per year. A consulting engagement costs $50,000 minimum. The entire invoice processing function costs the company roughly $40,000 per year in labor. Automating it with custom AI development would cost more than doing it manually.
+
+The platform approach changes this equation.
+
+A visual workflow builder -- drag and drop, no code -- lets the office manager construct an invoice processing pipeline. The builder presents pre-built components: a document ingestion node that accepts PDF, image, and email attachments. An extraction node that pulls vendor name, invoice number, date, line items, amounts, and tax calculations. A validation node that checks the extracted data against the company's vendor list and flags discrepancies. A routing node that sends validated invoices to the appropriate approval queue and flags exceptions for manual review.
+
+The office manager doesn't need to understand machine learning. She needs to understand her own invoicing process -- which she does, because she's been doing it for eight years. The workflow builder translates her process knowledge into an executable pipeline. The components handle the AI. She handles the logic.
+
+The pipeline runs on a server under the office manager's desk. Not metaphorically -- literally. A $5,000 appliance, roughly the size of a small desktop tower, runs the inference locally. The company's financial data never leaves the building. There is no cloud dependency. There is no monthly subscription that scales with usage. There is no terms-of-service agreement granting a third party the right to process the company's financial records.
+
+When the pipeline works -- and after two weeks of calibration, it processes 85% of invoices without human intervention -- the office manager has something valuable: a working automation that encodes her expertise. The 60 hours per month of manual data entry become 10 hours of exception handling.
+
+Here is where the marketplace layer creates something new. The office manager's invoice processing workflow isn't unique to her company. Every small manufacturer in Ontario processes invoices from similar suppliers using similar formats. The workflow, with the company-specific vendor list removed and replaced with a configurable parameter, is a reusable asset.
+
+She publishes it to a marketplace. Other small manufacturers discover it, deploy it on their own local hardware, configure it with their own vendor lists, and run it. She earns a fee for each deployment. Her eight years of invoicing expertise -- the knowledge of which fields matter, which validation rules catch real errors, which exception conditions require human attention -- is now productized. Not as a SaaS application she has to maintain. As a workflow that runs on other people's hardware, under their control, with her expertise encoded in the logic.
+
+This is the creator economy for domain expertise. Not content creation. Not software development. Process knowledge, captured in executable form and distributed through a marketplace. The barrier to entry isn't technical skill -- it's domain knowledge. The twenty-person company's office manager has something that no Silicon Valley AI startup has: eight years of practical experience processing invoices for small manufacturers. That experience, encoded as a workflow, is worth money.
+
+The infrastructure stack makes this possible at every layer. The accountability layer tracks costs and provenance for every execution. The compute layer runs locally without cloud dependency. The marketplace layer handles distribution and payment. The trust layer accumulates quality metrics -- execution count, auto-approval rate, error rate -- that give buyers confidence. The governance layer ensures that one company's financial data never crosses to another company's workflow instance.
+
+Without the complete stack, any single piece of this story breaks. Without local compute, the twenty-person company won't process financial data in the cloud. Without the marketplace, the office manager's workflow stays internal. Without accountability, buyers can't evaluate whether the workflow is any good. Without governance, the data isolation that regulated industries require is missing. The stack works as a stack, or it doesn't work at all.
+
+## The University
+
+A business school runs a three-session workshop for 120 students enrolled in a management information systems course. The students are not computer science majors. They don't code. They use Excel, PowerPoint, and the occasional database query. They are learning to manage information systems, not to build them.
+
+Session one is deliberate friction. Students receive a stack of fourteen resumes for a marketing analyst position. They spend ninety minutes manually screening each resume: reading qualifications, comparing against job requirements, scoring on a rubric, writing notes. It's tedious, inconsistent, and slow. By the end, most students have screened all fourteen but can't agree on rankings. Their rubric interpretations diverged. Their attention flagged on resume number nine. Their notes are incomplete.
+
+The point isn't to teach resume screening. The point is to make students feel the pain of repetitive, judgment-intensive work done manually, so they understand what they're about to automate and what they might lose in the automation.
+
+Session two introduces the workflow layer. Each student builds a single-resume processing workflow using a visual builder. The workflow has three stages: data extraction (pull name, education, experience, skills from the resume), scoring (evaluate against the job requirements using a defined rubric), and output (produce a structured assessment with the score, the reasoning, and the source passages that support each score). No code. Drag and drop. Connect components. Configure parameters.
+
+The critical pedagogical moment comes when students look at the output and realize it includes something their manual screening didn't: citations. Every score is linked to the specific passage in the resume that supports it. "Scored 4/5 on analytical skills based on: 'Led cross-functional analysis of customer segmentation data resulting in 15% improvement in targeting accuracy' (Resume, Experience section, paragraph 2)." The AI didn't just score the resume. It showed its work.
+
+This leads to the real lesson: calibration. The students review the AI's assessments and compare them to their own manual screening. Where do they agree? Where do they disagree? When they disagree, who is right? Sometimes the student caught something the AI missed -- a red flag in employment gaps, a pattern in career trajectory that the rubric didn't capture. Sometimes the AI caught something the student missed -- a relevant certification buried in the skills section, a quantitative achievement that the student's attention skipped over on resume twelve.
+
+The calibration exercise teaches students something that no coding class does: how to evaluate AI output. Not whether it sounds good -- whether it is good. Not whether the prose is fluent -- whether the underlying judgment is sound. This is the new professional literacy. The question isn't "can you code?" The question is "can you tell when the AI is right and when it's wrong?"
+
+Session three composes the single-resume workflow into a batch pipeline. The students' individual workflows become components in a larger system: ingest all fourteen resumes, process each through the scoring workflow, aggregate scores, apply ranking logic, produce a final recommendation with the top three candidates and the reasoning chain for each selection. A recommendation agent synthesizes the individual assessments into a comparative analysis. Human approval gates sit at key junctures -- the student must sign off on the final ranking before it's submitted.
+
+By the end of session three, students who started the week doing manual resume screening have built a complete AI pipeline with cost tracking (they can see exactly how much compute each resume consumed), accountability envelopes (every recommendation traces to specific evidence in specific documents), and governance controls (approval gates where human judgment is required).
+
+They didn't learn to code. They learned something more important: how to design, deploy, and govern an AI system. How to set confidence thresholds. How to decide where human review is required and where auto-approval is safe. How to read a cost tree and understand what they're spending. How to build a system that shows its work.
+
+This is the educational model that scales. Not "learn to prompt" -- that's a parlor trick. Not "learn to code AI" -- that's a specialty. "Learn to build and govern AI workflows" is the literacy that every knowledge worker will need, the same way every knowledge worker needed to learn spreadsheets in the 1990s and databases in the 2000s. The university that teaches this first doesn't just produce graduates who can use AI tools. It produces graduates who can build the systems that other people use.
+
+The progression from manual work to governed AI pipeline in three sessions is only possible because the infrastructure stack exists. Without the visual workflow builder, the students would need to code. Without the accountability layer, the citation chains and cost tracking wouldn't exist. Without the governance controls, the approval gates and confidence thresholds would be absent. Without local compute, the university would be sending student data to a cloud provider and dealing with privacy reviews that would kill the workshop before it started.
+
+## What Changed and What Didn't
+
+Five industries. Five transformations. The same pattern in each.
+
+The work didn't disappear. It restructured. The lawyer still reviews contracts -- but reviews flagged exceptions instead of reading every page. The officer still writes reports -- but edits AI drafts instead of typing from scratch. The procurement evaluator still makes judgment calls -- but works from structured comparisons instead of reading binders. The office manager still processes invoices -- but handles exceptions instead of manual data entry. The student still evaluates candidates -- but governs an AI pipeline instead of screening resumes.
+
+In every case, the human role shifted from production to governance. From "do the work" to "ensure the work was done correctly." From output to oversight.
+
+And in every case, the infrastructure stack was the enabling condition. Remove any layer and the transformation breaks. Remove accountability and the output isn't auditable. Remove sovereignty and the data can't stay local. Remove the marketplace and expertise stays trapped in individual practitioners. Remove governance and regulated industries can't participate. Remove confidence calibration and the system guesses silently instead of flagging uncertainty.
+
+The question of whether AI replaces jobs is the wrong question. AI replaces tasks. Tasks that are high-volume, pattern-matching, structurally repetitive. The jobs that consisted primarily of those tasks will shrink. The jobs that consisted primarily of judgment, calibration, and governance will grow. The transition between the two is the hard part -- and it's a transition that requires infrastructure, not just technology.
+
+The technology exists today. Frontier language models can already do most of the extraction, analysis, and generation described in these examples. What doesn't exist today is the infrastructure that makes the technology deployable: the accountability envelopes, the citation chains, the cost trees, the governance boundaries, the confidence calibration, the local compute, the marketplace distribution.
+
+Building that infrastructure is the work that remains.
+
+---
+
+*Next: [The Distributed Architecture](./02-distributed-future.mdx)*

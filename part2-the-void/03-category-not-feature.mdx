@@ -1,0 +1,129 @@
+---
+title: "A Category, Not a Feature"
+---
+
+# A Category, Not a Feature
+
+The instinct, when presented with the accountability void, is to assume it can be solved by adding features to existing platforms. OpenAI could add cost breakdowns. Google could add governance controls to A2A. AWS could add provenance tracking to Bedrock.
+
+This instinct is wrong. Not because these companies are incapable — they're among the most capable engineering organizations on Earth — but because accountability for multi-agent, multi-org workflows is structurally different from the problems their platforms are designed to solve. Bolting accountability onto an agent control plane is like bolting financial auditing onto an email server. The email server can send the invoices. But the invoices need a ledger, and the ledger needs to be independent of the email server.
+
+The accountability layer is a different category of infrastructure. Understanding why requires examining what it must do and how that differs from what existing systems do.
+
+## The Control Plane Approach
+
+The current generation of agent safety and management tools follows a pattern that could be called the "external checkpoint" model.
+
+An agent control server sits outside the agent workflow. When an agent is about to take an action — make an API call, access a file, execute a tool — it checks with the control server. The control server evaluates the action against a set of policies: is this tool on the allowlist? Does this output match a prohibited pattern? Is this API call within the rate limit? If the action passes, the agent proceeds. If it fails, the agent is blocked or the action is modified.
+
+This model has clear value. It prevents agents from executing disallowed actions. It provides a centralized point of control. It gives operators a dashboard where they can see what their agents are doing and define what they're allowed to do.
+
+But the model has fundamental limitations that become apparent in multi-agent, multi-organizational workflows.
+
+**The control server is scoped to one organization.** It sees the agents it manages. It doesn't see agents operated by other organizations. When a consulting firm's agent calls a research firm's agent, the consulting firm's control server evaluates the outbound call, and the research firm's control server evaluates the inbound request — but neither server has visibility into the other's evaluation. There's no shared context. The consulting firm doesn't know what the research firm's agent did with its data. The research firm doesn't know why the consulting firm's agent made the request.
+
+**The evaluation is stateless.** Each policy check is independent. The control server evaluates "is this action allowed?" without context about what happened before. Was this the fifth time the agent accessed this data source? Has the cumulative cost of this session exceeded the budget? Has the agent's behavior pattern changed in ways that suggest a compromised prompt? Stateless evaluation can't answer these questions. It evaluates each action in isolation, like a security guard who checks IDs at the door but has no memory of who entered the building yesterday.
+
+**The record stays at the checkpoint.** When the control server approves an action, the record of that approval lives on the control server's database. The data itself — the document being processed, the API response being generated — moves on without any record of the evaluation attached to it. Six months later, a compliance audit asks: "was this output evaluated for safety before it was sent to the client?" The answer requires checking the control server's logs, matching timestamps, and hoping the record was retained. The output itself carries no evidence that it was ever evaluated.
+
+**There's no composability.** When Agent A calls Sub-agent B, which calls Sub-agent C, the control server sees three independent policy checks. It doesn't understand that these three checks are part of a single workflow. There's no parent-child relationship between the evaluations. No roll-up of costs from children to parent. No way to enforce that the total budget for the workflow — across all sub-agents — stays within a defined limit.
+
+The control plane approach is a security camera at the door. It records who entered, and it can block unauthorized visitors. But the package that enters the building has no record of being checked. The chain of custody is in the camera footage, not on the package.
+
+## The Accountability Layer Approach
+
+The accountability layer works differently. Instead of an external checkpoint that evaluates actions from outside, the accountability layer is a set of structured records that travel with the work.
+
+Think of it as a chain-of-custody form stapled to every package.
+
+When an agent begins processing a task, a structured context is created. This context contains: the budget allocated for this operation, the data governance policies that apply (which data classifications are present, what consent exists), the tracing information that links this operation to its parent workflow, and the safety policies that should be evaluated.
+
+This context flows down through every sub-agent call. When the orchestrator calls a research agent, the research agent receives the context: the remaining budget, the governance requirements, the trace ID. The research agent can inspect these before deciding whether to proceed. It can check: "Do I have enough budget to process this request? Does the governance policy allow me to access the data types this workflow contains? Am I authorized to operate under these safety requirements?"
+
+When each agent completes its work, it produces a structured envelope. The envelope contains: the result of the work, the cost incurred (broken down by compute, value-added processing, and platform fees), the citations that link every claim to a specific source, the safety verdicts that were evaluated during processing, and the governance decisions that were made at each data boundary.
+
+These envelopes compose. When Sub-agent C returns its envelope to Sub-agent B, B incorporates C's cost into its own cost tree, C's citations into its own citation chain, and C's governance decisions into its own governance record. When B returns its envelope to Agent A, the same composition happens again. The result is a hierarchical record of the entire workflow — what happened at each step, what it cost, where every claim came from, and what governance decisions were made — in a single, inspectable artifact.
+
+The critical difference: the record travels with the work. Six months later, a compliance audit can inspect any output and immediately see: what it cost, which agents were involved, where every claim traces back to, what data classifications were processed, what consent existed at each boundary, and whether any safety concerns were flagged. This information isn't in a separate logging system that might have different retention policies or access controls. It's in the artifact itself.
+
+## Why This Can't Be a Feature
+
+The distinction between the control plane approach and the accountability layer approach isn't a matter of engineering preference. It's a structural constraint that determines what's possible.
+
+### Cross-org accountability requires protocol, not servers
+
+A control server managed by Organization A can govern Organization A's agents. But when A's agent calls B's agent, A's control server has no authority, no visibility, and no presence in B's infrastructure. Adding accountability to this cross-org call requires something that both A and B can understand, inspect, and extend without either one operating the other's infrastructure.
+
+That something is a protocol — a standardized format for structured accountability records that each organization can produce, consume, and validate independently. Not a server that both organizations must connect to. Not a shared database that both organizations must trust. A format that travels with the data, carries its own evidence, and can be validated by anyone who receives it.
+
+This is the same architectural pattern that makes HTTPS work. HTTPS doesn't require a shared server between the client and the server. The certificate travels with the connection. The client validates the certificate independently. The trust is in the protocol, not in a shared intermediary.
+
+Agent accountability requires the same pattern. The receipt must travel with the work. The cost tree must be inspectable by any party in the workflow. The citation chain must be verifiable by anyone who receives the output. The governance record must be auditable by any regulator with jurisdiction. This can't be accomplished by a server that sits in one organization's infrastructure. It requires a format that works everywhere, controlled by no one.
+
+### Cost trees must compose recursively
+
+In a multi-agent workflow, costs nest. The orchestrator incurs costs. The research agent it calls incurs costs. The extraction model the research agent calls incurs costs. The embedding queries the extraction model makes incur costs.
+
+To produce a complete cost breakdown for the workflow, costs must flow upward through the entire call tree. Each agent reports its own costs, and the parent aggregates children's costs into its own cost record. This recursive composition is a fundamental architectural requirement — it can't be approximated by top-level monitoring.
+
+A control plane sees the orchestrator's costs (the API calls it makes) but doesn't see the costs incurred by sub-agents within their own infrastructure. Even if it could query those costs, assembling them into a coherent tree requires a shared format for cost records that all agents, across all organizations, produce consistently. That's a protocol requirement, not a feature of any single platform.
+
+### Envelopes must nest for budget enforcement to work
+
+Budget enforcement at the orchestrator level is insufficient. If the orchestrator has a $100 budget for a workflow, and it delegates $40 to a research agent, the research agent must independently enforce that $40 limit — including across its own sub-delegations. If the research agent delegates $20 to an extraction service, the extraction service must enforce the $20 limit.
+
+This requires that budget information propagate downward through the call tree and that cost information propagate upward — at every level, across every boundary, including organizational boundaries. A control plane that sits outside the agents can't enforce budgets inside them. Budget enforcement must be in the protocol — in the context that flows down and the envelope that flows up.
+
+### Governance requires field-level granularity that travels with data
+
+Data governance can't be evaluated at the document level. A single document might contain fields at four different classification levels: public (company name), internal (contract value), confidential (trade secrets), and regulated (Social Security numbers). Proper governance requires that each field's classification travel with the data through every processing step, and that governance policies be evaluated at each boundary based on the classifications present.
+
+This field-level metadata must be part of the data record, not part of an external monitoring system. When data crosses an organizational boundary — when Agent A sends data to Agent B in a different company — the classification labels must travel with the data so that Agent B's infrastructure can enforce its own governance policies based on what's actually present. An external control plane in Agent A's organization can't enforce Agent B's governance policies. The governance metadata must be self-describing and self-contained.
+
+## The Analogy That Matters
+
+Double-entry bookkeeping was invented in the 15th century. It didn't replace the merchants' existing tools — it was a new category of infrastructure that made complex commerce possible. Before double-entry bookkeeping, merchants tracked transactions in narrative ledgers. They worked, for simple businesses. But as trade became more complex — spanning multiple partners, multiple currencies, multiple time periods — narrative ledgers broke down. You couldn't verify balances. You couldn't detect fraud. You couldn't produce financial statements that a third party could audit.
+
+Double-entry bookkeeping solved this by imposing a structural constraint: every transaction must be recorded in two places, as a debit and a credit, and the totals must balance. This constraint seems trivial, but it made possible everything that followed: financial statements, auditing, corporate governance, investor confidence, and ultimately, the modern economy. The constraint is the infrastructure.
+
+The agent economy needs its equivalent. Not a narrative log of what happened — the current approach of API call logs and billing dashboards. A structural format for accountability records that composes recursively, travels with the data, enforces constraints at every boundary, and produces artifacts that any party can audit independently.
+
+This is not something you bolt onto an existing agent framework. It's not a dashboard that sits beside the workflow. It's not a monitoring service that watches from outside. It's a category of infrastructure — as fundamental to the agent economy as double-entry bookkeeping is to the financial economy.
+
+## What the Category Looks Like
+
+Without prescribing a specific implementation, the accountability layer for the agent economy must have certain properties:
+
+**Execution contexts flow down.** When an agent initiates work, a structured context must propagate to every sub-agent involved. This context carries the budget, the governance policies, the tracing information, and the safety requirements. Every agent in the chain knows what constraints apply before it begins work.
+
+**Execution envelopes flow up.** When an agent completes work, a structured envelope must return with the result. This envelope carries the cost breakdown, the citation chain, the governance decisions, and the safety verdicts. Every agent in the chain can inspect what happened below it.
+
+**Envelopes compose.** When a parent agent aggregates results from child agents, the envelopes nest. Parent costs include child costs. Parent citations include child citations. Parent governance records include child governance records. The resulting artifact is a complete, hierarchical record of the entire workflow.
+
+**The protocol works across organizational boundaries.** Two agents operated by two different organizations, running on two different infrastructure stacks, can exchange execution contexts and envelopes without sharing any infrastructure. The protocol is self-describing — the recipient can interpret the accountability record without prior coordination with the sender.
+
+**Conformance is graduated.** Not every agent in the ecosystem needs full accountability from day one. A sensible conformance model might start with basic tracing (every operation gets an ID and a duration), progress to cost tracking (every operation reports what it consumed), advance to citation support (every claim links to a source), and culminate in full governance (every data boundary enforces classification and consent policies). Organizations adopt the level appropriate to their risk profile, and the ecosystem becomes more accountable over time.
+
+**The accountability layer is independent of the communication layer.** A2A handles how agents discover and talk to each other. The accountability layer handles what agents record about what they did. These are complementary, not competing. An agent can communicate via A2A while recording accountability via the execution envelope protocol. The communication layer says "Agent A is talking to Agent B." The accountability layer says "here's what the conversation cost, what data was involved, and whether the appropriate governance was in place."
+
+## The Category Gap
+
+The infrastructure the agent economy needs doesn't map to any existing product category:
+
+It's not **observability** (Datadog, New Relic). Observability tools monitor system health — CPU usage, error rates, latency percentiles. They answer "is the system performing well?" not "what did this specific workflow cost and where did every claim come from?"
+
+It's not **security** (firewalls, control planes, policy engines). Security tools prevent unauthorized actions. They answer "should this action be allowed?" not "what was the full cost breakdown of the workflow that this action was part of?"
+
+It's not **billing** (Stripe, API metering). Billing systems charge for usage. They answer "how much does the customer owe?" not "how did the cost decompose across seven agents in three organizations?"
+
+It's not **compliance** (audit log platforms, GRC tools). Compliance tools record events. They answer "what happened?" not "what was the chain of provenance from source document to final claim, and was consent obtained at every organizational boundary?"
+
+The accountability layer sits beneath all of these — providing the raw records from which observability metrics, security policies, billing calculations, and compliance reports can be derived. It's the bookkeeping layer that makes all the other layers possible.
+
+This category doesn't exist yet. The agent economy is assembling itself without it — the frameworks are maturing, the communication standards are solidifying, the hardware is getting cheap, and the agents are crossing organizational boundaries with every API call. But the bookkeeping isn't there.
+
+The void isn't just a missing feature. It's a missing foundation. And the seven forces converging on the same destination guarantee that the foundation will be built. The only question is whether it's built correctly — as a protocol-level standard that composes across the entire ecosystem — or incorrectly, as fragmented, proprietary solutions that each platform implements differently, creating the compliance equivalent of the browser wars.
+
+History suggests that the protocol approach wins. TCP/IP won over proprietary networking. HTTP won over proprietary web protocols. HTTPS won over proprietary security schemes. In each case, the open protocol that composed across the ecosystem became the standard, and the proprietary alternatives became footnotes.
+
+The accountability protocol for the agent economy will follow the same pattern. The question is who builds it, and when.

@@ -1,0 +1,142 @@
+---
+title: "Protocols, Platforms, and the Composition Problem"
+---
+
+# Protocols, Platforms, and the Composition Problem
+
+The seven-layer stack is a blueprint. Sovereignty is the foundation. But a blueprint and a foundation do not answer the question that matters most to the people who will actually build and operate this infrastructure: how do the layers compose in practice?
+
+This chapter walks through a concrete cross-organizational scenario, follows the data and decisions through every boundary, and then addresses the fundamental architectural question: should this infrastructure be a proprietary platform or an open protocol?
+
+## The Three-Organization Scenario
+
+A consulting firm's strategy agent needs to evaluate a pharmaceutical company's drug pipeline for a client engagement. The strategy agent does not have specialized pharmaceutical analysis capabilities. It discovers a research firm's analysis agent that does. The research firm's agent, in turn, needs to process large volumes of clinical trial data that resides on the client's own GPU cluster, where it must remain for regulatory reasons.
+
+Three organizations. Three runtimes. One workflow. Each organization has its own infrastructure, its own compliance requirements, and its own billing system. The data cannot leave the client's premises. The analysis must be auditable. The costs must be attributed precisely.
+
+Walk through what needs to happen at every boundary.
+
+### Boundary 1: Consulting Firm to Research Firm
+
+The consulting firm's strategy agent identifies the research firm's analysis agent through a discovery mechanism. The analysis agent publishes its capabilities — pharmaceutical patent analysis, clinical trial assessment, drug pipeline evaluation — along with its trust metrics, compliance certifications, and pricing model.
+
+Before the first byte of data crosses this boundary, several things must happen.
+
+**Identity verification.** The strategy agent verifies that the analysis agent is who it claims to be. Not just "this is a valid API endpoint," but "this agent is operated by Research Firm Inc., has a verified identity bound to cryptographic keys, and has authorization from Research Firm Inc. to perform pharmaceutical analysis." The agency layer handles this — verifiable identity, authorization chains, capability-based permissions.
+
+**Trust evaluation.** The strategy agent checks the analysis agent's track record. Over the last 10,000 pharmaceutical analyses, what was the accuracy rate? What was the average cost? How many governance violations were recorded? The trust layer provides this — a structured reputation derived from historical accountability records, not from the analysis agent's self-reported claims.
+
+**Terms negotiation.** The two agents negotiate terms: maximum cost for the analysis, expected turnaround, data governance requirements (the clinical trial data is classified as confidential, and the analysis must comply with PIPEDA). The exchange layer handles the price negotiation. The accountability layer handles the governance terms.
+
+**Budget delegation.** The strategy agent allocates a portion of its client-approved budget to the analysis agent. The budget flows downward through the execution tree, enforced at every level. If the analysis agent exceeds its allocation, the overage is blocked, not passed through to the consulting firm's client.
+
+Now the analysis can begin. The strategy agent sends its request — "evaluate the drug pipeline for Company X" — along with an execution context that carries the budget allocation, governance requirements, tracing identifiers, and the strategy agent's authorization chain.
+
+### Boundary 2: Research Firm to Client Infrastructure
+
+The research firm's analysis agent needs clinical trial data. That data sits on the client's own GPU cluster — a sovereign deployment where the client controls the hardware, holds the encryption keys, and requires that no data leave its premises.
+
+This boundary is the hardest one. The analysis agent cannot simply download the data, process it on its own infrastructure, and return results. The data must be processed where it resides, on the client's hardware.
+
+**Compute allocation.** The analysis agent requests compute resources on the client's GPU cluster. "I need 3 GPU workers for 20 minutes, budget $45." The compute layer on the client's infrastructure checks available capacity, verifies that the analysis agent is authorized to request resources (authorization chain verification via the agency layer), and allocates the workers atomically. The workers are isolated — they run the analysis agent's code but have access only to the specific data authorized for this analysis, not the client's entire dataset.
+
+**Data governance enforcement.** The clinical trial data is classified as "confidential" under the client's governance policy. The governance layer checks: does the analysis agent's organization have consent to process confidential data? The consent was established in the terms negotiation at Boundary 1 and verified by the governance layer at Boundary 2. If consent is missing, the data access is blocked. If consent is present but conditional (e.g., "process but do not store"), the condition is enforced.
+
+**Provenance recording.** Every data access, every computation, every intermediate result is recorded in the provenance chain. The chain records which clinical trial records were accessed, which model processed them, what prompt was used, and what intermediate conclusions were produced. This provenance chain flows upward through the execution tree, available for audit at every level.
+
+**Cost attribution.** The compute resources consumed on the client's hardware generate cost records. These records attribute the cost to the research firm's analysis agent (which requested the compute) while recording that the compute occurred on the client's infrastructure. The cost tree distinguishes between who paid for the compute and whose hardware provided it.
+
+### Boundary 3: Results Flow Upward
+
+The analysis is complete. Results must flow upward through the execution tree, crossing organizational boundaries in reverse.
+
+**From client hardware to research firm.** The analysis results — drug pipeline assessment, statistical findings, confidence scores — flow from the client's GPU cluster to the research firm's analysis agent. The governance layer checks: are the results classified at a level that the research firm is authorized to receive? The raw clinical trial data is confidential and stays on the client's hardware. The analytical conclusions, derived from that data, may be classified at a lower level depending on the governance policy. The governance layer enforces this distinction — it is not the analysis agent's decision to make.
+
+**From research firm to consulting firm.** The analysis agent composes its findings into a structured result — citations to the clinical trial data, confidence scores for each conclusion, and its own analytical overlay. This result flows to the strategy agent along with the full cost tree (the analysis agent's LLM costs plus the compute allocation costs on the client's hardware) and the complete provenance chain.
+
+**From consulting firm to client.** The strategy agent synthesizes the analysis into its own recommendation. The cost tree at the root level shows the total engagement cost, decomposed by organization: consulting firm's LLM inference costs, research firm's analysis costs, compute costs on the client's hardware. The provenance chain traces the recommendation through the analysis, through the data processing, down to the specific clinical trial records.
+
+The client receives a recommendation that is:
+- **Cost-attributed.** Every dollar is accounted for, by organization, by operation, by resource type.
+- **Provenance-traced.** Every conclusion can be traced back to specific data, specific models, specific computations.
+- **Governance-compliant.** The clinical trial data never left the client's premises. The governance rules were enforced at every boundary. The audit trail proves it.
+- **Verifiable.** The provenance chain, cost tree, and governance records are structured data that can be independently audited. They are not self-reported claims — they are cryptographically signed records produced by the accountability layer as a natural byproduct of execution.
+
+## The Execution Envelope
+
+The mechanism that makes this composition possible is the execution envelope — a structured container that accompanies every piece of work as it moves through the system.
+
+The envelope carries two types of information, flowing in opposite directions.
+
+**Context flows down.** When a root agent initiates a workflow, it creates an execution context that travels with every sub-invocation through the entire execution tree. The context includes:
+
+- Budget allocation (how much the sub-agent is authorized to spend)
+- Governance rules (what data classifications are permitted, what consent is required)
+- Tracing identifiers (trace ID for correlating operations across organizational boundaries)
+- Authorization chain (who authorized this agent to perform this work)
+
+As the context flows downward through the tree, each level can narrow it — a sub-agent can impose stricter governance rules or smaller budgets on its own sub-agents — but cannot widen it. A sub-agent cannot grant itself a larger budget than it received. It cannot relax governance rules that its parent imposed. The context is monotonically restrictive as it flows downward.
+
+**Results flow up.** When a sub-agent completes its work, it produces an execution envelope that travels upward through the tree. The envelope includes:
+
+- The result itself (the analysis, the conclusion, the processed data)
+- Cost records (what the sub-agent and all of its sub-agents spent)
+- Provenance chain (what data was consumed, what model produced the result, what confidence score is attached)
+- Governance records (what consent checks were performed, what classifications were enforced)
+- Safety verdicts (what enforcement checks were run, what the outcomes were)
+
+As the envelope flows upward, each level composes the results of its children into its own envelope. Costs aggregate. Provenance chains extend. Governance records accumulate. The root caller receives a single envelope that contains the complete accountability record for the entire execution tree.
+
+The envelope is the structural unit that makes the seven layers composable. Without it, each layer would need its own mechanism for passing information through the execution tree. With it, there is one container, one direction for context, one direction for results, and a clean composition model that works regardless of how deep the tree goes or how many organizational boundaries it crosses.
+
+## Why This Must Be an Open Protocol
+
+There is a temptation, at this point, to think of the seven-layer stack as a platform — a product that one company builds, operates, and sells access to. This would be a mistake. A fundamental, structural mistake.
+
+The accountability infrastructure for the agent economy must be an open protocol, not a proprietary platform. The reasoning follows from the historical pattern established in Part III, and from the specific requirements of cross-organizational interoperability.
+
+**The interoperability argument.** The three-organization scenario described above requires that all three organizations participate in the same accountability system. If that system is a proprietary platform, then the consulting firm, the research firm, and the client must all be customers of the same vendor. This is unrealistic. Large organizations will not adopt a single vendor's platform for their internal AI infrastructure, let alone agree to use the same vendor as their partners, customers, and competitors.
+
+A protocol does not have this limitation. Just as any email server can send messages to any other email server (because they all speak SMTP), any accountability implementation can exchange execution envelopes with any other implementation (because they all speak the same protocol). The consulting firm can use one vendor's implementation. The research firm can use another. The client can use a third, or build its own. The protocol is the interoperability layer.
+
+**The trust argument.** A proprietary platform creates a trust dependency. Every organization must trust the platform operator to handle their data correctly, maintain their audit trails, and not modify their accountability records. A protocol eliminates this trust dependency. Organizations hold their own accountability records, generated by their own implementations, verified by their own systems. The protocol defines the format. Each organization controls its own data.
+
+**The regulatory argument.** Regulatory bodies will not accept a single company's proprietary system as the accountability standard for the agent economy. They will accept an open protocol that multiple vendors implement and that can be independently audited. This is the same reason financial regulators accept GAAP (an accounting standard) rather than any specific accounting software product. The standard is auditable. A product is not.
+
+**The durability argument.** Proprietary platforms are mortal. They can be acquired, shut down, or pivoted. Protocols are immortal. SMTP was specified in 1982 and is still the backbone of email. HTTP was specified in 1991 and still governs the web. An open accountability protocol will outlast any company that implements it, including the company that creates it. This durability is essential for an infrastructure layer that organizations will depend on for compliance, audit, and legal purposes.
+
+## The A2A Relationship
+
+Google's Agent-to-Agent protocol (A2A) has emerged as the leading standard for agent interoperability, now maintained by the Linux Foundation and backed by over 150 organizations. A2A handles a specific set of problems: agent discovery (Agent Cards describing capabilities and authentication), task lifecycle management (seven states from working to completed), multi-turn conversation (context and reference task linking), and content exchange (typed message parts and artifacts).
+
+A2A is the communication layer. It handles how agents find each other, how they start conversations, how they exchange messages, and how they manage task state. This is analogous to what SMTP does for email or what SIP does for voice calls — the mechanics of establishing and maintaining a communication session.
+
+What A2A does not handle — and what its designers explicitly left out of scope — is the accountability layer. A2A has no mechanism for cost tracking. It has no provenance model. It has no data governance enforcement. It has no budget enforcement. It has no settlement protocol.
+
+These are not gaps in A2A. They are the boundaries of A2A's scope. A2A solves the communication problem. The accountability protocol solves the accountability problem. They are complementary layers, not competitors, in the same way that HTTP and TLS are complementary — HTTP handles content exchange, TLS handles encryption, and neither one replaces the other.
+
+The composition between A2A and an accountability protocol is clean. A2A's `DataPart` — a typed content container in A2A messages — can carry accountability context (execution context flowing down) and accountability results (execution envelopes flowing up) as structured data. When Agent A initiates a task with Agent B via A2A, the accountability context travels alongside the A2A task request. When Agent B returns results via A2A, the execution envelope travels alongside the A2A task artifact.
+
+This means an accountability-enabled agent can participate in the A2A ecosystem without modification. It speaks A2A for discovery and task management. It carries accountability data as structured content within A2A messages. An agent that does not support the accountability protocol still works — it communicates via A2A normally, but without cost tracking, provenance, or governance enforcement. An agent that does support the accountability protocol gains all of those capabilities when communicating with another accountability-enabled agent.
+
+The degradation is graceful. Full accountability when both sides support it. Standard A2A communication when only one side supports it. No communication failure in either case. This is the model that TLS established: an HTTPS request to a server that supports TLS gets encryption. An HTTP request to the same server still works, just without encryption. The protocol is additive, not exclusive.
+
+## The Composition Problem, Solved
+
+Return to the three-organization scenario. With the seven-layer stack implemented as an open protocol, composing across organizational boundaries is mechanical rather than heroic.
+
+**Discovery.** The consulting firm's strategy agent discovers the research firm's analysis agent through A2A's Agent Card mechanism. The Agent Card includes an extension indicating accountability protocol support at a specific conformance level, advertised capabilities, pricing model, and trust metrics.
+
+**Negotiation.** The agents negotiate terms using the exchange layer's protocol. The negotiation produces a signed agreement: maximum cost, turnaround time, governance requirements, conformance level. The agreement is recorded in both organizations' accountability systems.
+
+**Execution.** Work proceeds through the execution tree. At every boundary, the accountability context flows down and the execution envelope flows up. Cost trees compose. Provenance chains extend. Governance rules enforce. The protocol handles the composition — no custom integration, no bilateral agreements on data formats, no manual reconciliation.
+
+**Settlement.** When the workflow completes, the root envelope contains the complete cost tree. The exchange layer computes the settlement: consulting firm owes research firm X, research firm owes client Y for compute consumed on client hardware. Settlement is mechanical — derived from the accountability records, not from manual invoicing.
+
+**Audit.** At any point, any organization in the chain can produce a complete audit trail for its portion of the workflow. The consulting firm's auditor sees the full cost tree and provenance chain. The research firm's auditor sees the sub-tree rooted at its analysis agent. The client's auditor sees the compute allocation records and governance enforcement events. Each auditor sees what they need and nothing more.
+
+This is what the accountability infrastructure for the agent economy looks like when it is designed as a coherent system. Not a collection of features. Not a proprietary platform. A protocol stack that composes across organizational boundaries, enforces governance at every handoff, tracks costs with precision, and produces permanent, auditable records as a natural byproduct of execution.
+
+The protocol that achieves this will not be glamorous. It will not attract breathless press coverage. It will not be the subject of conference keynotes or venture capital bidding wars. It will be the infrastructure that everything else depends on — the bookkeeping system of the agent economy, the TLS of autonomous AI, the SWIFT of machine-to-machine commerce.
+
+And it will outlast the tools it accounts for.
