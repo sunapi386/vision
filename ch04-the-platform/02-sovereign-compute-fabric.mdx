@@ -1,0 +1,89 @@
+# Sovereign Compute Fabric
+
+## One Program
+
+Install one program on your hardware. That is the entire onboarding story.
+
+The program is called Citadel. It is a single Go binary -- no Python dependencies, no Docker prerequisites on first run, no runtime to install. Download it, run `citadel init`, and follow the prompts. The machine joins the mesh network, announces its capabilities, and begins accepting work. The entire process takes less than two minutes on a fresh machine.
+
+What happens in those two minutes is architecturally significant.
+
+First, Citadel runs an OAuth 2.0 Device Authorization flow. It displays a device code on the terminal. The operator opens a browser, navigates to aceteam.ai/device, enters the code, and approves the machine. This is the same pattern that Claude Code and other CLI tools use for authentication -- no shared secrets, no API keys to manage, no SSH tunnels to configure.
+
+Second, Citadel connects to Nexus, our coordination server, using an embedded implementation of the Tailscale protocol. This is critical: we embed the networking library directly in the binary. There is no external Tailscale or WireGuard installation required. The binary handles everything -- key exchange, tunnel establishment, NAT traversal. It works behind corporate firewalls. It works behind home routers. It works on a machine with no public IP address. No ports need to be opened.
+
+Third, Citadel probes the local hardware. It detects NVIDIA GPUs via nvidia-smi, checks for running Ollama or vLLM instances, measures available VRAM, CPU cores, and memory. These capabilities are published as tags -- `gpu:b300`, `vram:192gb`, `llm:llama3` -- that the platform uses for job routing.
+
+Fourth, it starts accepting work. On-premise nodes pull from Redis Streams queues matched to their capabilities. A node tagged `llm:llama3` subscribes to `jobs:v1:tag:llm:llama3`. A general-purpose CPU node subscribes to `jobs:v1:cpu-general`. The node begins processing immediately.
+
+Citadel runs on Linux, macOS, and Windows. On Linux, it uses nvidia-smi and lspci for GPU detection. On macOS, it detects Metal-compatible GPUs via system_profiler. On Windows, it uses nvidia-smi.exe with a WMI fallback. Each platform has its own package manager integration -- apt, Homebrew, winget -- for installing Docker and other dependencies when needed.
+
+The design goal is radical: an operator with zero DevOps experience should be able to contribute GPU compute to the fabric. No Kubernetes. No Terraform. No YAML manifests (beyond the one Citadel generates for you). One binary.
+
+## The Mesh
+
+Under the hood, every Citadel node joins a WireGuard-encrypted mesh network coordinated by Nexus, our Headscale server running at nexus.aceteam.ai.
+
+Headscale is the open-source implementation of Tailscale's coordination protocol. We chose it for three reasons. First, WireGuard is the fastest VPN protocol available -- it runs in the kernel, adds minimal latency, and handles encryption at wire speed. Second, the coordination model eliminates the classic VPN problem of configuring each connection manually. Nodes register with the coordination server and automatically discover peers. Third, NAT traversal works reliably across firewalls, carrier-grade NAT, and restrictive corporate networks.
+
+The mesh provides two routing patterns:
+
+**Queue-based routing for fungible resources.** When any node with the right capabilities can handle a job -- LLM inference, document processing, embedding generation -- the work goes through Redis Streams. Workers pull from queues matched to their capability tags. The caller never specifies which machine should handle the work. This is how you get automatic load balancing, fault tolerance, and horizontal scaling without configuration.
+
+**Direct fabric calls for specific resources.** When a job needs a particular machine -- a specific database, a particular file system, a unique hardware configuration -- the platform calls the node directly via its VPN IP. The `fabricCall()` function resolves the node's mesh address, verifies organizational ownership, confirms the node is online, and makes the HTTP request through the encrypted tunnel.
+
+Both patterns coexist. A single workflow might use queue-based routing for an LLM inference step and a direct fabric call for a database query on a specific node. The workflow engine handles this transparently.
+
+## Your Data Never Leaves Your Machines
+
+This is not a marketing claim. It is a structural property of the architecture.
+
+When an organization runs AI workloads through AceTeam, the compute happens on nodes they control. If those nodes are in their data center, the data stays in their data center. The platform sends job instructions through the mesh. The worker executes the job locally. Results stream back through the encrypted tunnel.
+
+The platform layer -- the web application, the job queue, the coordination server -- handles orchestration. It knows that a job was submitted, which node claimed it, how long it took, and what it cost. It does not need to see the data being processed. The job payload and the results travel between the caller and the worker through the encrypted mesh, but the platform's role is routing and accounting, not data inspection.
+
+Organization isolation is enforced at the network layer. Each organization receives its own Headscale user namespace (`org_{organization_id}`). The coordination server generates per-user ACL policies that make nodes belonging to different organizations cryptographically invisible to each other. They do not appear in each other's `tailscale status`. They cannot be pinged, scanned, or reached by any protocol. The coordination server never distributes WireGuard keys across organizational boundaries.
+
+For industries handling regulated data -- legal, medical, financial, defense -- this architecture satisfies compliance requirements that cloud AI services structurally cannot meet. When you call the OpenAI API, your data traverses infrastructure you do not control, in jurisdictions you may not have chosen. When you run the same model through AceTeam on your own hardware, the data never leaves a network you own.
+
+## Add Hardware When You Need Capacity
+
+Scaling the fabric is operationally trivial. Install Citadel on another machine. It joins the mesh, announces its capabilities, and starts pulling from queues. No configuration changes to the existing system. No load balancer updates. No Kubernetes node pools to resize.
+
+This applies at every scale:
+
+A startup with two GPUs under a desk. Install Citadel on both machines. They form a two-node fabric. When the team buys a third GPU, install Citadel. Three-node fabric. The workflows that ran on two nodes now have three nodes available. No changes to the workflows.
+
+A data center operator with two hundred B300 GPUs. Install Citadel on each server. Two hundred nodes join the fabric. The queue distributes work across all of them. During off-peak hours, idle GPUs become available to marketplace consumers. During peak hours, the operator's own workloads take priority through queue partitioning.
+
+An enterprise with mixed infrastructure -- on-premise servers, cloud VMs, edge devices. All run Citadel. All join the same mesh. The workflow engine routes work based on capability tags and compliance policies. GDPR-sensitive workloads route only to EU-tagged nodes. Latency-sensitive workloads route to the nearest capable node.
+
+## Mix On-Prem with Cloud When It Makes Sense
+
+The fabric does not force a binary choice between cloud and on-premise. Both coexist on the same mesh.
+
+An organization might run steady-state workloads on their own GPUs -- the daily document processing pipeline, the customer service agents, the regular inference load. When they need burst capacity -- a large batch job, a spike in traffic, a model training run -- they spin up cloud VMs, install Citadel, and add them to the fabric temporarily. When the burst is over, they shut down the cloud VMs. Their on-premise nodes continue as before.
+
+The multi-provider AI layer makes this seamless. Agents and workflows do not know or care whether a response comes from a local Ollama instance running Llama 3 or from the OpenAI API via a cloud worker. The interface is identical. An organization can start with cloud APIs for convenience, migrate to local models as they build infrastructure, and use both simultaneously during the transition.
+
+This hybrid model is not a future feature. It is the current architecture. The same Redis Streams queues accept work from cloud-hosted Python workers and from on-premise Citadel nodes. The job routing system does not distinguish between them. A job tagged `llm:llama3` will be consumed by whatever worker has that model available, whether it is running in a data center in Hamilton or on a cloud VM in us-east-1.
+
+## Technical Depth: Coordination and Job Queues
+
+For those who want the details.
+
+**Nexus Coordination.** Nexus runs Headscale v0.28 with SQLite backing. DERP relay is embedded (region ID 900, "ace"), eliminating dependency on external DERP infrastructure. DNS uses MagicDNS with a `nexus` base domain. ACL policy mode is set to `database`, meaning policies are managed programmatically via the Headscale API rather than static files. A policy-sync container runs every five minutes, generating per-user isolation rules and pushing them to Headscale. Admin users configured via `FABRIC_ADMIN_USERS` get full mesh access for operational visibility.
+
+Dynamic DNS (Cloudflare) keeps nexus.aceteam.ai pointed at the correct IP even when the upstream connection changes. TLS is handled by Certbot with automatic renewal. Observability is optional but available: Prometheus scrapes Headscale metrics, Loki aggregates container logs via Promtail, and Grafana provides dashboards with twelve panels covering node count, HTTP request rate, latency percentiles, Go memory usage, and live container logs.
+
+**Redis Streams Job Queues.** All workloads flow through Redis Streams using consumer groups. Queue names follow the pattern `jobs:v1:tag:{capability}` for tag-based routing and `jobs:v1:cpu-general` for the fallback queue. Development and production use separate queue suffixes to prevent cross-contamination.
+
+Each message tracks delivery attempts. After configurable retries with exponential backoff, failed jobs move to a Dead Letter Queue (`dlq:v1:{queueSuffix}`). Idempotency is enforced: workers check job status before processing and skip already-completed jobs. Backpressure triggers at 80% queue capacity (logging warnings) and 100% (returning HTTP 503 to new submissions). Orphan recovery detects jobs stuck in "enqueued" state in the database and re-queues them automatically.
+
+Streaming results use a dual-channel pattern. Workers publish chunks to `stream:v1:{jobId}` via Redis Pub/Sub. The API gateway subscribes and forwards chunks as Server-Sent Events. Stream event types include `start`, `chunk`, `tool_call_start`, `tool_call_end`, `error`, and `end`. This enables real-time token-by-token display in the browser, even when the inference is running on a machine three network hops away through an encrypted tunnel.
+
+**Status Publishing.** Citadel publishes heartbeats every 30 seconds to both Redis Pub/Sub (`node:status:{nodeId}`) for real-time UI updates and Redis Streams (`node:status:stream`) for reliable processing by the Python worker. Status includes CPU, memory, GPU utilization, temperature, running services, and peer connectivity. The platform consumes this stream for the Fabric Management Dashboard, providing operators with real-time visibility into every node in their infrastructure.
+
+---
+
+[Previous: Architecture Philosophy](./01-architecture-philosophy.mdx) | [Next: Agent Workbench](./03-agent-workbench.mdx)

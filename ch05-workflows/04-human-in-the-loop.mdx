@@ -1,0 +1,101 @@
+# Human-in-the-Loop
+
+## Trust But Verify
+
+You want to trust the agent is doing the right thing. You also want to verify separately. This is not a contradiction. It is the same principle that governs every system with real stakes.
+
+Accounting works this way. A company trusts its accountants to record transactions correctly throughout the year. But auditors come periodically -- annually, quarterly, or on demand -- and independently verify that the books are accurate. The accountants and the auditors serve different functions. The accountants do the work. The auditors ensure the work was done correctly. Neither role replaces the other.
+
+AI systems need the same architecture. The AI does the work -- processing documents, classifying inputs, generating outputs, making decisions within defined parameters. A separate layer -- sometimes human, sometimes another AI system, sometimes both -- verifies that the work meets quality standards.
+
+This is human-in-the-loop, and in AceTeam's workflow engine, it is a first-class primitive. Not an afterthought. Not an error handler. A designed, intentional step in the process.
+
+## Why AI Monitoring AI
+
+The auditing analogy extends further. In a large organization, you do not have one auditor checking everything. You have layers.
+
+The first layer is the AI itself, with built-in self-checks. A classification model outputs a confidence score. If the score is below a threshold, the result is flagged automatically. This is the equivalent of a bookkeeper who double-checks their own math before handing the report to a manager.
+
+The second layer is a separate AI system that reviews the first system's output. A different model, with different training, evaluates whether the output looks reasonable. This is the equivalent of a supervisor reviewing a team member's work -- same domain knowledge, different perspective.
+
+The third layer is human review. A domain expert examines cases that the AI layers could not resolve with sufficient confidence. This is the auditor -- independent, authoritative, and expensive, so you use them strategically rather than on every transaction.
+
+This layered approach is not theoretical. It is how AceTeam workflows operate in practice.
+
+Consider a document classification workflow. A model classifies incoming documents as "invoice," "receipt," "contract," or "other." For each classification, it produces a confidence score. The workflow routes based on confidence:
+
+- Above 95%: auto-approve. The classification is almost certainly correct. Processing continues without human intervention.
+- Between 75% and 95%: peer review. A second model, potentially a different architecture, confirms or challenges the classification. If both agree, auto-approve. If they disagree, escalate.
+- Below 75%: human review. The document is presented to a human reviewer with the model's prediction, the confidence score, and the alternative classifications. The human makes the final call.
+
+The thresholds are configurable per workflow. A medical records processing workflow might require human review on everything above 80% confidence because the cost of a misclassification is high. A marketing email categorization workflow might auto-approve above 70% because the stakes are low.
+
+## Policies as Guardrails
+
+Every organization has policies. Some are written down. Most live in people's heads as institutional knowledge -- "we always double-check invoices over $10,000" or "escalate any customer complaint that mentions legal action."
+
+These policies are natural workflow guardrails. They define the boundaries within which the AI operates and the triggers that invoke human judgment.
+
+The key insight is that every organization's policies are slightly different. Two accounting firms may follow the same tax code, but their internal review processes, risk tolerances, and escalation procedures are unique. A workflow platform that encodes these policies as configurable guardrails -- rather than hard-coded rules -- becomes a natural subscription service.
+
+When a firm subscribes to AceTeam and configures their workflows, they are encoding their specific policies. The AI operates within those policies. The guardrails enforce them. The human-in-the-loop gates activate when the policies require human judgment.
+
+This is why cookie-cutter AI solutions fail in professional services. A generic "AI tax assistant" cannot enforce the specific policies of a particular firm. But a workflow configured with that firm's policies, thresholds, and escalation rules can.
+
+## SOPs Become Enforceable Rules
+
+Standard Operating Procedures are the backbone of any well-run organization. They define how work should be done: the steps, the order, the checks, the approvals. In most organizations, SOPs exist as documents -- PDFs in a shared folder that people are supposed to read and follow.
+
+The problem is enforcement. An SOP says "verify the client's identity before processing the transaction." But the system does not prevent an employee from skipping that step. The SOP is advisory. Compliance depends on individual discipline.
+
+When an SOP becomes a workflow, it becomes enforceable. The identity verification step is a node in the workflow. The next step does not execute until the verification node completes. An employee cannot skip it because the system will not advance without it. The human review gate at the verification step requires explicit approval before the workflow continues.
+
+This is the same principle that manufacturing learned decades ago. Assembly line stations enforce process order. You cannot install the engine after the body is sealed. The process architecture prevents the error. Quality is built into the system, not dependent on individual vigilance.
+
+AI workflows apply this principle to knowledge work. The SOP is not a document that employees are supposed to follow. It is the system they work within. Compliance is structural, not behavioral.
+
+## The Review Interface
+
+Human-in-the-loop is only as good as the interface that presents information to the reviewer. If the reviewer has to dig through raw data to understand what the AI did and why, the review takes too long and the human bottleneck negates the AI's speed advantage.
+
+AceTeam's review interface is designed for rapid, informed decision-making:
+
+**Context.** The reviewer sees the full upstream context -- what triggered the review, what data the AI processed, what intermediate results were produced. They do not need to reconstruct the process. The workflow provides the narrative.
+
+**Prediction and alternatives.** For classification tasks, the reviewer sees the model's prediction, the confidence score, and the ranked alternatives. If the model says "contract" at 82% confidence with "agreement" as the second option at 71%, the reviewer knows exactly where the uncertainty lies.
+
+**Inline editing.** The reviewer can modify the AI's output directly. If the model generated a summary that is mostly correct but has an error in one paragraph, the reviewer edits that paragraph. They do not need to regenerate the entire output or write it from scratch.
+
+**Diff views.** When the reviewer modifies the AI's output, the changes are tracked as a diff. This serves two purposes: it creates an audit trail of human corrections, and it provides training data for future model improvement. Over time, the system learns which outputs humans consistently modify and adjusts.
+
+**Approval and rejection.** One-click approve or reject. The workflow continues with the human's decision, and the decision is logged with a timestamp and reviewer identity.
+
+The goal is that a reviewer spends seconds per routine case and minutes per complex case. The AI handles the volume. The human handles the judgment. The interface minimizes the friction between them.
+
+## The Trust Gradient
+
+Trust in AI is not binary. It is a gradient, and it changes over time.
+
+When an organization first deploys an AI workflow, trust is low. They want human review on every output. This is correct -- the system has not proven itself. The human review rate is 100%.
+
+As the system demonstrates consistent quality, trust increases. The organization raises the auto-approval threshold from 95% to 90% to 85%. The human review rate drops from 100% to 50% to 20%. The AI handles more. The human reviews less.
+
+Eventually, for well-understood, low-risk processes, the human review rate drops to near zero. The AI has earned trust through consistent performance. The human role shifts from reviewing individual outputs to monitoring aggregate quality metrics -- accuracy rates, error distributions, drift detection.
+
+This trust gradient is natural and healthy. It mirrors how organizations delegate to employees. A new hire is supervised closely. An experienced team member works independently. A senior leader is trusted to make judgment calls. The progression from close supervision to independence is earned through demonstrated competence.
+
+AI workflows make this trust gradient explicit and measurable. The confidence thresholds, the review rates, the correction frequencies -- all are tracked and visible. An organization can see, quantitatively, how trustworthy their AI system is for each type of task. And they can adjust the human-in-the-loop configuration based on data, not intuition.
+
+## The Subscription Model
+
+This is why workflow-based AI is a natural subscription service.
+
+Every organization's policies are slightly different. Their risk tolerances, escalation procedures, quality standards, and regulatory requirements are unique. A workflow platform that encodes these policies as configurable guardrails -- and enforces them consistently -- provides ongoing value that justifies ongoing payment.
+
+The value is not the AI model. Models are increasingly commoditized. The value is the policy enforcement layer -- the specific configuration of guardrails, thresholds, review gates, and escalation rules that reflect a particular organization's standards.
+
+When that configuration is maintained, updated, and improved over time -- as regulations change, as the organization's processes evolve, as the AI models improve -- the subscription earns its keep.
+
+---
+
+[Previous: The Science of Work](./03-the-science-of-work.mdx) | [Next: Dogfooding](./05-dogfooding.mdx)

@@ -1,0 +1,63 @@
+# Why a Protocol
+
+## The Consulting Analogy
+
+Here is how every management consulting engagement actually works.
+
+A company hires McKinsey to evaluate a potential acquisition. McKinsey assigns a team. The team realizes they need specialized expertise — pharmaceutical pipeline analysis, say — so they subcontract a boutique research firm. The research firm, in turn, needs clinical trial data, so they license access from a data provider.
+
+Three organizations. Money flows down: the company pays McKinsey, McKinsey pays the research firm, the research firm pays the data provider. Findings flow up: the data provider delivers trial data, the research firm produces an analysis, McKinsey synthesizes a recommendation. And the paper trail — this is the part that matters — the paper trail flows in both directions.
+
+There are receipts. Every organization tracks its costs, and the root client gets a breakdown. Not just "McKinsey charged $2 million." The breakdown shows how much went to the research firm, how much to data licensing, how much to McKinsey's own team. The client can trace every dollar.
+
+There are footnotes. When McKinsey says "the drug pipeline is promising," that conclusion does not float in the air. It rests on the research firm's analysis. The research firm's analysis rests on specific trial data — enrollment numbers, endpoint results, statistical significance. The footnotes go all the way down to primary sources. If the board asks "where did this number come from?", you can answer.
+
+And there are NDAs. The data provider's clinical trial data is governed by specific usage agreements. The research firm can use it for analysis but cannot forward raw data to McKinsey. McKinsey can reference the conclusions but cannot share the underlying patient records with their client. Data governance is not a one-time check at the front door. It is checked at every organizational boundary, every handoff.
+
+This is the protocol. It is invisible when things go well. But when something goes wrong — when costs blow up, when a conclusion turns out to be wrong, when data ends up where it should not — the protocol is what lets you reconstruct what happened, who is accountable, and where the breakdown occurred.
+
+## What AI Agents Are Missing
+
+AI agent systems have none of this.
+
+When a strategy agent calls a research agent that calls a retrieval agent, there is no standard for how costs are tracked across that chain. The root caller might see a single API bill with no breakdown. The intermediate agents might have no idea what the sub-agents spent. Budget limits, if they exist at all, are implemented as ad hoc checks inside a single framework, with no way to enforce them across organizational boundaries.
+
+Provenance is worse. When the strategy agent produces a recommendation, there is typically no way to trace that recommendation back through the reasoning chain to the specific data, model, and prompt that produced it. If an auditor asks "why did the system conclude X?", the answer is often "we would have to re-run the query and hope for the same result."
+
+Data governance is worst of all. When an agent processes patient records or financial data, the governance rules are typically enforced at the point of ingestion — if at all. Once data enters the agent's context window, there is no mechanism to prevent it from being forwarded to another agent, summarized in a way that leaks PII, or sent to a model hosted in a different jurisdiction. The NDA is checked at the front door and then forgotten.
+
+This is not a framework problem. It is not a feature that any single vendor can add to their platform and solve. It is an interoperability problem. When three organizations with three different agent platforms collaborate on a workflow, the accountability layer must be a shared protocol, not a proprietary feature.
+
+## The Strategic Choice: Protocol, Not Library
+
+We made a deliberate decision to build AEP and ACP as protocols, not as features of our platform.
+
+This means several things in practice.
+
+**Interoperability.** AEP's cost tracking, provenance, and governance work across agent platforms. An AceTeam agent can call an agent running on LangChain, which calls an agent running on a custom Python framework. The protocol travels with the execution context, independent of the runtime. Our Go-based runtime is the first implementation, but it is not meant to be the last. Any organization can implement AEP in any language, on any platform.
+
+**Regulatory readiness.** When a regulated organization needs to demonstrate to auditors that its AI systems are accountable, a documented protocol is categorically different from "we have internal checks." A protocol has a specification. It has conformance levels. It can be independently verified. It can be cited in compliance documentation. This matters for healthcare, financial services, government, and defense — exactly the verticals where AI adoption is highest-value and most risk-sensitive.
+
+**Vendor neutrality.** Organizations adopt AI infrastructure reluctantly because they fear lock-in. A proprietary accountability layer means that switching platforms means losing your audit trail, your cost history, your provenance chains. A protocol means the accountability data is portable. The organization owns it regardless of which runtime generated it.
+
+The trade-off is real. Protocols are harder to evolve than libraries. You cannot just push a breaking change and bump a version number. Backward compatibility becomes a constraint. But the payoff is that the protocol outlasts any single implementation. TCP/IP outlasted every early internet company. SMTP outlasted every early email provider. The protocol layer is where durable value lives in infrastructure.
+
+## Conformance Levels
+
+Not every organization needs the same level of accountability from day one. AEP defines a conformance roadmap with increasing rigor:
+
+**Minimal.** Cost tracking only. Every agent call generates a cost record. Records form a tree mirroring the execution tree. This is the entry point — you can see what things cost, who spent what, where the budget went. No provenance, no governance. Useful for internal cost management and billing reconciliation.
+
+**Basic.** Cost tracking plus basic provenance. Every conclusion carries a citation chain linking it to the data and model that produced it. Not cryptographically verified, not deeply auditable, but sufficient to answer "where did this number come from?" in a post-mortem. Useful for internal quality assurance.
+
+**Traceable.** Full provenance with cryptographic attestation. Verdicts are signed with Ed25519 and chained into Merkle audit trails. You can prove that safety checks ran, in what order, with what results, and that the chain has not been tampered with. Useful for regulated industries where audit trails have legal weight.
+
+**Governed.** Everything in Traceable, plus data governance enforcement. Data carries classification labels. Consent is checked at every organizational boundary. Data flow violations are detected and blocked in real time. Useful for healthcare (PHI), financial services (PCI), and government (classified data).
+
+Each level builds on the previous. An organization can start at Minimal — just tracking costs — and move to Governed as their compliance requirements mature. The protocol supports all four levels. The implementation chooses which to enforce.
+
+This graduated approach is important. The alternative — requiring full governance compliance from day one — would make adoption impossible for organizations that just want to stop guessing what their agents cost. Meet them where they are, then give them a path forward.
+
+---
+
+[Next: AEP — Receipts](./02-aep-receipts.mdx)

@@ -1,0 +1,93 @@
+# AEP: Receipts
+
+## The Cost Accountability Problem
+
+Ask any engineering leader how much their AI system costs to run, and you will get one of two answers: a single number from their cloud provider bill, or a shrug.
+
+The single number is useless. It tells you the total spend, but not where it went. When a workflow calls four sub-agents, each making multiple LLM calls across two different providers, the cloud bill shows aggregate API charges. It does not show which agent consumed what fraction, which sub-call was expensive, which step could be optimized, or whether the $47 charge for a single workflow run was normal or anomalous.
+
+The shrug is honest. Most organizations genuinely do not know what their agents cost at a granular level. They know their monthly OpenAI bill went up. They know it is "probably" the new document analysis workflow. They do not know whether the cost spike is because the workflow runs more often, because it processes larger documents, or because a sub-agent is making redundant calls.
+
+This is not a monitoring problem. Monitoring tells you that costs went up. Cost accountability tells you why, through what chain of execution, and who is responsible. These are fundamentally different capabilities.
+
+## How AEP Cost Tracking Works
+
+Every agent call in an AEP-conformant system generates a cost record. Not a log line. Not a metric. A structured record that is part of the execution tree.
+
+The execution tree mirrors the call tree. When a root agent calls sub-agent A, which calls sub-agents B and C, the cost tree looks the same:
+
+```
+Root Agent ($12.47)
+├── Sub-Agent A ($8.31)
+│   ├── Sub-Agent B ($3.12)
+│   │   ├── LLM Call: GPT-4o ($2.80)
+│   │   └── LLM Call: GPT-4o ($0.32)
+│   └── Sub-Agent C ($5.19)
+│       ├── LLM Call: Claude Sonnet ($4.85)
+│       └── Embedding: text-embedding-3 ($0.34)
+└── LLM Call: GPT-4o ($4.16)
+```
+
+Every node in this tree knows its own cost and the costs of everything beneath it. The root caller sees the complete breakdown. Sub-agent A sees its own breakdown ($8.31 total, composed of $3.12 from B and $5.19 from C). Sub-agent B sees only its own two LLM calls.
+
+This is recursive cost composition. Each level of the tree composes the costs of its children into its own total, then reports that total to its parent. No single node needs global knowledge. Each node only needs to aggregate what is directly beneath it. The protocol handles the composition.
+
+## Budget Enforcement
+
+Cost tracking without enforcement is journalism, not governance. You find out what went wrong after the money is gone.
+
+AEP budgets flow downward through the execution tree. When the root caller initiates a workflow with a $50 budget, that budget limit is part of the execution context passed to the first agent. The first agent can allocate portions of that budget to its sub-agents. If it calls sub-agent A with a $30 budget and sub-agent B with a $15 budget, it keeps $5 of headroom for its own LLM calls.
+
+Budget enforcement happens at every level, not just at the root. When sub-agent A's $30 budget is exhausted, it cannot make additional calls — even if the root's $50 budget still has room. The budget was allocated. The allocation is binding. Sub-agent A does not get to reach into the root's remaining $5 of headroom.
+
+This is the same principle as expense account management in any large organization. The CFO sets a department budget. The department head allocates portions to project managers. A project manager does not get to spend the department's contingency fund because their own allocation ran out.
+
+The enforcement mechanism uses pessimistic reservation. When an agent is about to make an LLM call, it estimates the cost (based on model, token count, and pricing) and reserves that amount from its budget before the call is made. If the reservation would exceed the remaining budget, the call is blocked. The reservation is adjusted to the actual cost after the call completes. This prevents the common failure mode where five concurrent calls each check the budget independently, all pass, and collectively blow through the limit.
+
+## Cross-Organizational Settlement
+
+Here is where cost tracking becomes genuinely hard, and genuinely valuable.
+
+When three organizations collaborate on a workflow — Organization A provides the orchestration, Organization B provides a specialized analysis agent, Organization C provides data access — the costs need to be settled across three separate billing systems that have no shared state.
+
+In today's AI ecosystem, this does not work. Organization A pays for all the API calls because the calls go through their API key. They then try to reconstruct what Organization B's agent consumed, negotiate a manual invoice, and handle the settlement out of band. This is fragile, slow, and approximate.
+
+AEP cost records solve this by design. Every cost record carries the organization identity of the agent that incurred it. When Organization A's orchestrator calls Organization B's analysis agent, which calls Organization C's data service, the cost tree records which organization owns each node:
+
+```
+Orchestrator [Org A] ($47.83)
+├── Analysis Agent [Org B] ($35.21)
+│   ├── Data Query [Org C] ($12.40)
+│   └── LLM Calls [Org B] ($22.81)
+└── LLM Calls [Org A] ($12.62)
+```
+
+The settlement is mechanical. Org A owes Org B $35.21. Org B owes Org C $12.40. The cost records are the invoice. No manual reconciliation, no estimation, no after-the-fact archaeology.
+
+This is what makes a marketplace viable. Without cost accountability across organizational boundaries, you cannot have agents from different organizations collaborating on paid work. The buyer does not know what they will be charged. The seller does not know what to charge. The platform cannot mediate. AEP cost records are the settlement layer that makes multi-organization agent workflows economically functional.
+
+## Decimal Precision
+
+A detail that matters more than it should: all cost calculations in AEP use decimal arithmetic, not floating-point.
+
+This is the same reason financial systems use decimal. Floating-point arithmetic accumulates rounding errors. In a deeply nested execution tree with hundreds of cost records being composed recursively, floating-point errors can compound to meaningful discrepancies. When you are settling payments across organizations, a $0.03 discrepancy on a $500 workflow is not a rounding error — it is a billing dispute.
+
+The CostTracker implementation uses Python's `Decimal` type for all arithmetic. The serialization format preserves full precision. Cost records are exact, not approximate. This is a small technical decision that prevents a large class of operational problems.
+
+## What This Enables
+
+When every workflow execution produces a complete, exact, hierarchical cost breakdown that crosses organizational boundaries, several things become possible that are not possible today.
+
+**Cost optimization with precision.** Instead of guessing which part of a workflow is expensive, you can see exactly where the money goes. If sub-agent C is responsible for 60% of the cost, you can optimize that specific component. If a particular LLM call is disproportionately expensive relative to its contribution, you can swap models for that step.
+
+**Usage-based pricing for agent services.** If you publish an agent on a marketplace, AEP cost records let you implement transparent pricing. The buyer sees exactly what they are paying for. The seller knows exactly what it cost to serve. Margins are visible and verifiable.
+
+**Anomaly detection with context.** A cost anomaly detector that knows the execution tree can distinguish between "this workflow is expensive because it is processing a large document" and "this workflow is expensive because a sub-agent is making redundant calls." The tree structure turns cost monitoring from a flat signal into a diagnostic tool.
+
+**Budget governance for enterprises.** An enterprise can set budget limits by department, by project, by workflow type, and enforce those limits in real time through the execution tree. The CEO says "AI spend is $100K this quarter." The budget cascades down through the org, through the projects, through the individual workflow invocations, with enforcement at every level.
+
+This is what receipts look like when agents are the employees.
+
+---
+
+[Next: AEP — Footnotes](./03-aep-footnotes.mdx)

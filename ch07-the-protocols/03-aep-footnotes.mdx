@@ -1,0 +1,87 @@
+# AEP: Footnotes
+
+## The Provenance Problem
+
+A strategy agent tells you "the drug pipeline is promising." Based on what?
+
+In a consulting engagement, this question has an answer. The strategy consultant's recommendation rests on a research analyst's memo. The memo references specific clinical trial data — Phase III results, enrollment figures, primary endpoint outcomes. You can follow the chain from conclusion to evidence. If the conclusion is wrong, you can find out where the reasoning broke down. If the evidence changes, you can identify which conclusions need to be revised.
+
+AI agent systems have no equivalent. When a multi-agent workflow produces a conclusion, that conclusion typically has no traceable link to the specific data, model, prompt, or intermediate reasoning that produced it. The output is an assertion floating in the air. You can see what went in (the input) and what came out (the output), but the chain of reasoning between them — the provenance — is opaque.
+
+This matters less for trivial tasks. Nobody needs a citation chain for "summarize this email." It matters enormously for high-stakes decisions in regulated industries. When a financial analysis agent recommends a trading strategy, regulators want to see how the recommendation was derived. When a healthcare agent suggests a treatment pathway, clinicians need to evaluate the underlying evidence. When a government agent makes a policy recommendation, decision-makers need to understand what assumptions drove the conclusion.
+
+AEP's provenance layer — what we call footnotes — makes the citation chain explicit, traceable, and machine-readable.
+
+## How Provenance Chains Work
+
+Every conclusion in an AEP-conformant system carries a citation back to the data, model, and prompt that produced it.
+
+This is implemented through the ExecutionEnvelope — the structured result that flows upward through the execution tree. When an agent produces a result, the envelope contains not just the result itself, but metadata about how it was produced:
+
+- **What data was consumed.** The specific documents, records, or API responses that informed the conclusion.
+- **What model produced it.** The model identifier, version, and the specific prompt that was sent.
+- **What intermediate reasoning occurred.** If the agent called sub-agents, the citations from those sub-agents are included. The provenance chain is recursive, just like the cost tree.
+- **What confidence level is attached.** Not just "the pipeline is promising" but "the pipeline is promising with 73% calibrated confidence."
+
+The result is a citation graph that mirrors the execution tree. The root conclusion links to intermediate conclusions. Intermediate conclusions link to data retrievals and model inferences. Data retrievals link to specific sources. You can follow the chain from the top-level recommendation all the way down to the primary data — footnotes that go all the way to primary sources.
+
+## The Audit Trail in Practice
+
+Consider a concrete scenario. An investment analysis workflow processes a pharmaceutical company's public filings to assess its drug pipeline. The execution tree looks like:
+
+```
+Strategy Agent → "Pipeline is promising, recommend overweight"
+├── Research Agent → "3 of 5 pipeline drugs show positive Phase III results"
+│   ├── Data Agent → Retrieved 5 clinical trial records from FDA database
+│   │   ├── Source: FDA CDER, Trial NCT-2025-4892, retrieved 2026-03-15
+│   │   ├── Source: FDA CDER, Trial NCT-2024-7731, retrieved 2026-03-15
+│   │   └── ... (3 more trials)
+│   └── Analysis Agent → "Endpoint met in 3/5 trials, p < 0.05 in all 3"
+│       ├── Model: claude-sonnet-4-6, prompt hash: 7f8a9b3c
+│       └── Input: 5 trial summary documents, 47 pages total
+├── Financial Agent → "Current valuation below peer median on EV/pipeline"
+│   ├── Data Agent → Retrieved comparable company valuations
+│   └── Model: gpt-4o, prompt hash: 2d1e0f4a
+└── Risk Agent → "Key risk: Phase III failure in lead compound would erase 40% of pipeline value"
+    └── Model: claude-sonnet-4-6, prompt hash: 5b6c7d8e
+```
+
+When the portfolio manager asks "why did the system recommend overweight?", the answer is not "the AI said so." The answer is specific: three of five pipeline drugs showed positive Phase III results, the current valuation is below peer median, and the key risk is concentrated in the lead compound. Each of these sub-conclusions has its own citation chain to specific data sources and model inferences.
+
+When the auditor asks "how reliable is the clinical trial assessment?", the answer is traceable: the data came from FDA CDER records retrieved on a specific date, the analysis was performed by a specific model with a specific prompt, and the statistical claims can be verified against the original trial data.
+
+This is not a log. Logs are unstructured, retrospective, and designed for debugging. This is a structured provenance chain designed for accountability and regulatory compliance.
+
+## Calibrated Confidence
+
+Raw provenance tells you where a conclusion came from. It does not tell you how much to trust it.
+
+This is where calibrated confidence scoring enters the picture. Instead of binary severity labels (high/medium/low), AEP supports continuous probability scores: "73% confident this output is safe." These scores come from an ensemble of diverse judge models — different model families, different sizes, different prompting strategies — whose individual assessments are aggregated into a calibrated confidence measure.
+
+The research backing comes from work at the University of Waterloo and the Vector Institute. Their findings: an ensemble of 51 judges across 4 model families and 3 prompting strategies achieves 0.75 AUC discriminative ability. Adding just 2 additional judge models improved expected calibration error from 0.70 to 0.45. Diversity in the judge ensemble matters more than the size of any individual judge.
+
+For the provenance layer, calibrated confidence means that every node in the citation chain carries a numeric trust signal. The strategy agent does not just say "the pipeline is promising." It says "the pipeline is promising, confidence 0.73, based on a research assessment with confidence 0.81, based on data retrieval with confidence 0.95." The confidence degrades as you move up the chain — each inference step introduces uncertainty — and the degradation is visible.
+
+This enables threshold-based decisions. An organization can say: "Block any conclusion with confidence below 0.6. Flag anything between 0.6 and 0.8. Auto-approve above 0.8." The thresholds are configurable per organization, per workflow, per agent. And the thresholds operate on calibrated probabilities, not arbitrary scores — so 0.7 means the same thing regardless of which model or workflow produced it.
+
+## Why This Matters for Regulated Industries
+
+Healthcare, financial services, and government are the three verticals where AI adoption has the highest economic value and the highest regulatory barrier. In all three, the barrier is the same: the inability to explain and audit AI-generated conclusions.
+
+**Healthcare.** When an AI system recommends a clinical pathway, the clinician needs to understand the evidence basis. Not because the AI is unreliable — it may be more accurate than the clinician — but because medical practice requires informed judgment. A recommendation without traceable evidence is not clinically actionable. AEP provenance chains give the clinician what they need: here is the data the system considered, here is how it weighted that data, here is where you can check the sources.
+
+**Financial services.** SEC Rule 15c3-5 requires broker-dealers to have risk controls that are "reasonably designed." When an AI system makes trading decisions, regulators will ask how those decisions were made. "The model decided" is not a sufficient answer. AEP provenance chains provide the audit trail: this recommendation was based on this analysis, which was based on this data, retrieved from these sources, on these dates. The chain is the compliance documentation.
+
+**Government and defense.** When an AI system produces intelligence assessments or policy recommendations, decision-makers need to evaluate source reliability, assess analytical confidence, and understand the assumptions underlying the conclusion. This is standard intelligence tradecraft — source attribution, confidence assessment, alternative analysis — applied to AI-generated products. AEP provenance chains map directly to this existing framework.
+
+The common thread: in regulated industries, you do not get to deploy AI that cannot explain itself. Provenance chains are not a feature for power users. They are a prerequisite for adoption.
+
+## From Footnotes to Accountability
+
+Cost records tell you what things cost. Provenance chains tell you why things were concluded. Together, they create a complete accountability layer: you can trace both the money and the reasoning through the entire execution tree.
+
+This is the foundation for trust in multi-agent systems. Not trust in the sense of "believing the AI is correct" — that is a calibration problem. Trust in the sense of "being able to verify, after the fact, what happened and why." The same trust you place in a consulting firm's deliverable, not because you assume they are right, but because you can check their work.
+
+---
+
+[Next: AEP — NDAs](./04-aep-ndas.mdx)

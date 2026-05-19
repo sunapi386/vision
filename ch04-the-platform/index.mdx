@@ -1,0 +1,19 @@
+# Chapter 4: The Platform
+
+Every layer of the modern AI stack has been built by someone else. NVIDIA builds the chips. Data center operators rack them. Cloud providers sell access. Model labs train the weights.
+
+But between the hardware and the work, there is a gap. No one has built the layer that takes heterogeneous compute -- a rack in a data center, a workstation under someone's desk, a cloud VM rented for the afternoon -- and turns it into a managed AI factory. The layer that routes work to the right machine, chains tasks into pipelines, enforces governance, and lets a non-technical user get value from a GPU they have never seen.
+
+AceTeam is that layer. Not another cloud provider. Not another model wrapper. The intelligent orchestration layer that sits between infrastructure and outcomes.
+
+This chapter describes what we actually built. The architecture philosophy that guided every decision. The Sovereign Compute Fabric that connects machines into a secure mesh. The Agent Workbench where you configure AI without writing code. The Workflow Engine where you chain tasks into repeatable pipelines. And what makes this different from every other attempt.
+
+Built by three engineers. Bootstrapped. Zero external funding. Eighteen months of production-deployed code.
+
+---
+
+- [Architecture Philosophy](./01-architecture-philosophy.mdx) -- The three principles behind every technical decision
+- [Sovereign Compute Fabric](./02-sovereign-compute-fabric.mdx) -- One binary, secure mesh, your hardware
+- [Agent Workbench](./03-agent-workbench.mdx) -- Visual agent builder with RAG, voice, and phone
+- [Workflow Engine](./04-workflow-engine.mdx) -- Visual DAG builder with 30+ node types and human-in-the-loop
+- [What Makes It Different](./05-what-makes-it-different.mdx) -- Why no one else has solved the whole puzzle

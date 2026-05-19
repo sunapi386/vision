@@ -1,0 +1,81 @@
+# Agent Workbench
+
+## The Interface Layer
+
+Most people's first experience with AI is a chatbot. They type a question, get an answer. This is useful but radically incomplete -- like evaluating a computer by looking at a calculator app.
+
+The Agent Workbench is where you build the intelligence that sits behind every interaction. An agent is not a prompt. An agent is a system: a set of instructions, a body of knowledge, a toolkit of actions, a model configuration, and a set of communication channels. The Workbench is where you assemble that system visually, test it interactively, and deploy it to production -- without writing code.
+
+Every organization we work with eventually needs agents that do more than answer questions. They need agents that can search internal documents, pull data from databases, make API calls, escalate to humans, speak on the phone, and remember context across conversations. The Workbench provides all of these capabilities as configurable building blocks.
+
+## What You Build in the Workbench
+
+An AceTeam agent combines five components, each configurable through the Workbench interface:
+
+**System prompt.** The instructions that define who the agent is and how it behaves. This is the most important piece. A well-written system prompt is the difference between an agent that says "I don't know" and one that searches the knowledge base, synthesizes three documents, and asks a clarifying question when the answer is ambiguous. The Workbench provides version history for prompts -- you can roll back to any previous version if a change degrades quality.
+
+**Knowledge base.** Documents, databases, and structured data the agent can reference. This is powered by a full RAG pipeline that runs entirely on your infrastructure. The pipeline works as follows: documents are ingested in any supported format -- PDF, DOCX, HTML, plain text. They are chunked into segments using configurable chunk sizes and overlap parameters. Each chunk is embedded into a vector using your choice of embedding model (OpenAI, local models via Ollama, or any provider). The vectors are stored in pgvector, the PostgreSQL vector extension. At query time, the agent's question is embedded using the same model, a similarity search retrieves the most relevant chunks, and those chunks are injected into the agent's context alongside the user's question.
+
+The entire pipeline -- ingestion, chunking, embedding, storage, retrieval -- runs on your hardware if you are on the Sovereign Compute Fabric. Your documents never leave your machines. The Workbench provides a drag-and-drop interface for uploading documents to collections, and the RAG pipeline handles everything else.
+
+**Tools.** Actions the agent can take. Out of the box, agents can search the web, make API calls, query databases, generate files, and execute code. But the real power is in extensibility through MCP -- the Model Context Protocol. MCP is an open standard for tool discovery: any service that implements the protocol automatically becomes available to agents. Tools self-describe with a name, a schema, and a description. The agent discovers available tools at runtime without code changes.
+
+This means an agent's capabilities are not limited to what we built into the platform. If an organization has an internal ticketing system, they can write an MCP server that exposes "create ticket," "search tickets," and "update ticket" as tools. Any agent on the platform can then use those tools. The organization does not need to modify the agent or the platform. They add a tool server, link it to the agent in the Workbench, and the agent knows how to file tickets.
+
+**Model configuration.** Which AI model powers the agent's reasoning. AceTeam supports OpenAI (GPT-4o, o1), Anthropic (Claude Sonnet, Claude Opus), Google (Gemini Pro, Gemini Flash), Deepseek, and any model running locally via Ollama. The Workbench lets you switch models with a dropdown. A single agent can be tested against multiple models to compare quality and cost.
+
+This multi-provider support is not just a convenience feature. It is an insurance policy against vendor lock-in. When OpenAI raises prices -- and they do -- you switch to Anthropic or a local model. When a model is deprecated, you move to its successor. When regulations require that AI processing stay on specific infrastructure, you switch to Ollama running on your own GPU. The agent's behavior, knowledge, and tools remain the same. Only the model changes.
+
+**Communication channels.** How users interact with the agent. The Workbench supports:
+
+- *Chat.* WebSocket-based real-time messaging. The standard interface.
+- *Voice.* Real-time voice conversations via WebRTC. The agent listens, thinks, and speaks. Useful for customer service, phone screening, and accessibility.
+- *Phone.* Inbound and outbound phone calls via Twilio integration. The agent handles calls, follows scripts, collects information, and escalates to humans when needed. An accounting firm can deploy an agent that answers the phone, gathers client information, and books appointments -- 24/7, across time zones.
+- *API.* RESTful endpoints for programmatic access. Embed the agent in any application.
+- *Embedded widgets.* Drop a chat widget into any website with a code snippet.
+
+Each channel connects to the same underlying agent. A customer who starts a conversation via chat and later calls by phone talks to the same agent with the same knowledge and the same conversation history.
+
+## Configure Without Code, Deploy Anywhere
+
+The Workbench is designed for people who understand their domain but do not write software. An immigration lawyer knows what questions to ask about a TN visa application. A tax accountant knows the SR&ED filing process. A customer service manager knows escalation policies. These people should not need to learn Python to deploy an AI agent that encodes their expertise.
+
+Every configuration in the Workbench is visual. Drag documents into a knowledge base. Select a model from a dropdown. Type instructions in plain language. Toggle tools on and off. Test the agent by chatting with it directly in the builder.
+
+When the agent works correctly, deployment is a single click. The agent becomes available through whatever channels you configured -- chat widget, phone number, API endpoint. It runs on whatever compute you have available -- your on-premise GPUs, cloud workers, or a mix.
+
+The Workbench stores all configurations as structured data. Agents can be exported, imported, versioned, and shared. An organization that builds a customer service agent for one client can export it as a template, modify the knowledge base and prompts for another client, and deploy a customized version in an hour. This is the beginning of the marketplace -- domain expertise encoded as portable agent configurations.
+
+## The RAG Pipeline in Detail
+
+Retrieval-Augmented Generation is the mechanism that gives agents access to knowledge beyond their training data. Without RAG, an agent can only answer questions based on what was in its training set. With RAG, an agent can answer questions about your company's policies, your client's documents, your industry's regulations -- anything you put in the knowledge base.
+
+AceTeam's RAG pipeline is fully configurable and runs entirely on your infrastructure when deployed on the Sovereign Compute Fabric.
+
+**Ingestion.** Documents are uploaded through the Workbench. Supported formats include PDF, DOCX, HTML, Markdown, plain text, and CSV. The ingestion pipeline extracts text, preserving structure where possible. For PDFs, we use Docling for high-fidelity extraction that handles tables, multi-column layouts, and embedded images.
+
+**Chunking.** Extracted text is split into segments. The default strategy is character-based with configurable chunk size (default: 1000 characters) and overlap (default: 200 characters). Overlap ensures that context is not lost at chunk boundaries. More sophisticated chunking strategies -- semantic chunking, markdown-aware splitting -- are available as workflow nodes for advanced users.
+
+**Embedding.** Each chunk is converted to a vector using an embedding model. The Workbench supports multiple embedding providers: OpenAI's text-embedding-3-small, local models via Ollama, and any model compatible with the embedding API. When running on the Sovereign Compute Fabric, embedding happens on your GPU. The vectors never leave your infrastructure.
+
+**Storage.** Vectors are stored in pgvector, the vector extension for PostgreSQL. This means vector search is a database query, not a separate service. Metadata -- source document, chunk index, creation time -- is stored alongside the vectors for provenance tracking.
+
+**Retrieval.** At query time, the user's question is embedded using the same model. A similarity search (cosine distance) retrieves the top-k most relevant chunks. These chunks are injected into the agent's system prompt as context. The agent then generates a response grounded in the retrieved documents.
+
+**Citations.** The agent's response includes citations linking claims to source documents and specific chunks. This makes the agent's reasoning auditable. When an agent says "According to your policy document," a human can verify which document it referenced and whether the interpretation is correct.
+
+The complete pipeline -- from document upload to cited response -- can be configured in the Workbench without writing a single line of code. For organizations that need custom pipelines, every step is also available as a workflow node: TextChunker, Embedding, VectorStoreSink, VectorSearch, and RAG. You can build custom retrieval pipelines in the Workflow Engine and wire them into agents.
+
+## What This Means in Practice
+
+An accounting firm deploys an agent that knows their internal policies, can answer questions about tax regulations, and handles initial client intake by phone. The knowledge base contains their policy manuals, relevant CRA guidelines, and client onboarding scripts. The agent answers questions, books appointments, and escalates to a human when the question is outside its training. The firm's documents never leave their office server.
+
+A consultancy serves fifteen clients. Each client has a separate organization on the platform with its own agents, knowledge bases, and data. The consultant switches between organizations in the Workbench, configures client-specific agents, and deploys them -- all from a single login. Each client's data is cryptographically isolated from every other client.
+
+A university department creates a student-facing agent that answers questions about course registration, program requirements, and financial aid. The knowledge base contains the academic calendar, program handbooks, and FAQ documents. The agent handles hundreds of questions per day that would otherwise go to overwhelmed administrative staff.
+
+None of these users wrote code. They configured agents in the Workbench, uploaded documents, and deployed. The platform handled the rest: RAG pipeline, model routing, infrastructure management, usage tracking, and billing.
+
+---
+
+[Previous: Sovereign Compute Fabric](./02-sovereign-compute-fabric.mdx) | [Next: Workflow Engine](./04-workflow-engine.mdx)

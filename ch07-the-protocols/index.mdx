@@ -1,0 +1,25 @@
+# Chapter 7: The Protocols
+
+For AI agents to work across organizations, there must be shared paperwork. AEP and ACP are that paperwork.
+
+Every industry that handles money, liability, or sensitive data has evolved a protocol layer. Accounting has GAAP. Shipping has bills of lading. Medicine has HL7. These protocols exist not because anyone loves paperwork, but because when three organizations collaborate on something that matters, you need a shared language for accountability.
+
+AI agents have no such language. When a strategy agent calls a research agent that calls a data agent, spanning three different organizations with three different billing systems and three different compliance regimes, there is no standard way to track costs, trace conclusions back to their sources, or enforce data governance rules at every handoff.
+
+We built two protocols to fill this gap.
+
+**The Agentic Execution Protocol (AEP)** handles the accountability side: cost tracking (receipts), provenance (footnotes), and data governance (NDAs). It is the paper trail that follows every piece of work as it moves through a chain of agents, regardless of who owns them.
+
+**The Agent Compute Protocol (ACP)** handles the compute substrate: how agents acquire, use, and release workers at runtime. When an agent needs five workers for ten minutes to index 100,000 documents, ACP is the request-allocate-release-report cycle that makes that happen atomically.
+
+Both are Apache 2.0 licensed. Both use schema-defined messages with JSON encoding. Both are protocols, not libraries — a deliberate strategic choice that this chapter explains in detail.
+
+The structural principle underlying both: **context flows down, results flow up.** When a root agent calls a sub-agent, budget limits, governance rules, and tracing context flow downward through the execution tree. Results, costs, citations, and audit trails flow upward. This is the same direction money and findings move in any consulting engagement. The protocol just makes it machine-readable.
+
+---
+
+- [Why a Protocol](./01-why-a-protocol.mdx) — the management consulting analogy, and why we chose interoperability over integration
+- [AEP: Receipts](./02-aep-receipts.mdx) — cost accountability through recursive cost composition
+- [AEP: Footnotes](./03-aep-footnotes.mdx) — provenance chains and calibrated confidence scoring
+- [AEP: NDAs](./04-aep-ndas.mdx) — data governance that is checked at every handoff
+- [ACP: Compute](./05-acp-compute.mdx) — dynamic compute allocation with four messages

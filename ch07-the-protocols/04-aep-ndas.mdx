@@ -1,0 +1,83 @@
+# AEP: NDAs
+
+## The Data Governance Gap
+
+Every organization that handles sensitive data already has governance policies. Healthcare organizations classify patient records as PHI. Financial institutions classify payment data as PCI. Government agencies classify information by security clearance level. Every employee signs an NDA that specifies what they can and cannot share, with whom, and under what conditions.
+
+When AI agents enter the picture, these governance policies evaporate.
+
+An agent processing patient records does not understand that those records are PHI. It does not know that the records cannot be forwarded to an analytics agent running on a third-party cloud provider. It does not check whether the downstream agent has the appropriate consent to receive the data. It does not verify that the model processing the data is compliant with the relevant jurisdiction's data residency requirements.
+
+The typical response to this problem is perimeter defense: control what data enters the system, then hope for the best once it is inside. Check the data at the front door — classify it, flag it, maybe redact sensitive fields — and then let it flow freely through the agent execution tree. This is the approach most AI safety systems take today.
+
+It is fundamentally inadequate. The front door is one boundary. A multi-agent workflow crosses many boundaries. Every time an agent calls a sub-agent, data crosses a boundary. Every time a sub-agent runs on different infrastructure, data crosses a boundary. Every time results flow from one organization's agent to another's, data crosses a boundary. Checking at the front door and ignoring every subsequent boundary is like having an NDA that covers the initial handshake but not the work itself.
+
+AEP data governance fixes this. It makes data classification labels travel with the data, and it checks consent at every organizational boundary — not just at the front door.
+
+## How Data Governance Works in AEP
+
+The mechanism has three components: classification, consent, and enforcement.
+
+**Classification.** Data entering the system carries a classification label: `public`, `confidential`, `phi` (Protected Health Information), `pii` (Personally Identifiable Information), or `pci` (Payment Card Industry data). These labels are attached via governance headers when the data enters the AEP pipeline, or they are detected automatically by safety detectors.
+
+The classification is not a metadata annotation that gets stripped during processing. It is part of the execution context that flows through the entire tree. When a root agent passes classified data to a sub-agent, the classification travels with it. When the sub-agent calls another sub-agent, the classification travels further. The classification is persistent and inherited — data does not lose its classification just because it has been summarized, transformed, or quoted.
+
+**Consent.** Every organizational boundary in the execution tree has a consent gate. Before data crosses from Organization A's agent to Organization B's agent, the protocol checks: does Organization B have consent to receive data of this classification?
+
+Consent is specified in the governance headers: `X-AEP-Consent: gdpr=granted,training=no`. This tells the system that GDPR-regulated data is cleared for processing, but the data must not be used for model training. Consent is granular: you can grant access to confidential data but not PHI. You can allow processing but not storage. You can permit analysis but not redistribution.
+
+The consent check is automatic and happens at every boundary, not just the first one. If Organization A's orchestrator calls Organization B's analysis agent, which calls Organization C's data service, there are two consent checks: A-to-B and B-to-C. Organization C receiving data that Organization B was not authorized to forward is caught by the protocol, not by a lucky audit.
+
+**Enforcement.** When a consent check fails — when classified data would cross a boundary to an unauthorized recipient — the protocol blocks the transfer. The data does not leak and then get flagged for review. It does not proceed with a warning. The transfer is blocked, the violation is recorded in the audit trail, and the calling agent receives a governance error.
+
+The enforcement policy is configurable. An organization can choose to block on violation (no data crosses the boundary), flag on violation (data crosses but a human review is triggered), or log on violation (data crosses and the event is recorded). The default is block. Most regulated organizations will keep it that way.
+
+## Automatic Detection
+
+Classification works best when data is labeled at the source. But data does not always arrive neatly labeled. An employee pastes a customer's social security number into a prompt. A document contains embedded credit card numbers. An API response includes email addresses and phone numbers that were not expected.
+
+AEP's safety detectors handle this through automatic detection. The PII detector — running a 110-million-parameter model fine-tuned for personal information detection — scans both inputs and outputs for social security numbers, email addresses, phone numbers, credit card numbers, and other PII patterns. When PII is detected, the data is automatically classified and the governance rules apply.
+
+The detection runs in both directions. On the input side, it catches sensitive data entering the system that was not properly classified by the caller. On the output side, it catches model outputs that inadvertently contain or reproduce sensitive data. An LLM that memorized training data containing PII will have that PII caught on the way out, even if the input was clean.
+
+This dual-direction detection is implemented in the AEP proxy, which sits between the agent and the LLM provider. The proxy is a reverse proxy by design — it reads the full request and the full response. It can classify and enforce in either direction. The agent does not need to be modified. The LLM provider does not need to know AEP exists. The governance layer is invisible until it matters.
+
+## The NDA Analogy, Extended
+
+Think about how NDAs actually work in professional services.
+
+You do not sign one NDA at the beginning of an engagement and assume it covers everything forever. When the engagement involves subcontractors, each subcontractor signs their own NDA with the primary contractor. When the scope changes to include new data categories, the NDA is amended. When a third party needs access to work product, a separate agreement governs what they can see.
+
+NDAs are layered, specific, and enforced at every relationship boundary. If a subcontractor violates their NDA by sharing data with an unauthorized fourth party, the primary contractor is liable regardless of what their own NDA with the client says. The governance chain has to be airtight at every link, not just the first one.
+
+AEP data governance is the machine-readable equivalent. Every organizational boundary in the agent execution tree is an NDA boundary. Classification labels are the terms of the NDA. Consent gates are the signature verification. Enforcement is the legal team that catches violations before they cause damage.
+
+The difference is speed and scale. A human NDA violation might not be discovered for months or years. An AEP governance violation is caught in milliseconds, before the data crosses the boundary. A human NDA covers one relationship at a time. AEP governance covers every relationship in an execution tree simultaneously.
+
+## Governance That Scales Down
+
+Data governance in AI is typically presented as an enterprise concern. Fortune 500 companies need it. Startups can worry about it later.
+
+This is wrong, and dangerous. A 30-person company processing customer data has the same legal obligations as a 30,000-person company. GDPR does not exempt small organizations. HIPAA does not have a startup clause. And the consequences of a data breach are proportionally more devastating for a small company — a $500,000 fine is a rounding error for a bank and a death sentence for a startup.
+
+AEP governance is designed to scale down. At its simplest, governance is a single header on a single API call: `X-AEP-Classification: confidential`. The proxy strips the classification header before forwarding to the LLM provider — the provider never sees the governance metadata. The agent sees a governance error if it tries to forward the data inappropriately. That is it. No configuration files, no compliance dashboards, no governance committee. One header, one rule, enforced automatically.
+
+For the 30-person company, this means data governance costs zero engineering effort. Point your agent at the AEP proxy, add the classification header, and you have a governance layer that most enterprises do not have.
+
+For the enterprise, the same mechanism scales up. Multiple classification levels, multiple consent types, per-organization governance policies, audit trails that map to compliance frameworks, automatic detection for unclassified data. The sophistication increases, but the mechanism is the same: labels travel with data, consent is checked at every boundary, violations are blocked.
+
+## What Governance Enables
+
+When data governance is built into the execution protocol — not bolted on as an afterthought — it changes what is possible.
+
+**Cross-organizational workflows with sensitive data.** Today, sharing PHI between two organizations for AI processing requires manual data use agreements, secure transfer protocols, and extensive legal review. With AEP governance, the protocol enforces the agreement in real time. The legal framework is still needed, but the technical enforcement is automatic.
+
+**Compliance as a feature, not an audit.** Instead of proving compliance after the fact by reconstructing what data went where, the execution tree records every governance decision in real time. The audit trail is a natural output of the system, not a forensic reconstruction.
+
+**Data sovereignty enforcement.** When an organization requires that its data be processed only on infrastructure in a specific jurisdiction, AEP governance can enforce this through classification and consent rules. Data classified as jurisdiction-restricted will not cross a boundary to an agent running on non-compliant infrastructure. The data stays where it is supposed to stay.
+
+Governance is invisible until it matters. For 99% of agent executions, the governance layer adds no friction, no latency, no complexity. The data is clean, the consent is in order, the classification is appropriate, and the execution proceeds normally. For the 1% where something is wrong — where data would leak, where consent is missing, where classification is incorrect — the governance layer is the difference between a caught violation and a breach.
+
+---
+
+[Next: ACP — Compute](./05-acp-compute.mdx)

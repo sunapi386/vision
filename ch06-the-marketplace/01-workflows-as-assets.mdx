@@ -1,0 +1,77 @@
+# Workflows as Assets
+
+## Build Once, Sell Forever
+
+Traditional consulting is an elegant trap. You have expertise. A client needs that expertise. You do the work. They pay you. The work product is custom, the engagement is one-off, and the billing is by the hour.
+
+The problem is structural. Your revenue is capped by the number of hours you can work. A senior consultant bills $300 per hour. There are roughly 2,000 billable hours in a year. The ceiling is $600,000 in revenue -- and that assumes 100% utilization, which never happens. Realistically, a solo consultant at 70% utilization generates $420,000 in revenue while working themselves into the ground.
+
+Every engagement starts from scratch. Yes, you bring accumulated expertise. Yes, you work faster the third time you do something. But the work product is custom. The deliverable is specific to this client, this situation, this set of facts. When the engagement ends, you move to the next client and start over.
+
+Now consider the alternative. You do the engagement. You deliver the work product. And alongside the work product, you produce a workflow -- a reusable, configurable, deployable pipeline that encodes the process you just executed. The workflow is not the work product. It is the machine that produces the work product.
+
+The next client does not need a custom engagement. They need the workflow, configured for their specific situation. The configuration takes an hour. The execution takes minutes. The result is indistinguishable from what a custom engagement would produce -- because the workflow encodes the same expertise.
+
+You built the workflow once. You sell it forever.
+
+## The $800 Service for $3 in Compute
+
+Let me make this concrete with a number.
+
+A traditional SR&ED filing service costs $800 or more per claim, reflecting the time a specialist spends gathering documentation, classifying expenditures, writing technical narratives, and preparing the filing package. This is skilled work performed by experienced professionals.
+
+The same service, delivered through a workflow on AceTeam, costs approximately $3 in compute. The document ingestion uses embedding models running on local GPUs. The classification uses LLM inference. The narrative generation uses structured prompts with RAG-powered context from CRA guidelines. The formatting uses template nodes. Total compute: a few hundred thousand tokens of LLM inference, some vector operations, and a PDF generation step.
+
+The gap between $800 and $3 is not margin. It is the space where a new business model fits.
+
+The workflow creator prices the service at, say, $300. The client pays $300 -- a 62% discount from the traditional service. The workflow creator earns $300 in revenue, of which $3 goes to compute and $60-$90 goes to the platform (20-30% platform fee). The remaining $207-$237 is gross profit. On a single sale.
+
+But here is the key: the creator did not do $300 worth of work. They did one hour of expert review at the human-in-the-loop gates. The workflow handled everything else. If they process ten claims in a day, that is $3,000 in revenue for ten hours of review work -- $300 per hour effective billing rate. If the auto-approval rate is high enough that only 20% of claims need review, they process fifty claims in a day for $15,000 in revenue and ten hours of review work -- $1,500 per hour effective rate.
+
+The economics are not incremental improvements over consulting. They are structural transformations.
+
+## The Revenue Split
+
+The marketplace operates on a simple revenue split: 70-80% to the workflow creator, 20-30% to the platform.
+
+This is deliberately modeled on the App Store and digital marketplace conventions. Apple takes 30% of app revenue. The creator keeps 70%. AceTeam's range -- 20-30% -- reflects the additional infrastructure we provide: the compute fabric, the job queue, the billing system, the customer management, the security and compliance layer.
+
+The creator's portion includes both their intellectual property (the workflow design) and their ongoing labor (human-in-the-loop review, when required). Some workflows require zero human involvement after deployment -- a document formatting workflow, for instance. These are fully automated and generate revenue passively. Other workflows require periodic human review -- a tax filing workflow, a legal document review workflow. These generate revenue semi-passively: the creator does review work, but the AI handles the volume that would otherwise require a large team.
+
+The platform fee covers infrastructure (compute routing, mesh networking, job queue), security (organization isolation, encryption, audit trails), billing (Stripe integration, credit management, usage tracking), and marketplace operations (discovery, rating, support infrastructure).
+
+## Money in Your Sleep
+
+The phrase sounds glib, but it describes a real phenomenon. A workflow published on the marketplace can process requests at any hour, in any timezone. When a law firm in Sydney submits a document classification request at 3 AM Eastern, the workflow processes it on whatever compute is available. The creator does not need to be awake.
+
+This is possible because most workflows have auto-approval thresholds. Cases above 95% confidence process without human intervention. The human is only needed for edge cases, which can be batched and reviewed during business hours. The workflow does not need to wait for the human -- it queues the edge cases and continues processing everything else.
+
+The result is that a workflow creator can service clients across timezones without being available around the clock. The workflow handles the routine work continuously. The creator handles the exceptions during their working hours. Revenue accrues twenty-four hours a day.
+
+For domain experts who currently bill by the hour, this is the fundamental unlock. Their expertise is no longer consumed one hour at a time by one client. It is deployed continuously to every client who subscribes to the workflow. The expert's time is spent on what only they can do -- review complex edge cases and improve the workflow -- while the workflow handles everything else.
+
+## Version Control and Quality
+
+Marketplace workflows are version-controlled. Every update creates a new version. Subscribers can choose to auto-update or pin to a specific version.
+
+This matters for quality assurance. When a workflow creator discovers an edge case and adds a new validation node, that improvement is published as a new version. Subscribers who auto-update get the improvement immediately. Subscribers who need stability -- a financial institution in the middle of an audit, for instance -- stay on the current version until they are ready to upgrade.
+
+Quality metrics are visible in the marketplace listing. How many times has the workflow been executed? What is the auto-approval rate? What is the average human review time? How often do reviewers override the AI's recommendation? These metrics are proxies for quality. A workflow with a 95% auto-approval rate and a 2% override rate is demonstrably reliable. A workflow with a 60% auto-approval rate and a 15% override rate needs improvement.
+
+Ratings and reviews from subscribers provide qualitative feedback. But the quantitative metrics are more informative -- they are harder to fake and more directly relevant to a prospective buyer's decision.
+
+## The Creator Economy for Expertise
+
+This marketplace creates a new creator economy. Not for content -- we have that. Not for code -- we have that too. For expertise.
+
+The immigration lawyer who perfects a TN visa workflow is a creator. The tax specialist who builds an SR&ED filing workflow is a creator. The HR professional who designs a hiring pipeline is a creator. The compliance officer who encodes regulatory checks is a creator.
+
+These people are not software developers. They are domain experts who use a visual tool to encode their knowledge into executable workflows. The barrier to entry is expertise, not coding ability. The competitive advantage is knowing what good and bad look like in a specific domain -- the calibration that takes years to develop and is impossible to replicate from a prompt.
+
+The marketplace gives these experts a distribution channel. Previously, their expertise was local -- limited to the clients they could personally serve. Now it is global -- available to any organization that needs it, deployable instantly, scalable without additional labor.
+
+This is the third wave of the creator economy. The first wave was content (YouTube, Substack). The second wave was code (GitHub, npm). The third wave is expertise -- domain knowledge encoded as executable workflows, distributed through a marketplace, and monetized per execution.
+
+---
+
+[Next: Marketplace Economics](./02-marketplace-economics.mdx)

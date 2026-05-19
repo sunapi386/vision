@@ -1,0 +1,68 @@
+# AI Is Different
+
+Every infrastructure shift I described in the previous section moved work around. The internet moved commerce from stores to screens. Cloud moved servers from basements to data centers. Mobile moved computing from desks to pockets.
+
+AI doesn't move the work. It replaces the worker.
+
+This is not a subtle distinction. It's a fundamental break in the pattern. And most people haven't internalized what it means.
+
+## The Worker, Not the Workplace
+
+When AWS launched, it didn't replace the sysadmin — it changed what the sysadmin did. Instead of racking servers, they configured virtual machines. Instead of monitoring hardware, they monitored dashboards. The job description changed. The job still existed.
+
+When smartphones arrived, they didn't replace the taxi dispatcher — they replaced the dispatcher's process. Uber still needed drivers. The human in the loop moved from the call center to the car.
+
+AI eliminates the loop.
+
+A contract that previously required a junior lawyer to spend four hours reading, redlining, and summarizing can now be processed by a language model in 90 seconds. Not approximately processed — actually processed. The model identifies non-standard indemnification clauses, flags missing limitation of liability provisions, summarizes material obligations, and produces output that a senior lawyer can review in ten minutes. The junior lawyer's four hours of billable work becomes ten minutes of senior oversight.
+
+This is happening right now. Not in a research lab. Not in a demo. In production, at law firms that are billing clients for the output.
+
+## Concrete Examples
+
+Let me be specific about what "replaces the worker" means in practice, because vague claims about AI disruption are worthless.
+
+**Contract Review.** A mid-size law firm reviews 200 contracts per month. Each contract takes a junior associate 3-5 hours. That's 600-1,000 hours of junior associate time per month — roughly four full-time employees. An AI system can process each contract in under two minutes, producing a structured summary, risk assessment, and redline markup. The senior partner still reviews the output. But the four junior associates? Their job isn't automated — it's eliminated.
+
+**Financial Data Analysis.** A consulting firm receives a client's financial statements — three years of balance sheets, income statements, cash flow statements. An analyst spends two days building a model, calculating ratios, identifying trends, benchmarking against industry averages. An AI system does this in minutes. Not a rough sketch — a complete analysis with variance calculations, trend identification, and anomaly flags. The analyst's two days become a senior consultant's thirty-minute review.
+
+**Customer Support.** A SaaS company handles 10,000 support tickets per month. Each ticket requires a support agent to read the issue, search the knowledge base, compose a response, and follow up. Average handle time: 12 minutes. That's 2,000 hours per month — roughly twelve full-time employees. An AI system resolves 60-70% of tickets without human intervention. Not by deflecting customers to FAQ pages — by actually understanding the issue, searching documentation, and providing specific, accurate answers. The remaining 30-40% get escalated to humans, but the humans now handle 3,000-4,000 tickets instead of 10,000.
+
+**Code Generation.** I've watched this one from the inside. A feature that would take a developer a full day to implement — reading specifications, writing code, writing tests, debugging, refactoring — can now be completed in an hour with AI assistance. Not by generating boilerplate. By actually understanding the codebase, identifying the right abstraction, implementing the logic, and writing meaningful tests. The developer's role shifts from writing code to reviewing code. The productivity gain isn't 10% or 20% — it's 3x to 5x.
+
+**Medical Documentation.** A physician spends 2 hours per day on clinical notes. AI scribes now listen to patient encounters and generate structured clinical documentation in real-time — SOAP notes, ICD-10 codes, medication reconciliation. The physician reviews and signs. Two hours become fifteen minutes.
+
+These aren't cherry-picked demos from conference keynotes. These are production systems running today, processing real work, generating real output that real professionals rely on.
+
+## The Magnitude Problem
+
+Here's what makes this different from every previous automation wave: the magnitude of the change.
+
+The industrial revolution automated physical labor. But it took decades. The assembly line replaced individual craftsmen, but the transition happened over 40 years, giving society time to adapt. New jobs emerged — machine operators, maintenance workers, quality inspectors — that absorbed the displaced workers.
+
+AI is automating cognitive labor, and it's happening in years, not decades.
+
+In 2022, ChatGPT was a novelty. By 2024, AI was writing legal briefs, generating medical notes, coding production software, and analyzing financial statements. By 2026, the question isn't whether AI can do knowledge work — it's which knowledge work AI can't do.
+
+The list of things AI can't do is shrinking every quarter. And the list of things AI does better than the median human professional is growing every quarter. The crossover point — where AI output quality exceeds the average human output for a given task — has already been reached for many categories of knowledge work.
+
+This isn't technological determinism. It's arithmetic. If a task can be decomposed into steps, if those steps can be described in language, and if the quality of the output can be evaluated — AI can do it. Maybe not perfectly. Maybe not for every edge case. But well enough that the economics force the transition.
+
+## What Doesn't Change
+
+I want to be precise about what I'm claiming, because overstating the case is as dangerous as understating it.
+
+AI doesn't replace judgment. It doesn't replace relationships. It doesn't replace the senior partner's instinct that a deal feels wrong, or the doctor's hunch that a patient is hiding something, or the manager's sense that a team is about to fall apart.
+
+What AI replaces is the work that happens between the judgment calls. The hours of reading, summarizing, calculating, drafting, formatting, checking, and re-checking that constitute 80% of most knowledge workers' days. The work that's necessary but not sufficient — the scaffolding around the decisions that matter.
+
+This distinction matters because it shapes who benefits. The senior professionals who make judgment calls become more productive — they get the scaffolding for free. The junior professionals who build the scaffolding lose their entry point into the profession.
+
+That's not a feature of AI. That's the problem with AI as it's currently being deployed. And it's part of why the current approach — renting intelligence from cloud providers on a per-token basis — is structurally wrong.
+
+But that's a discussion for the next chapter.
+
+---
+
+*Previous: [The Pattern That Repeats](./01-historical-pattern.mdx)*
+*Next: [The Asymmetry](./03-the-asymmetry.mdx)*

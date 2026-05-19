@@ -1,0 +1,61 @@
+# Ownership Economics
+
+## The Crossover Point
+
+There is a volume threshold at which owning AI compute infrastructure costs less than renting it from cloud providers. For most mid-market organizations, that threshold has already been crossed.
+
+The math is straightforward. On one side: cloud API costs, which are variable (per-token, per-call), unpredictable, and scale linearly with usage. On the other side: owned infrastructure costs, which are primarily fixed (hardware, space, power, connectivity) with marginal variable costs (electricity, maintenance, model updates).
+
+A concrete example. A 100-person professional services firm runs AI workflows for document analysis, contract review, and research synthesis. Average monthly cloud AI spend: $8,000-15,000, depending on workload volume. The spend is unpredictable month to month, driven by project load. Some months it is $6,000. Some months it hits $20,000. Budgeting is guesswork.
+
+The alternative: a dedicated inference server. A workstation with an NVIDIA RTX 5090 or RTX 6000 Ada GPU, 128GB of system RAM, and 2TB of NVMe storage. Capital cost: roughly $8,000-15,000. Power consumption: 400-600 watts, approximately $40-60 per month in electricity. The machine runs open-weight models (Llama, Mistral, Qwen) that cover the firm's inference needs for analysis, summarization, and classification tasks. For tasks requiring frontier model capabilities, a small cloud API budget remains for overflow.
+
+The break-even point: 2-4 months. After that, every month of operation is a net cost reduction. After 12 months, the firm has spent $15,000 in capital plus $600 in electricity versus $120,000 in cloud API costs. The savings are not 20%. They are 85-90%.
+
+The objection is always the same: "but we need GPT-5 / Claude Opus / Gemini Pro for quality." For some tasks, this is true. For the majority of enterprise AI workloads — document classification, entity extraction, summarization, template-based generation, search and retrieval — open-weight models running locally deliver equivalent quality. The frontier model premium is real for novel reasoning tasks. It is unnecessary for the routine work that constitutes 80% of enterprise AI usage.
+
+## The Own-vs-Rent Decision Matrix
+
+The crossover is not the same for every workload. Different factors push the decision in different directions.
+
+**Volume** is the dominant factor. Below 1,000 inference calls per month, cloud pricing is cheaper because the fixed costs of ownership are not amortized over enough volume. Above 10,000 calls per month, ownership is almost always cheaper. The middle zone — 1,000 to 10,000 calls — depends on model size and task complexity.
+
+**Latency sensitivity** favors ownership. Local inference eliminates network round-trips to cloud providers. For interactive applications — real-time chat, live document analysis, voice-driven workflows — the 200-500ms latency reduction from local inference changes the user experience from "waiting for AI" to "AI just responds."
+
+**Data sensitivity** favors ownership categorically. Healthcare organizations processing PHI, financial institutions processing customer data, government agencies processing classified information — for these organizations, the question is not "is ownership cheaper?" but "can we use cloud inference at all?" Data residency requirements, compliance frameworks, and risk policies often make cloud inference infeasible regardless of cost. Local inference on owned infrastructure is not an optimization. It is a prerequisite.
+
+**Burst workloads** favor cloud. If usage is highly spiky — 100 calls most days, 50,000 calls on the last day of the quarter — the fixed cost of hardware to handle peak load is prohibitive. Cloud elasticity genuinely solves this problem. The hybrid model — owned infrastructure for baseline load, cloud burst for peaks — is often the optimal configuration.
+
+**Model diversity** is neutral. Cloud providers offer access to many models from many providers through a single API. But model serving frameworks (vLLM, SGLang, Ollama) make it equally easy to run multiple models on owned hardware. The operational complexity of multi-model serving is no longer a meaningful differentiator.
+
+## The Hardware Trajectory
+
+The crossover point is not static. It is moving in one direction.
+
+GPU price-performance has improved roughly 3-4x per generation for the last three generations. The NVIDIA A100 (2020) delivered 312 TFLOPS of FP16 performance for about $10,000. The H100 (2023) delivered 989 TFLOPS for about $25,000 — 3x the performance at 2.5x the price. The B200 (2025) delivered over 2,500 TFLOPS at a similar price point. Each generation makes local inference cheaper per token.
+
+Simultaneously, model efficiency has improved. Quantization techniques (GPTQ, AWQ, GGUF) allow models to run at 4-bit or 8-bit precision with minimal quality loss, reducing memory requirements by 4-8x. Speculative decoding, continuous batching, and KV-cache optimization have improved serving throughput by 2-5x without hardware changes. A model that required an 80GB A100 two years ago runs on a 24GB consumer GPU today.
+
+The combined effect — cheaper hardware and more efficient models — is that the ownership crossover point drops with each generation. A workload that required $50,000 in GPU hardware two years ago requires $15,000 today and will require $5,000 in two years.
+
+This trajectory leads to a specific prediction: the AI inference appliance. A self-contained device — smaller than a mini-fridge, quieter than a desktop, running open-weight models with a web interface — that a small business plugs in, connects to their network, and uses for AI inference without any cloud dependency. The price point: $2,000-5,000, comparable to a high-end workstation. The operating cost: electricity.
+
+This is not science fiction. The components exist today. The missing piece is the software stack that makes it operationally seamless — setup, model management, updates, monitoring, multi-user access, security. That software stack is the AceTeam platform running on the Sovereign Compute Fabric. The appliance is just a Citadel node with a nice case.
+
+## What Ownership Does Not Solve
+
+Ownership is not a universal solution. There are genuine advantages to cloud AI that ownership cannot replicate.
+
+**Frontier model access.** The latest models from OpenAI, Anthropic, and Google are not available as open weights. If a task genuinely requires frontier model capabilities — complex multi-step reasoning, novel creative generation, advanced tool use — there is no ownership alternative. The gap between open-weight and frontier models has narrowed significantly, but it has not closed.
+
+**Zero-operations overhead.** Cloud AI requires no infrastructure management. No hardware procurement, no model serving, no security patching, no capacity planning. For organizations without technical operations capability, this is not a minor convenience. It is a prerequisite. The ownership model requires a software stack that reduces operations overhead to near zero, or it does not work for these organizations.
+
+**Global availability.** Cloud AI is available from any location with internet connectivity. Owned infrastructure is in a specific physical location. For globally distributed organizations, cloud AI provides inference where the users are. Owned infrastructure requires either multiple deployment locations or acceptable latency to a central location.
+
+These limitations define the design constraints for the platform. The software stack must make ownership as close to zero-operations as possible. The hybrid model — owned infrastructure for baseline, cloud for frontier and burst — must be seamless. And the economics must work at the scale of a single office, not just at data center scale.
+
+The next section examines what happens after you own the hardware: how to turn commodity compute into a viable business through vertical value capture.
+
+---
+
+[Next: Vertical Value Capture](./03-vertical-value-capture.mdx)

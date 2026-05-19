@@ -1,0 +1,83 @@
+# The Consulting Channel
+
+## Consulting as Marketing
+
+Every consulting engagement produces four outputs. Only one of them is what the client pays for.
+
+The first output is the deliverable. The client gets their problem solved — an ML pipeline audit, a custom agent deployment, a workflow automation. This is the contracted work product. It generates revenue.
+
+The second output is a case study. "We audited a 7-product ML pipeline for a network observability company and identified the gap between their 192-dimensional feature space and their rule-based detection system." That story — anonymized, distilled, reusable — is more valuable than any marketing campaign because it is real. It happened. The results are specific. Prospects hear it and think "that sounds like my problem."
+
+The third output is product refinement. Every engagement exposes gaps in the platform. The client's environment is different from our test environment. Their data has different characteristics. Their compliance requirements have different constraints. Each engagement teaches us something that makes the platform better for the next client. This is product development funded by consulting revenue instead of venture capital.
+
+The fourth output is referrals. A successful engagement produces 2-3 adjacent introductions. The VP of Engineering who hired you for the ML pipeline audit introduces you to their counterpart at a partner company. The CTO who saw the agent deployment mentions it at a board meeting. The procurement officer who approved the contract has a colleague at another agency with a similar need. Consulting is inherently viral in a way that product marketing is not, because the recommendation comes from a peer, not a vendor.
+
+Consulting is marketing that pays you instead of costing you. The revenue covers the cost of customer acquisition. The case studies fuel the next sales conversation. The product insights accelerate development. The referrals expand the pipeline. Every engagement is simultaneously a revenue event, a marketing event, a product event, and a sales event.
+
+## The DeployCo Validation
+
+In early 2026, OpenAI made a move that validated our entire thesis. They did not invest in a consulting company. They acquired one.
+
+DeployCo — backed by $4 billion in investment — acquired Tomoro, a firm with approximately 150 Field Deployment Engineers (FDEs). The FDE role is precisely what we do in consulting engagements: go to the customer site, understand their infrastructure, deploy AI solutions on their systems, build custom workflows, and train their team to maintain what was built.
+
+The hiring manager for DeployCo's FDE team is Arnaud Fournier, who was literally FDE number one at OpenAI — the first person they hired to do field deployment before they formalized it into a team. Previously, he was a manager of special projects at Palantir, another company that built its business on field deployment.
+
+OpenAI sees the same opportunity we see. AI is not going to sell itself through self-serve signups. Enterprise adoption requires someone who can sit in the customer's conference room, understand their specific problem, and build the solution on their infrastructure. This is consulting by another name.
+
+The difference in our approaches is structural. OpenAI is doing vertical integration: they own the model, the API, the platform, and now the consulting arm. They control the entire stack. Their FDEs deploy OpenAI solutions on OpenAI infrastructure.
+
+We are building the platform that enables anyone to be the consultant. An independent AI practitioner, a boutique consulting firm, a system integrator, an in-house technical team — anyone can use the AceTeam platform to deliver the same caliber of field deployment that OpenAI's 150-person team provides. The workflows they build become marketplace assets. The expertise they develop compounds on the platform.
+
+This is the difference between building a consulting firm and building the infrastructure that consulting firms run on.
+
+## Real Engagements
+
+Theory is cheap. Here is what actual consulting engagements look like.
+
+**Network observability company.** Seven products across three layers — network fabric visibility, stream analysis, and packet intelligence. Each product generates telemetry across a 192-dimensional feature space covering network behavior, timing precision, media integrity, and device identity. Current detection: all rule-based thresholds. The ML pipeline is fully architected but zero models are deployed. Twenty-three person team with zero ML expertise.
+
+Our engagement: audit the pipeline architecture, assess which ML approaches fit which detection problems (temporal behavioral baselines via Mamba VAE, unsupervised anomaly detection via Isolation Forest, topology-aware risk scoring via Graph CNN, anomaly classification via XGBoost), and scope the implementation roadmap. The deliverable was a technical architecture assessment that mapped four specific ML models to four specific detection capabilities, with deployment recommendations for their edge inference hardware.
+
+Revenue: modest. Value: the case study is reusable for every infrastructure monitoring company that has a feature space and no ML team. And the engagement opened conversations with two adjacent companies in the same investor's portfolio.
+
+**Agent deployment on customer infrastructure.** Three AI agent skills — document analysis, workflow execution, and tool integration — deployed in three weeks on a customer's own servers. Not our cloud. Not our API. Their machines, their network, their firewall rules. The AEP safety layer running on their proxy, tracking costs and enforcing governance from day one.
+
+This engagement proved that the platform works on infrastructure we do not control. It proved that deployment is fast enough to be economically viable for the customer. And it produced a deployment playbook that we now use for every subsequent field engagement.
+
+**Legal technology contract analysis.** A startup building contract analysis tooling needed a workflow that could parse legal documents, extract key clauses, classify risk levels, and generate summary reports. Built on the platform using the workflow engine, deployed with custom safety detectors for legal-specific sensitive data (client names, financial terms, liability provisions).
+
+The engagement took four weeks. The workflow now runs as a marketplace asset. Every run generates revenue. The startup got their tool. We got a reusable product.
+
+## Founder-Led Sales
+
+At this stage — pre-10 repeat customers — sales is founder-led. This is not a scaling strategy. It is a learning strategy.
+
+The founder talks to every prospect. The founder sits in every discovery call. The founder scopes every engagement. This is inefficient by design. The inefficiency is the point. Every conversation teaches something about the market that no amount of market research would reveal.
+
+The patterns that emerge from 20-30 founder-led sales conversations are the foundation for everything that comes after: the positioning, the pricing, the product roadmap, the ideal customer profile, the objections and how to handle them, the buying process and how to navigate it. These patterns cannot be delegated. They must be experienced.
+
+The milestone is 10-20 repeat customers. Not new logos — repeat customers. Organizations that bought once, saw results, and came back for more. Repeat customers validate the product-market fit more reliably than any other signal. They prove that the value delivered justifies the cost, that the relationship is worth maintaining, and that the customer's problem is recurring (not a one-time project).
+
+Once the pattern is clear from founder-led sales, the playbook can be handed to a sales team. The positioning is proven. The pricing is validated. The objection handling is documented. The ICP is specific enough to target efficiently. Until then, the founder is the sales team, and the inefficiency is an investment.
+
+## The Consulting-to-Product Pipeline
+
+The most important function of the consulting channel is not revenue. It is the pipeline from engagement to product.
+
+Every consulting engagement produces custom work: a specific workflow, a specific safety policy, a specific integration pattern. If that custom work stays custom, it generated revenue once. If that custom work is generalized into a reusable workflow or policy template and published on the marketplace, it generates revenue every time someone else has the same problem.
+
+The pipeline works like this:
+
+1. Client has a specific problem. We build a specific solution.
+2. We observe: is this problem unique, or is it a pattern? If unique, the engagement is a one-off and the value is the revenue plus the relationship. If a pattern, proceed to step 3.
+3. Generalize the solution. Strip out client-specific details. Parameterize the configuration. Add documentation and default settings that work for the common case.
+4. Publish to the marketplace as a reusable workflow or policy template.
+5. The next client with the same pattern does not need a consulting engagement. They buy the marketplace product. Or they buy a lighter consulting engagement — customization of the existing template rather than a build from scratch.
+
+Over time, the ratio shifts. Early on, every engagement is a full custom build. As the marketplace accumulates templates and workflows, more engagements become customization of existing assets. The consulting revenue per engagement decreases, but the total revenue (consulting plus marketplace) increases because the marketplace compounds.
+
+This is the consulting channel's endgame: work itself out of a job by converting custom work into reusable products. Not immediately — the consulting channel will generate revenue and learning for years. But the trajectory is clear. Consulting is the R&D lab that funds itself while building the product catalog.
+
+---
+
+[Next: The Public Sector](./03-public-sector.mdx)

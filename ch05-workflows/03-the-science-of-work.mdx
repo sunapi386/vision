@@ -1,0 +1,83 @@
+# The Science of Work
+
+## Hypothesis, Experiment, Result
+
+Science works by a cycle. You form a hypothesis. You design an experiment. You run the experiment and collect data. You compare the results to the hypothesis. If they match, confidence increases. If they diverge, you revise the hypothesis and run again.
+
+Most people think this cycle applies to laboratories and research papers. It does. But it also applies to every repeatable business process. The only difference is that businesses rarely formalize it.
+
+Consider a monthly budget review. The budget is the hypothesis -- a prediction about how much revenue the company will generate and how much it will spend. The month's actual results are the experiment -- what really happened. The review is the comparison: did the prediction match reality?
+
+If revenue was $120,000 against a budget of $100,000, that is a positive surprise. Why? Was it a one-time event, or has something structural changed? Should the budget for next month be revised? If expenses were $85,000 against a budget of $70,000, that is a negative surprise. Where did the $15,000 go? Is it a timing issue, or is the spending pattern sustainable?
+
+This is the scientific method applied to business operations. But most companies do not practice it. They set an annual budget in January, hand it to the accountant, and wait until year-end to see how things turned out. By then, it is too late to course-correct. The experiment ran for twelve months without anyone checking the data.
+
+AI workflows bring scientific discipline to every repeatable business process. Not by being smarter than humans -- by being more consistent.
+
+## The Monthly Cycle
+
+The accounting firm at the Forge laid it out clearly: a three-year budget model with year one broken into monthly checkpoints. Each month is a micro-experiment. Budget versus actual. Expected versus observed. The deviation is the signal.
+
+Here is what this looks like as a workflow:
+
+Node one: Pull the month's financial data from the accounting system. Node two: Compare each line item against the budget. Node three: Calculate the variance for each category -- revenue, COGS, operating expenses, taxes. Node four: Flag any variance above 10% for review. Node five: Generate a summary report with the top three positive deviations and top three negative deviations. Node six: Route to the human reviewer -- the founder, the CFO, whoever owns the budget -- with the flagged items highlighted. Node seven: The human reviews, adds context ("the equipment purchase was planned but fell in the wrong month"), and approves. Node eight: Update the budget model with the review decisions.
+
+This runs on the first business day of every month. It takes minutes of compute time and perhaps thirty minutes of human review. Without the workflow, the same analysis takes two to three hours of an accountant's time, happens inconsistently, and produces no standardized output.
+
+The key insight is not that AI does the math faster. It is that AI does the math every month, without fail, in the same way, producing the same structured output that can be compared across months. The consistency is the value. The consistency is what turns a business process into a scientific process.
+
+## Expected vs. Observed
+
+Every workflow that processes recurring data is implicitly running an experiment. The workflow's rules and thresholds encode expectations. The data that flows through the workflow provides observations. The gap between expectation and observation is the signal.
+
+An invoice processing workflow expects invoices to fall within certain ranges for known vendors. When an invoice from Vendor A arrives for $47,000 and the typical range is $3,000 to $8,000, that is a deviation. The workflow flags it. A human reviews. Maybe Vendor A changed their pricing. Maybe it is a duplicate. Maybe it is fraud. The point is that the workflow caught it automatically, instantly, and consistently.
+
+A hiring workflow expects a certain number of applicants per job posting. When a posting receives three hundred applications instead of the usual thirty, the workflow adjusts -- maybe it tightens the initial screening criteria, maybe it routes overflow to a secondary reviewer, maybe it triggers an alert that the job description may be too broad.
+
+A customer service workflow tracks response quality metrics. When customer satisfaction scores drop below a threshold, the workflow routes more conversations to human agents and triggers a review of recent AI responses that received negative feedback.
+
+In each case, the workflow is doing what a scientist does: comparing expected results to observed results and taking action based on the deviation. The difference is that the workflow does this continuously, at machine speed, without forgetting, without getting tired, and without the cognitive biases that cause humans to miss gradual drift.
+
+## The Feedback Loop
+
+The scientific method has a feedback loop: observations from one experiment inform the design of the next. Workflows have the same loop, but most organizations do not close it.
+
+Here is what closing the loop looks like:
+
+The monthly budget workflow runs. It shows that marketing spend exceeded budget by 25% for the third consecutive month. The human reviewer notes that the overspend is driven by a new campaign that started in Q2. The workflow records this annotation. The next month, the workflow includes the new campaign as a separate line item with its own budget. The deviation disappears -- not because spending changed, but because the model now reflects reality.
+
+The SR&ED filing workflow processes ten claims. Human reviewers modify 30% of the AI's initial classifications. The workflow logs every modification. After the tenth claim, the system has accumulated thirty data points about what the AI gets wrong. These data points are used to refine the classification rules. On the next batch, the modification rate drops to 15%. After thirty claims, it drops to 8%.
+
+The hiring workflow screens five hundred applications over six months. Hiring managers provide feedback on which AI-recommended candidates were actually good fits. This feedback is correlated with the screening criteria. Criteria that do not predict hiring outcomes are downweighted. Criteria that strongly predict outcomes are emphasized. The workflow improves with every hiring cycle.
+
+This is not magic. It is the same mechanism that makes scientific disciplines improve over time: systematic observation, recorded results, and hypothesis revision. The workflow provides the structure. The human provides the judgment. The feedback loop connects them.
+
+## Why Organizations Do Not Do This Today
+
+If the scientific approach to business processes is obviously superior, why do most organizations not practice it? Three reasons.
+
+First, the tooling did not exist. Building a structured monthly review process required custom software, database queries, and reporting infrastructure. Most organizations cannot justify the engineering investment for an internal process.
+
+Second, the overhead was too high. Even with tooling, someone had to run the process every month. Gather the data, run the analysis, format the report, distribute it, collect feedback, update the model. Each step took time. Over twelve months, the process consumes hundreds of hours.
+
+Third, the discipline is hard. Humans are inconsistent. They skip the review when the month is busy. They forget to log their corrections. They do not update the model when they find a pattern. The feedback loop stays open.
+
+AI workflows solve all three. The tooling is the workflow builder -- visual, no-code, configurable by anyone who understands the process. The overhead is near-zero -- once the workflow is built, it runs automatically on a schedule, generates reports, routes reviews, and logs feedback without manual intervention. The discipline is enforced by the system -- the workflow runs every month regardless of whether anyone remembers, and it does not forget to log corrections.
+
+## From Art to Engineering
+
+There is a well-known distinction in software development between art and engineering. Art is when an individual craftsperson produces something unique through intuition and skill. Engineering is when a team produces something reliable through process, specification, and measurement.
+
+Most business processes today are art. An experienced accountant does a year-end close and gets it right because they have done it fifty times. A junior accountant does it and misses things. The quality depends on the individual, not the process.
+
+Workflows convert art to engineering. The process is specified. The steps are defined. The quality checkpoints are built in. The output is measurable. A junior running a well-designed workflow produces output of comparable quality to a senior working from memory -- because the senior's knowledge is encoded in the workflow, not locked in their head.
+
+This does not diminish the value of expertise. It changes where expertise is applied. Instead of the expert executing the process every time, the expert designs the workflow and reviews the edge cases. Their knowledge is leveraged across every execution, not consumed by a single one.
+
+This is the same transition that happened in manufacturing. Before assembly lines, each product was handcrafted. Quality varied. Throughput was limited by the number of skilled workers. After assembly lines, the process was engineered. Quality became consistent. Throughput scaled with the number of stations. The skilled workers' value moved from executing to designing.
+
+AI workflows are the assembly line for knowledge work. The same transition is happening now.
+
+---
+
+[Previous: Domain Expertise as IP](./02-domain-expertise-as-ip.mdx) | [Next: Human-in-the-Loop](./04-human-in-the-loop.mdx)

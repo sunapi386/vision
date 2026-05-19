@@ -1,0 +1,16 @@
+{
+  "name": "愿景：规模化信任",
+  "short_name": "规模化信任",
+  "description": "智能体经济的问责基础设施",
+  "start_url": "/book-zh.html",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#0a0c10",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0c10' width='100' height='100' rx='20'/><text x='50' y='68' text-anchor='middle' font-size='50' fill='%236aaefc'>愿</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+# The Subscription Model
+
+## Twenty Dollars Gets You in the Door
+
+The entry point is $20 per month per seat.
+
+At that price, a user gets the core platform: a chat interface backed by their choice of model, the ability to upload and query their own documents, basic workflow execution, and the safety layer running on their data. Nothing is sent to external providers unless the user explicitly configures it. The inference runs on their own hardware (Citadel node, office appliance, or shared infrastructure) or on the AceTeam-hosted service.
+
+For a 30-person company, that is $600 per month. Budgetable. Predictable. No per-token surprises, no egress fees, no end-of-quarter reconciliation where the AI bill is 3x what was expected. The CFO can plan around it the same way they plan around their phone bill or their Office 365 subscription.
+
+This is deliberately positioned against the consumption-based model that dominates AI pricing. Consumption-based pricing optimizes for the provider: variable revenue that grows with customer usage, structural unpredictability that prevents price shopping, and lock-in through accumulated usage patterns and data. Subscription pricing optimizes for the customer: fixed costs, predictable budgets, and the freedom to use the product more without paying more.
+
+The trade-off for us is obvious: we capture less per heavy user than a consumption-based model would. A user who runs 10,000 inference calls per month is not paying 10x what a user who runs 1,000 calls pays. But the trade-off is worth it because the subscription model creates a fundamentally different customer relationship. The customer is not afraid to use the product. They do not ration AI calls. They do not build workarounds to avoid API costs. They just use it. And usage drives adoption, which drives retention, which drives expansion.
+
+## The Revenue Stack
+
+The $20 subscription is the base layer. The full revenue model has four layers, each capturing value at a different level of the customer relationship.
+
+**Layer 1: Platform subscription.** $20/seat/month. Core product. Chat, documents, basic workflows, safety layer. This is the recurring annuity. Predictable, scalable, low-touch after onboarding. Gross margins at 70-80% because the compute runs on the customer's own hardware or on shared infrastructure with fixed costs.
+
+**Layer 2: Specialized workflows.** Per-workflow pricing or workflow bundles. The visa application workflow at $300 per execution. The compliance audit workflow at $150 per run. The financial analysis package at $500/month for unlimited runs. These are upsells from the base subscription. The customer discovers them through the marketplace, tries them on their existing infrastructure, and converts to paid usage.
+
+Workflow pricing is the most important revenue layer because it captures value proportional to the work product's worth, not the compute cost. A workflow that costs $3 in compute and prices at $150 in revenue is a 50x margin. This is where the vertical value capture model from the previous section materializes as revenue.
+
+**Layer 3: Customized guardrails and policies.** Consulting engagements. A healthcare organization needs custom data governance policies that map to their specific HIPAA compliance requirements. A financial institution needs custom safety detectors that catch their industry-specific risk patterns. A government agency needs custom classification schemes that match their security clearance framework.
+
+These are professional services engagements: $5,000-50,000 per project, scoped to specific customization needs. The IP — the custom policies, detectors, and workflows — stays on the platform. The customer gets a solution tailored to their environment. AceTeam gets revenue plus a deepened relationship plus a reusable pattern that can be adapted for the next customer in the same vertical.
+
+**Layer 4: Hardware revenue share.** When a customer runs workflows on their own hardware through the Sovereign Compute Fabric, and that hardware serves workflows to other users through the marketplace, the hardware operator earns a share of the workflow revenue. The platform takes a percentage. This creates a two-sided incentive: more hardware nodes expand platform capacity, more capacity enables more workflows, more workflows generate more revenue, more revenue attracts more hardware operators.
+
+## The Professional Services Firm Model
+
+The four-layer revenue stack mirrors the business model of a professional services firm, with one crucial difference.
+
+A traditional professional services firm earns revenue from three sources: recurring advisory fees (monthly retainer for ongoing counsel), project fees (scoped engagements for specific deliverables), and thought leadership (which generates reputation and inbound leads rather than direct revenue).
+
+AceTeam's model maps to this structure:
+- **Monthly retainer** = platform subscription (Layer 1)
+- **Project fees** = customized guardrails and consulting (Layer 3)
+- **Thought leadership** = education channel (generates leads and credibility, covered in the next chapter)
+
+The crucial difference is Layer 2: the workflow marketplace. A professional services firm cannot scale its project work beyond its headcount. It sells hours, and hours are finite. AceTeam's workflow marketplace scales without headcount. A workflow published once generates revenue every time it runs, across every customer who buys it, on every node that serves it. This is the layer that transforms a services business into a platform business.
+
+## Pricing Against the Market
+
+The $20/seat/month price point is positioned against three categories of competition.
+
+**Against cloud AI APIs** ($100-500/seat/month equivalent at typical enterprise usage): AceTeam is 5-25x cheaper. The customer gets predictable costs instead of variable costs, data sovereignty instead of cloud dependency, and a safety layer included rather than bolted on. The caveat: frontier model access may require supplementary cloud API spend for specific tasks.
+
+**Against AI SaaS tools** ($30-100/seat/month for products like Jasper, Copy.ai, Writer): AceTeam is price-competitive but differentiated. AI SaaS tools are point solutions — they do one thing (generate marketing copy, write code, analyze data). AceTeam is a platform — the customer can build any workflow, use any model, keep their data local. The $20 price point removes price as an objection and lets the conversation focus on capability and control.
+
+**Against building in-house** ($500K+ for a team to build custom AI infrastructure): AceTeam eliminates the need. The platform provides the infrastructure, the safety layer, the workflow engine, and the marketplace. A 30-person company does not need to hire an ML engineer to use AI effectively. They need a $600/month subscription and the willingness to describe their workflows.
+
+## Unit Economics
+
+At $20/seat/month, the unit economics work because the marginal cost of serving a user is extremely low when inference runs on the user's own hardware.
+
+The structural advantage is cost offloading. When the user's own infrastructure handles inference, the platform's variable costs are limited to authentication, web application hosting, marketplace infrastructure, and support — shared fixed costs amortized across the entire user base. The inference cost, which is the dominant cost in every cloud AI business, is borne by the user's hardware or by the shared infrastructure pool where it is a fixed cost rather than a per-user variable cost.
+
+The result is high contribution margins — well above 50% — at the $20 price point. For a 30-seat account at $600/month, the contribution is substantial even at modest scale. Customer acquisition costs are low because the education and consulting channels generate warm inbound rather than cold outbound. Payback periods are measured in months, not years.
+
+These are not venture-scale growth-at-all-costs economics. They are sustainable, profitable, capital-efficient economics. The kind that survives without the next funding round.
+
+## Why Not Free
+
+There is an argument for a free tier: reduce friction, maximize adoption, convert to paid over time. We have considered it and rejected it for now.
+
+Free tiers attract users who are optimizing for cost, not value. They consume support resources disproportionately. They churn at high rates. And they create a cultural expectation that the product should be free, which makes every pricing conversation harder.
+
+$20/month is low enough to be a non-decision for any professional. It is the price of a single lunch. But it is high enough to be a signal: this is a tool for people who do real work and are willing to pay a nominal amount for it. The $20 filters for seriousness without filtering for wealth.
+
+If the product is not worth $20/month to someone, it is not solving a real problem for them, and we should find out now rather than after 12 months of supporting a free account.
+
+---
+
+[Back to chapter overview](./index.mdx)

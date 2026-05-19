@@ -1,0 +1,61 @@
+# The Cloud Pricing Trap
+
+## The Illusion of Cheap Units
+
+Per-token pricing sounds reasonable. A few cents per thousand tokens. Fractions of a penny per inference. The unit cost is so small it feels almost free. This is by design.
+
+Cloud AI pricing follows the same playbook as cloud computing before it. AWS did not become a $100 billion business by charging a lot for a single API call. It became a $100 billion business by charging a little for each call, making it easy to start, and making it very hard to predict or control the total spend. The margin between what compute actually costs and what the customer pays is the entire business model.
+
+AI pricing is worse because the consumption is less predictable. With traditional cloud computing, you can estimate costs from infrastructure requirements: this many servers, this much storage, this much network. With AI, consumption depends on input length, output length, model choice, retry patterns, agent loops, and the emergent behavior of multi-step workflows. A workflow that costs $0.50 on a short document might cost $15 on a long one, and you do not know which it will be until it runs.
+
+The result is systematic budget overruns. Organizations report 3-10x overruns on their AI infrastructure costs. Not because they are bad at planning, but because the pricing model is structurally unpredictable. The cost per token is known. The number of tokens consumed per workflow, per user, per month, in production, at scale, is not knowable in advance.
+
+## The Opacity Problem
+
+Per-token pricing is the visible part of the cost. The full cost structure is considerably more opaque.
+
+**Egress fees.** Moving data out of a cloud AI provider's infrastructure incurs charges that are often not visible in the per-token pricing. An organization that processes data with a cloud AI service and then retrieves the results pays for both the processing and the data transfer. For high-volume workloads, egress fees can exceed the inference costs.
+
+**Storage fees.** Fine-tuned models, vector databases, uploaded documents, conversation histories — these accumulate storage charges. The storage itself might be cheap, but the pricing is designed to make it expensive to leave. Once your data is in the provider's ecosystem, retrieving it to move elsewhere incurs egress fees that function as a switching cost.
+
+**API call overhead.** Beyond the per-token cost, each API call has fixed overhead: network latency, authentication, rate limiting infrastructure, logging. At high volumes, the number of API calls matters as much as the tokens consumed. An agent that makes many small calls may cost more than one that makes fewer large calls, even at the same total token count, due to per-call overhead charges.
+
+**Rate limiting as pricing.** When an organization hits rate limits, the solutions are either to wait (which costs developer time and delays production workflows) or to upgrade to a higher pricing tier. Rate limits are not purely a capacity management tool. They are a pricing mechanism that forces high-volume users into more expensive tiers.
+
+The combined effect is that the true cost of cloud AI is systematically higher than the per-token price suggests. Organizations learn this through experience, not through pricing pages.
+
+## The Hardware Cost Disconnect
+
+While per-token prices have declined gradually, hardware costs have dropped dramatically.
+
+NVIDIA's B300 — the successor to the B200, which itself succeeded the H100 — delivers inference performance at a fraction of the cost per token compared to cloud API pricing. The gap between what inference actually costs on owned hardware and what cloud providers charge for the same inference is not 2x or 3x. It is often 10x to 50x, depending on volume and model.
+
+This gap exists because cloud AI providers price on value, not on cost. They charge what the market will bear, which is determined by the value of the output, not by the cost of the compute. A legal analysis that saves a law firm 10 hours of associate time is worth $3,000 to the firm, so the provider prices the inference at a fraction of that value — say $30 — rather than at the compute cost, which might be $0.30.
+
+Value-based pricing is rational for the provider. It is irrational for the customer at scale. If you run 1,000 legal analyses per month, you are paying $30,000 for compute that costs $300. At that volume, owning the hardware and running the inference yourself is not a marginal optimization. It is a 100x cost reduction.
+
+The counter-argument is infrastructure complexity. Running your own inference requires GPU hardware, model serving infrastructure, operations expertise, and ongoing maintenance. This is real overhead. But the overhead is largely fixed — it costs roughly the same whether you run 100 inferences per month or 10,000. The variable cost is electricity and hardware depreciation. At any meaningful scale, the fixed overhead is amortized over enough volume to make ownership dramatically cheaper.
+
+## Who Gets Hurt
+
+The cloud pricing trap affects different organizations differently.
+
+**Enterprises with GPU capital.** The most perverse outcome is that organizations that already have computing infrastructure are penalized by cloud pricing. A university with a GPU cluster, a government agency with a data center, a manufacturing company with edge computing hardware — these organizations have capital assets that could run AI inference at marginal cost. Instead, they send inference requests to cloud providers and pay orders of magnitude more than their own hardware would cost. They have the compute. They just do not have the software stack to use it for AI.
+
+**Mid-market companies.** Organizations with 50-500 employees are the worst positioned. They have enough volume to make cloud pricing painful (thousands of API calls per day across dozens of employees) but not enough perceived technical sophistication to justify self-hosting. They are the ideal cloud AI customer: locked in, overpaying, and convinced that the alternative is impossible.
+
+**Startups building on AI.** Startups that use AI as a core part of their product face a structural problem. Their margins are bounded by their AI infrastructure costs. If cloud AI pricing takes 30-50% of the gross revenue from every unit of work, the startup is permanently squeezed. They cannot compete on price with a competitor who owns their own inference. And they cannot easily switch providers because their application is deeply integrated with a specific provider's API.
+
+The common thread is dependency. Cloud AI pricing creates dependency by design. The unit costs are low enough to start. The switching costs are high enough to stay. The total costs are high enough to be painful but not quite high enough to justify the perceived complexity of the alternative. This is the trap.
+
+## The Way Out
+
+The way out is not to negotiate better rates from cloud providers. Rate negotiation moves the needle by 20-30%, which does not change the structural economics. The way out is to eliminate the dependency.
+
+This requires two things: the ability to run inference on your own hardware (or dedicated hardware that you control), and a software stack that makes this operationally feasible. The hardware is commodity. The software stack is the product.
+
+The next section examines the ownership economics: at what scale does owning beat renting, what does the crossover look like, and why the crossover point is closer than most organizations think.
+
+---
+
+[Next: Ownership Economics](./02-ownership-economics.mdx)

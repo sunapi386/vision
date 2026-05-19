@@ -1,0 +1,79 @@
+# Dogfooding
+
+## Cook Your Own Meal Before You Serve It
+
+There is a startup called Q Reserve at the McMaster Forge that builds scheduling software. When you visit their office, their own team schedules every meeting, every room booking, and every event through their own product. If the product cannot handle the founder's calendar, it is not ready for customers.
+
+This is dogfooding -- using your own product to run your own operations. It is the most honest test of quality because the consequences are real. If the product breaks, your operations break. There is no demo environment buffer between you and the bugs.
+
+AceTeam uses its own platform to run its own business.
+
+This is not a marketing claim. It is a survival strategy. We are three engineers with zero external funding. We cannot afford to hire people for tasks that our platform should automate. If the platform cannot handle our operations, we have a product problem and an operational problem simultaneously.
+
+## What We Run on AceTeam
+
+**Resume screening workflow.** When a job application comes in, a workflow processes it: extract text from the resume, parse key fields (education, experience, skills), compare against the role requirements, score the application, and route high-scoring candidates to the reviewer. Low-scoring applications are politely declined with an automated response. Edge cases -- candidates with unusual backgrounds that do not fit the standard scoring model -- are flagged for human review.
+
+We built this workflow because we needed to screen applicants for our own team. The volume was modest -- maybe twenty applications per posting. But the time cost was real. An hour per resume adds up when you have three engineers and no HR department. The workflow reduced the human time per application from sixty minutes to five minutes (for the ones that require review) and zero minutes (for the ones that auto-process).
+
+The same workflow was the centerpiece of our SJSU workshop series. We walked a hundred and fifty business students through the progression from manual screening to automated workflow. They used the same tool we use. The exercises were not hypothetical -- they were based on our actual screening criteria.
+
+**Marketing pipeline workflow.** Content creation for a bootstrapped startup is a constant pressure. Blog posts, social media, newsletter, documentation -- the volume is relentless and the team is small. A workflow handles the pipeline: generate topic suggestions based on recent conversations and industry trends, draft initial content, route for human editing, format for each distribution channel, schedule publication, and track engagement.
+
+Is the AI-generated first draft as good as what a human writer would produce from scratch? No. It is 70% there. But 70% of the way to a blog post in thirty seconds, with a human editor spending fifteen minutes polishing, is a dramatically better process than a human staring at a blank page for ninety minutes.
+
+**SR&ED filing workflow.** Scientific Research and Experimental Development tax credits are one of the most valuable and most underutilized programs for Canadian technology companies. The filing process is complex: identify eligible projects, classify expenditures, write technical narratives that satisfy CRA reviewers, calculate credits, and assemble the filing package.
+
+We are building a workflow for this. Our own SR&ED claim -- for the Mitacs research expenditures, the intern costs, the experimental development work on the workflow engine itself -- is the test case. Roughly $30,000 to $50,000 in eligible expenditures, at a 35% refund rate, means $15,000 to $20,000 back from the government. The workflow pays for itself on the first filing.
+
+The deeper goal is to turn this into a marketplace workflow. An SR&ED claim that costs a traditional consultant $800 or more could be processed for $3 in compute and one hour of expert review. The expert reviews the AI's work at the human-in-the-loop gates, not the routine processing. The workflow handles the data gathering, classification, narrative generation, and formatting. The expert handles the judgment calls.
+
+A retired BDO partner we met at the McMaster Forge knows a woman at CRA who has been reviewing SR&ED technical applications for fifteen years. She is an engineer, not an accountant. She knows exactly what CRA reviewers look for, because she has been one. If she builds the review criteria into a workflow, her fifteen years of pattern recognition become transferable -- downloadable expertise.
+
+**Operations monitoring.** The platform monitors itself through the platform. Node status heartbeats, job queue depths, error rates, and usage metrics flow through workflows that alert us when something is wrong. When a Citadel node goes offline, a workflow triggers. When job queue depth exceeds threshold, a workflow triggers. When a customer's credit balance approaches zero, a workflow triggers.
+
+This is the meta-test: can the platform be self-aware? Can it run the monitoring and alerting workflows that ensure its own health? If it cannot, we have a reliability problem that we need to fix before asking customers to depend on us.
+
+## What Dogfooding Reveals
+
+Using your own product every day exposes problems that demos never surface.
+
+You discover that the workflow builder is awkward for certain common patterns -- maybe connecting nodes requires too many clicks, maybe the parameter panel obscures the canvas, maybe error messages are cryptic. These are usability issues that emerge only through sustained use, not through a fifteen-minute walkthrough.
+
+You discover performance bottlenecks that only appear at scale. Processing one resume is instant. Processing twenty in a batch reveals that the embedding step is the bottleneck. The feedback goes directly into the engineering backlog.
+
+You discover that certain node types are missing. The first time you need to parse a CSV and the platform does not have a CSV reader node, you build one. That node goes into the standard library for everyone. Every missing piece we encounter in our own operations becomes a feature for customers.
+
+You discover that the human review interface needs improvement. When you are the reviewer, you notice that the context panel does not show enough information, or that the approval button is too far from the prediction display, or that the diff view is confusing for long documents. These are the details that separate a tool people tolerate from a tool people love.
+
+Most importantly, you discover whether the product delivers on its promise. Can three engineers actually run their business operations -- hiring, marketing, financial tracking, infrastructure monitoring -- through the platform? If the answer is yes, the product works. If the answer is no, we know exactly where it fails.
+
+## The Credibility Test
+
+When we talk to potential customers, the question inevitably comes: "Does it actually work?"
+
+The honest answer is: it runs our company. Our resume screening, our marketing pipeline, our infrastructure monitoring, our financial tracking. We are not a large company -- three people, zero funding, bootstrapped. But the operations are real, the data is real, and the consequences of failure are real.
+
+This is a credibility test that most AI startups cannot pass. They have demo environments with sample data. They have case studies written by marketing. They have impressive presentations. But they do not use their own product for their own operations.
+
+Ask them: what do you use for hiring? They use Greenhouse or Lever. What do you use for marketing? They use HubSpot or Mailchimp. What do you use for monitoring? They use Datadog or PagerDuty. They sell AI automation, but they do not automate their own processes.
+
+We do. Not because we are ideologically committed to dogfooding, but because we cannot afford not to. The constraints of being a three-person bootstrapped company force us to use our own tools or drown in operational overhead.
+
+## The Feedback Cycle
+
+Dogfooding creates the tightest possible feedback loop between product development and product quality.
+
+When a bug affects our own operations, it gets fixed that day. Not because it was prioritized in a sprint planning meeting, but because our operations are broken until it is fixed. The severity is felt directly by the people who can fix it.
+
+When a feature is missing, the need is felt directly by the people who can build it. The product backlog is not a list of customer requests filtered through a product manager. It is a list of things that would make our own work better. Customer requests often align -- because we face the same problems -- but the urgency is different when you are your own customer.
+
+When a feature works well, we know immediately. The resume screening workflow saves us ten hours per posting. The monitoring workflow catches a node failure at 2 AM and we fix it before anyone notices. The SR&ED workflow processes our own claim and recovers $18,000. The feedback is direct, measurable, and unambiguous.
+
+This cycle -- use the product, find the gap, fix the gap, use the product again -- is the fundamental engine of product quality. It is why the best developer tools are built by developers, the best design tools are built by designers, and the best workflow automation platform is built by a team that automates their own workflows.
+
+If the product cannot run our own business, it cannot run yours.
+
+---
+
+[Previous: Human-in-the-Loop](./04-human-in-the-loop.mdx)

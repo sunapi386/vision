@@ -1,0 +1,78 @@
+# The Asymmetry
+
+There's a fundamental asymmetry in the current AI economy, and it's hiding in plain sight.
+
+Companies building AI — OpenAI, Anthropic, Google DeepMind, Meta AI — are capturing enormous, compounding value. Every customer interaction trains their models. Every API call generates revenue AND improves their product. Every integration deepens dependency. They are building assets.
+
+Companies using AI — everyone else — are renting capability month-to-month, accumulating dependency, not capability. Every dollar spent on API calls is gone. Every workflow built on top of a third-party model is a liability, not an asset. Every month of usage makes the switching cost higher and the leverage lower.
+
+This is the cable TV model applied to intelligence. And like cable TV, it's wrong and temporary.
+
+## The Rent Trap
+
+Think about what happens when a company adopts a cloud AI platform today.
+
+Month one: they integrate the API. Simple. A few lines of code. Magic.
+
+Month six: they've built workflows around the API. Document processing pipelines. Customer support automation. Data analysis tools. All dependent on a specific model's capabilities, quirks, and pricing.
+
+Month twelve: they've accumulated organizational knowledge about prompts, system instructions, fine-tuning data, and evaluation criteria — all specific to one vendor's model. Switching to a competitor means rebuilding everything.
+
+Month twenty-four: the vendor raises prices. Not by a lot — maybe 15%. The company does the math and realizes that rebuilding their entire AI stack on a different platform would cost more than paying the increase. So they pay.
+
+This is not hypothetical. This is the Netflix model: $7.99 became $14.99 became $22.99 became $28.99. This is the Salesforce model: simple CRM becomes enterprise platform becomes organizational dependency. This is the Adobe model: Photoshop for $699 once becomes Creative Cloud for $55/month forever.
+
+The pattern is so consistent it should be taught in business school as a case study in platform economics. Step one: make adoption frictionless. Step two: make switching painful. Step three: raise prices.
+
+Per-token pricing is the cable bill of the 2020s.
+
+## Value Flows Uphill
+
+The asymmetry isn't just about pricing. It's about where the value accumulates.
+
+When a law firm uses GPT-4 to review contracts, the firm gets a reviewed contract. OpenAI gets the firm's data (subject to usage policies that change quarterly), the firm's usage patterns, the firm's prompts (which encode the firm's expertise), and $0.03 per 1K tokens. The firm's competitive advantage — its institutional knowledge about contract review — is now encoded in prompts that live on OpenAI's servers.
+
+When a hospital uses a cloud AI service for clinical documentation, the hospital gets transcribed notes. The AI provider gets medical conversations, diagnostic patterns, treatment protocols, and billing data. The hospital's clinical expertise becomes training signal for the next model version — which the AI provider will sell to the hospital's competitors.
+
+When a consulting firm builds an analysis pipeline on Claude or GPT, the firm gets faster analysis. The AI provider gets the firm's analytical frameworks, client data patterns, and domain expertise. Every interaction makes the platform smarter and the consulting firm more replaceable.
+
+Value flows uphill. Always. The platform gets smarter. The customer gets a bill.
+
+## The Historical Precedent
+
+This is not new. Every major infrastructure shift starts with the same asymmetry — and every one eventually corrects.
+
+**Railroads.** In the 1870s, railroads owned the only way to move goods across the country. Farmers and manufacturers had no alternative. Railroad companies charged whatever the market would bear, changed rates without notice, and gave preferential pricing to favored customers. The asymmetry was so extreme that it triggered federal regulation — the Interstate Commerce Act of 1887. The railroad owners didn't voluntarily share power. The government forced it.
+
+**Electricity.** In the 1890s, Edison's power companies controlled the generation, transmission, and distribution of electricity. If you wanted electric lights, you bought Edison's system — his generators, his wiring, his bulbs. Vertical integration. Then alternating current won, standardization emerged, and electricity became a utility. Edison didn't lose because his technology was bad. He lost because the market demanded interoperability and commodity pricing. Today, you don't know or care who generates your electricity.
+
+**Telephony.** AT&T monopolized American telecommunications for nearly a century. You couldn't connect your own device to the phone network — AT&T owned the network, the switches, the phones, and the service. The 1984 breakup and subsequent deregulation transformed telephony from a vertical monopoly into a commodity. Today, a phone call costs effectively nothing.
+
+**Cloud Computing (the correction).** AWS dominated cloud computing for a decade. Then Kubernetes emerged. Then multi-cloud architectures became standard. Then serverless abstracted away the infrastructure entirely. AWS is still enormously valuable, but the asymmetry diminished. Companies can (and do) run on multiple clouds. The switching cost dropped. The power rebalanced.
+
+In every case, the pattern is the same: an infrastructure provider captures disproportionate value. The market tolerates it while the technology is novel and the alternatives are worse. Then alternatives emerge — through regulation, standardization, or open-source competition — and the infrastructure commoditizes. The provider's margins compress. The value shifts to the companies building on top.
+
+## Where We Are Now
+
+We are in the early monopoly phase of AI infrastructure. OpenAI, Anthropic, and Google control the models. NVIDIA controls the hardware. AWS, Azure, and GCP control the compute. The margins are extraordinary. The switching costs are high. The customers are locked in.
+
+But the correction is already starting.
+
+Open-source models — Llama, Mistral, DeepSeek, Qwen — are closing the quality gap with proprietary models. Not completely, not for every task, but fast enough that the trajectory is clear. Two years ago, open-source models were toys. Today, Llama 3 and DeepSeek R1 are competitive with GPT-4 on most benchmarks. The gap is narrowing every quarter.
+
+GPU economics are crossing over. Five years ago, running your own inference was impractical — a single GPU cost $10,000 and could barely run a 7-billion parameter model. Today, a $30,000 server with consumer GPUs can run a 70-billion parameter model at production quality. In five years, the hardware will be the size of a mini-fridge and cost less than a car.
+
+The software layer is the bottleneck. The hardware is getting cheap. The models are getting open. What's missing is the software that lets organizations run AI on their own terms — on their own hardware, with their own data, under their own control. Not a chatbot. Not an API wrapper. A complete system for building, running, and governing AI workflows.
+
+That's the opportunity. And it's the subject of the next chapter.
+
+But before we go there, I want to be clear about one thing: the asymmetry I'm describing isn't a market failure. It's a market stage. The AI providers built something extraordinary. They took enormous risks, spent billions on research, and created technology that genuinely changes what's possible. They deserve the returns they're capturing.
+
+The question isn't whether the current AI providers deserve their position. The question is whether the current architecture — centralized intelligence, rented by the token, governed by terms of service that change quarterly — is the permanent structure of the AI economy.
+
+History says no. Every infrastructure monopoly eventually commoditizes. The question is who builds the layer that enables the transition.
+
+---
+
+*Previous: [AI Is Different](./02-ai-is-different.mdx)*
+*Up: [Chapter 1: The Shift](./index.mdx)*

@@ -1,0 +1,73 @@
+# Architecture Philosophy
+
+## The Missing Layer Is Not More Hardware
+
+There is a persistent fantasy in the AI infrastructure world that the bottleneck is compute. That if we could just build more data centers, rack more GPUs, provision more cloud instances, the problem would be solved. This is wrong in the same way that building more roads does not solve traffic -- it generates it. The bottleneck is not hardware. The bottleneck is the intelligence that decides what runs where, how tasks connect, and how organizations maintain control over their own data while using someone else's machines.
+
+Consider the current state. A company buys four NVIDIA B300 GPUs. They install them in a server room. Now what? They need to configure inference servers. Set up networking. Build a job queue. Write routing logic. Handle authentication. Track usage. Build a user interface. Every one of these is a solved problem in isolation, but no one has assembled them into a coherent platform. So the company either hires five engineers to glue it together, or they give up and pay OpenAI $15 per million tokens for something they could run locally at a fraction of the cost.
+
+We built the missing layer. Not more hardware. Intelligence.
+
+## Three Principles, Not Others
+
+When you start building a platform, you face an architectural decision that will constrain everything downstream. We chose three principles. Not because three is a nice number, but because these three are the minimum set required to make distributed AI work at any scale, from one GPU to ten thousand.
+
+### Principle 1: Separation of Orchestration and Compute
+
+The platform orchestrates. The hardware provides. These are independent layers that scale and evolve independently.
+
+This sounds obvious until you look at what everyone else built. ICP spent $250 million building a system where orchestration and compute were fused into a single blockchain consensus layer. Every compute node had to participate in orchestration. Every orchestration decision had to be validated by compute nodes. The result was a system that was too slow for real compute and too complex for reliable orchestration. They employed hundreds of engineers and never solved the fundamental design flaw.
+
+AWS solved this differently but created a different problem -- their orchestration is region-locked to their own infrastructure. You cannot use AWS orchestration to manage a GPU in your own data center. The intelligence is welded to their hardware.
+
+Our architecture is simple: the control plane runs as standard web services. The data plane is any machine with a CPU or GPU. These two layers communicate through a job queue and a VPN mesh. You can upgrade the platform without touching the compute nodes. You can add compute nodes without changing the platform. A data center operator can contribute a hundred GPUs without understanding our codebase. An enterprise can run the platform on their own infrastructure without depending on ours.
+
+This separation is not just an engineering convenience. It is the structural precondition for a marketplace. If orchestration and compute are fused, you cannot have independent compute providers. If they are separated, any hardware becomes available to any workflow.
+
+### Principle 2: Queue-Based Workload Distribution
+
+Every AI workload in AceTeam flows through a distributed job queue built on Redis Streams. Not request-response. Not direct HTTP. A queue.
+
+This is a deliberate architectural choice that most AI platforms get wrong. When you call the OpenAI API, your request goes directly to a server. If that server is overloaded, you get rate-limited. If it goes down, you get an error. If you want to switch to a different provider, you rewrite your integration.
+
+Queue-based processing inverts this. The caller puts work onto a queue and subscribes to a results channel. Workers -- which can be anywhere in the mesh -- pull work from the queue and push results back. The caller never knows which worker handled the job. The worker never knows who submitted it.
+
+This provides properties that are essential for distributed compute:
+
+**Natural load balancing.** If ten workers are consuming from the same queue, Redis Streams distributes jobs across them automatically. No load balancer to configure. No routing table to maintain.
+
+**Fault tolerance.** If a worker crashes mid-job, the message stays in the queue. After a configurable timeout, another worker picks it up. Dead Letter Queues catch jobs that fail repeatedly. The caller's request is not lost because a single machine went down.
+
+**Horizontal scaling.** Adding compute capacity means starting another worker on another machine. It joins the consumer group and begins pulling jobs. No configuration changes to the rest of the system. No restart required. No load balancer update.
+
+**Backpressure.** When the system is overloaded, queue depth increases. At 80% capacity, warnings are logged. At 100%, new jobs return HTTP 503. This is honest -- the system tells you it is full rather than degrading silently, which is what happens in request-response architectures under load.
+
+**Streaming.** For long-running tasks like LLM inference, workers publish chunks to a Redis Pub/Sub channel. The API gateway subscribes and forwards chunks as Server-Sent Events. The user sees tokens appearing in real time, even though the work is happening on a machine three network hops away.
+
+The queue is also the natural integration point between cloud and sovereign compute. Cloud workers and on-premise workers consume from the same queues. The system does not care where the compute is -- only that it has the right capabilities.
+
+### Principle 3: Secure Mesh Networking
+
+All compute nodes -- regardless of location -- join a single encrypted mesh network. This eliminates the three hardest problems in distributed computing for non-specialists: firewall configuration, VPN setup, and network address management.
+
+The mesh is built on Headscale, an open-source implementation of the Tailscale coordination protocol. Every node connects to our coordination server (Nexus) and receives a VPN IP address on the 100.64.0.0/10 subnet. All traffic between nodes is encrypted end-to-end with WireGuard. NAT traversal is handled automatically -- nodes behind corporate firewalls, home routers, or restrictive networks can join without opening ports.
+
+Why this matters: a data center operator in Hamilton can connect GPU racks to the same fabric as a developer's workstation in Vancouver. Both appear as peers on the mesh. Both can receive work from the job queue. Both are encrypted. Neither needs a public IP address.
+
+Organization isolation is enforced at the network level. Each organization gets its own Headscale user namespace. Nodes belonging to different organizations are cryptographically invisible to each other -- they do not appear in network scans, they cannot be pinged, they never receive each other's WireGuard keys. This is not application-level access control that can be bypassed. It is enforced by the coordination server refusing to distribute key material across organization boundaries.
+
+## Why These Three, Not Others
+
+You might wonder why we did not include "AI-native primitives" or "multi-model support" or "enterprise governance" in the architectural principles. Those are features. Important features -- and we built them. But they are not architectural principles.
+
+An architectural principle constrains every subsequent design decision. If you get it wrong, you cannot fix it with a feature. You have to rebuild.
+
+Separation of orchestration and compute means we can serve data center operators without asking them to run our platform. Queue-based distribution means we can scale from one GPU to ten thousand without redesigning the system. Secure mesh networking means we can connect hardware across the internet without asking users to understand networking.
+
+Every other decision -- the agent builder, the workflow engine, the marketplace, the billing system -- is a consequence of these three principles. They are the structural foundation that everything else sits on.
+
+The next sections describe what sits on that foundation.
+
+---
+
+[Next: Sovereign Compute Fabric](./02-sovereign-compute-fabric.mdx)

@@ -1,0 +1,81 @@
+# Marketplace Economics
+
+## Why This Is Not Another AI Wrapper
+
+The current AI startup landscape is dominated by wrappers. Companies that take an LLM API -- usually OpenAI -- add a user interface, maybe some prompt engineering, maybe a database integration, and call it a product. There are thousands of these. They have no moat.
+
+The moat problem is structural. If your product is "GPT-4 with a nice UI for lawyers," your product disappears the moment OpenAI ships a nice UI for lawyers. Or the moment Anthropic releases a model that is better at legal reasoning. Or the moment an open-source model reaches comparable quality and runs locally for free. Your value proposition is a thin layer of interface on top of someone else's intelligence.
+
+Workflow marketplace listings are fundamentally different. They are not wrappers around a model. They are encoded domain expertise that uses models as a component.
+
+Consider the difference between these two products:
+
+Product A: "AI legal assistant. Ask questions about law and get answers. Powered by GPT-4." This is a wrapper. The value is the model. The product is an interface.
+
+Product B: "TN visa processing workflow. 40-step pipeline: document intake, eligibility screening against NAFTA profession codes, supporting letter analysis, application assembly, government form generation, human review at three checkpoints, filing package production." This is a workflow. The value is the process design. The model is a tool used by the process.
+
+Product A is vulnerable to commoditization. Product B is defensible because the process design reflects years of expertise that cannot be replicated by prompting alone.
+
+## The Calibration Moat
+
+The deepest moat in AI is not data, not models, not infrastructure. It is calibration -- the accumulated knowledge of what good and bad results look like in a specific domain.
+
+A tax specialist who has reviewed ten thousand SR&ED claims knows, at a glance, whether a technical narrative will satisfy a CRA reviewer. They do not need to read the entire narrative. They scan the key phrases, check the structure, verify the expenditure classifications, and make a judgment in thirty seconds. This calibration -- the ability to rapidly distinguish good from bad -- is the product of a decade of experience.
+
+When this specialist builds a workflow, their calibration is encoded at every level. The confidence thresholds at human review gates. The validation rules on expenditure classifications. The template structures for technical narratives. The flagging criteria for high-risk claims. Every parameter reflects a judgment call informed by thousands of prior examples.
+
+A competitor cannot replicate this calibration by writing better prompts. They would need the same ten thousand examples, the same domain expertise, and the same iterative refinement process. Even then, their calibration would be different -- reflecting their experience, not the original specialist's.
+
+This is why the workflow creator has a sustainable competitive advantage. The model is replaceable -- switch from GPT-4 to Claude to Llama and the workflow still functions. The process design is persistent -- the steps, the checkpoints, the validation rules embody expertise that transcends any particular model. The calibration is irreplaceable -- it reflects the creator's unique accumulation of domain knowledge.
+
+## Network Effects
+
+Marketplace economics improve with scale, and the effects compound in four directions.
+
+**More buyers attract more sellers.** When a hundred organizations are purchasing workflows, creators invest the effort to build and maintain listings. When ten organizations are purchasing, the payoff is too low. This is the classic chicken-and-egg problem that every marketplace must solve.
+
+**More workflows attract more buyers.** A marketplace with five hundred workflows covering tax, legal, HR, marketing, and operations is a one-stop shop. A marketplace with ten workflows is a curiosity. The buyer's alternative is always available -- do it themselves, hire a consultant, use ChatGPT. The more workflows available, the more often the marketplace wins that comparison.
+
+**Each execution makes the workflow better.** A workflow that has processed ten thousand documents has ten thousand data points about its accuracy, failure modes, and edge cases. The performance metrics -- auto-approval rates, human modification frequencies, error rates -- are visible in the marketplace listing. Buyers steer toward proven workflows. Quality compounds with usage.
+
+**Workflows build on other workflows.** A tax filing workflow might use a document classification sub-workflow, a legal review sub-workflow, and a formatting sub-workflow. When any sub-workflow improves, every parent workflow that uses it improves automatically. Quality propagates through the dependency graph without the parent workflow's creator doing anything.
+
+## Pricing Models
+
+The marketplace supports multiple pricing models to match different use cases:
+
+**Per-execution pricing.** The buyer pays each time the workflow runs. This is the natural model for variable-volume use cases -- a law firm that processes fifty visa applications one month and five the next. Per-execution pricing aligns cost with value: you pay only for work products delivered.
+
+**Monthly subscription.** The buyer pays a flat monthly fee for unlimited executions. This is the natural model for steady-state use cases -- a company that processes invoices daily and needs the workflow available continuously. Subscription pricing provides cost predictability.
+
+**Tiered pricing.** A base tier includes a set number of executions per month, with overage charges above the limit. This balances predictability with flexibility.
+
+**Custom enterprise.** For large organizations with specific requirements -- dedicated compute, custom SLAs, integration support -- the workflow creator and the buyer negotiate terms directly, with the platform facilitating the transaction.
+
+In all models, the platform takes its 20-30% fee and the creator receives 70-80%. The platform handles all payment processing, invoicing, and financial reporting.
+
+## The Competitive Landscape
+
+The workflow marketplace competes against three alternatives:
+
+**Building in-house.** The organization hires engineers to build a custom solution. Advantages: full control, no ongoing fees. Disadvantages: six-figure development cost, months of development time, ongoing maintenance burden, and no access to domain expertise from outside the organization. For most organizations, building in-house is only justified for core differentiating processes.
+
+**Hiring consultants.** The organization pays a consulting firm to do the work manually, each time. Advantages: human judgment on every case. Disadvantages: high cost per engagement, inconsistent quality across consultants, no scale leverage, and knowledge walks out the door when the engagement ends.
+
+**Using generic AI tools.** The organization uses ChatGPT, Claude, or similar tools to assist with the work. Advantages: low cost, immediate availability. Disadvantages: no process enforcement, no quality guarantees, no audit trail, no human-in-the-loop at critical junctures, and no accumulated improvement over time.
+
+The marketplace occupies the sweet spot: the process quality of a custom build, the domain expertise of a consultant, the cost efficiency of generic AI, and the scalability of a platform. For most repeatable business processes, this is the dominant option.
+
+## What Makes This Different From SaaS
+
+Traditional SaaS sells software features. A CRM sells contact management, pipeline tracking, and reporting. The value is the software itself.
+
+The workflow marketplace sells outcomes. A visa processing workflow sells processed visa applications. A tax filing workflow sells completed tax filings. The value is the work product, not the software.
+
+This distinction changes the pricing conversation. When you sell software, the buyer evaluates the cost against the cost of other software. When you sell outcomes, the buyer evaluates the cost against the cost of producing the outcome by other means -- hiring a consultant, building in-house, doing it manually. The comparison is fundamentally more favorable because the alternative is always more expensive and less scalable.
+
+It also changes the retention dynamic. SaaS retention depends on feature satisfaction and switching cost. Marketplace workflow retention depends on outcome quality. If the workflow consistently produces correct visa applications at one-third the cost of a consultant, the buyer has no reason to switch. The switching cost is not data lock-in or feature dependency -- it is the risk of giving up a known-good process for an unknown alternative.
+
+---
+
+[Previous: Workflows as Assets](./01-workflows-as-assets.mdx) | [Next: From Consulting to Product](./03-from-consulting-to-product.mdx)

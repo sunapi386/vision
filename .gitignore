@@ -1,3 +1,22 @@
+# Generated HTML (rebuild with: python build.py)
+book.html
+book-zh.html
+index.html
+listen.html
+stats.html
+
+# Audio files (too large for git)
+audio/
+audio-zh/
+*.wav
+*.mp3
+
+# Timestamps (regenerated from audio)
+timestamps/
+timestamps-zh/
+
+# Runtime
 __pycache__/
 *.pyc
-.DS_Store
+tracker.log
+analytics.jsonl

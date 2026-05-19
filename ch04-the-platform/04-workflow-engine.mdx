@@ -1,0 +1,83 @@
+# Workflow Engine
+
+## Beyond One-Shot Interactions
+
+An agent answers a question. A workflow completes a process.
+
+This distinction matters. Most AI tools today are optimized for single-turn interactions: you ask, it answers. But the work that organizations actually need to automate is multi-step, conditional, and involves humans at critical junctures. Processing an insurance claim is not one question. It is: extract data from the form, validate against policy rules, check for prior claims, calculate the payout, flag anomalies for human review, generate the approval letter, and send it. Each step depends on the previous one. Some steps require AI. Some require database lookups. Some require a human to make a judgment call.
+
+The AceTeam Workflow Engine is a visual DAG builder that lets you chain these steps into repeatable pipelines. DAG stands for Directed Acyclic Graph -- a graph of nodes connected by edges, where data flows in one direction and never cycles back on itself. You drag nodes onto a canvas, connect them with typed edges, configure parameters, and execute. The engine handles scheduling, error recovery, and data flow between nodes.
+
+## 30+ Node Types
+
+The engine ships with over thirty node types organized by category. Each node is a self-contained unit of computation with defined inputs, outputs, and parameters.
+
+**AI and LLM nodes.** AgentMessage sends a message to a configured agent and returns the response. RAG performs retrieval-augmented generation with citations. StructuredOutput forces the model to produce JSON conforming to a schema -- critical for downstream processing where you need reliable data, not prose.
+
+**Data processing.** Jinja renders templates with dynamic variables. ExpandJSON splits a JSON object into individual output ports. ForEach iterates over a sequence, applying nested operations to each element. SubWorkflow embeds one workflow inside another for reuse and modularity.
+
+**Search and retrieval.** TextChunker splits documents into segments. Embedding generates vector representations. VectorStoreSink writes vectors to pgvector. VectorSearch queries for similar content. These are the same components that power the Agent Workbench's RAG pipeline, exposed as individual nodes for custom pipelines.
+
+**Human review.** HumanReview pauses the workflow and presents data to a human for inspection. HumanReviewClassification does the same for ML classification tasks, showing the model's prediction, confidence score, and alternative options. The human can approve, reject, or modify the result. The workflow continues with the human's decision.
+
+**Control flow.** If and IfElse provide conditional branching. The full set of comparison nodes -- Equal, NotEqual, GreaterThan, LessThan -- and logical operators -- And, Or, Not -- let you build complex decision trees without code.
+
+**Media.** TextToSpeech converts text to spoken audio. SpeechToText transcribes audio to text. VideoClipGenerator produces video from code and voiceover. ConvertToPDF produces PDF documents from text or file inputs.
+
+**Communication.** Email sends messages with attachments. APICall makes HTTP requests to external services with configurable methods, headers, and payloads.
+
+**Database.** SQLSelect runs queries. SQLInsert writes data. Both support parameterized queries with dynamic inputs from upstream nodes.
+
+**Utilities.** Mock nodes for testing. Sleep nodes for timing. Zip for combining sequences. Graph and Gantt for generating visualizations from data.
+
+## Type-Safe Connections
+
+Every node declares its input and output types using Pydantic models. When you connect two nodes in the visual builder, the engine validates that the output type of the source node is compatible with the input type of the destination node. You cannot connect a text output to a number input. You cannot feed an image into a node that expects a sequence.
+
+This is not just a convenience for the visual builder. It is a correctness guarantee. When a workflow executes, every piece of data flowing between nodes is validated at runtime. If a node produces unexpected output -- a malformed JSON, a null value where a string was expected -- the error is caught at the edge, not buried three steps downstream where it causes a cryptic failure.
+
+The type system uses immutable Value types: IntegerValue, StringValue, FileValue, BooleanValue, SequenceValue, MappingValue, JSONValue. Values support async type casting -- a StringValue containing "42" can be cast to an IntegerValue when the downstream node requires a number. This flexibility prevents brittle failures without sacrificing type safety.
+
+## Human-in-the-Loop as a First-Class Primitive
+
+Most workflow tools treat human involvement as an exception. Something went wrong, so a human has to fix it. In our engine, human review is a designed step in the workflow, not an error handler.
+
+The HumanReview node pauses execution and presents the current state to a human reviewer. The reviewer sees the data that triggered the review, the context from upstream nodes, and the proposed action. They can approve the action as-is, modify it, or reject it entirely. The workflow continues with the human's decision.
+
+The HumanReviewClassification node is specifically designed for ML predictions. It shows the model's classification, the confidence score, and the alternative options. If the model says "this document is a tax receipt" with 94% confidence, the reviewer can confirm at a glance. If the confidence is 62%, the reviewer looks more carefully.
+
+This enables confidence-based routing. A workflow can be configured to auto-approve above 95% confidence, route to human review between 70% and 95%, and flag for senior review below 70%. The thresholds are configurable per workflow and per node. An organization processing low-risk documents might auto-approve at 80%. One processing medical records might require human review on everything.
+
+The review interface supports inline editing and diff views. When a reviewer modifies the model's output, the change is tracked. Over time, these modifications become training data -- you can see which predictions the model gets wrong and which corrections humans make consistently. This feedback loop is the mechanism by which workflows improve over time.
+
+## Version Control and Sharing
+
+Every workflow has a version history. When you modify a workflow and save it, the previous version is preserved. You can compare versions, see what changed, and roll back to any previous state.
+
+This matters operationally. When a production workflow starts producing unexpected results, you can trace it back to the specific change that caused the regression. When a team member modifies a workflow, the change is auditable. When a client asks "what changed since last month," you can show them the diff.
+
+Workflows are portable. They can be exported as JSON definitions, imported into other organizations, and shared through the marketplace. A workflow that processes TN visa applications can be exported as a template, with the sensitive configurations (API keys, database connections) stripped out and replaced with parameters that the new user fills in.
+
+SubWorkflow nodes enable modularity. A common pattern is to build small, focused workflows -- "extract text from PDF," "classify document type," "generate summary" -- and compose them into larger pipelines. Each sub-workflow is version-controlled independently. Updating the PDF extraction sub-workflow updates every parent workflow that uses it.
+
+## Execution Model
+
+When a workflow is triggered, the engine resolves the DAG and executes nodes in dependency order. Nodes with no unmet dependencies execute concurrently. Results stream back to the browser via Redis Pub/Sub and Server-Sent Events, so the user sees each node's status in real time -- queued, running, completed, or failed.
+
+The workflow execution itself flows through the same job queue infrastructure as everything else on the platform. A workflow execution job is enqueued to `jobs:v1:cpu-general`. A WorkflowExecutionWorker claims the job and drives the execution. Individual nodes within the workflow can dispatch sub-jobs to specialized queues -- an LLM inference node routes to the queue matching the requested model, a database node routes directly to the node hosting the database via a fabric call.
+
+This means workflow execution benefits from all the properties of the queue architecture: fault tolerance, horizontal scaling, backpressure, and streaming. A workflow with twenty nodes running on ten machines across three data centers looks and feels exactly like a workflow running on a single laptop. The engine abstracts the distribution.
+
+Error handling is explicit. Each node can define retry policies, fallback behaviors, and error transformations. When a node fails, the engine can retry it, skip it (if optional), route to an alternative branch, or halt the workflow and notify a human. The dead letter queue catches workflows that fail repeatedly, preserving the full execution state for debugging.
+
+## The Protocol Layer
+
+The workflow engine is adopting the Agentic Execution Protocol (AEP) -- a vendor-neutral wire protocol we designed for cost accountability, provenance, and data governance across multi-organization workflows.
+
+AEP adds three capabilities to every workflow execution. First, hierarchical cost tracking: when a workflow calls a sub-workflow owned by a different organization, the cost tree captures the full hierarchy -- compute cost, value-added fee, and platform commission at each level. Budget enforcement is pessimistic: before each LLM call, the system reserves worst-case cost and settles with actual usage after completion. Second, provenance: every output carries citations linking it to the inputs and intermediate results that produced it. Third, data governance: field-level classification tags (PUBLIC, INTERNAL, CONFIDENTIAL, PHI, PII) flow with the data, and consent is checked at organization boundaries.
+
+The existing JSON DAG format is preserved and extended with optional AEP fields. Workflows that do not use cross-organization features continue to work exactly as before. AEP is additive, not breaking.
+
+---
+
+[Previous: Agent Workbench](./03-agent-workbench.mdx) | [Next: What Makes It Different](./05-what-makes-it-different.mdx)

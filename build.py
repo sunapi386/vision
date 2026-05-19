@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the vision book into a single-page HTML file."""
+"""Build the AceTeam vision document into a single-page HTML book."""
 
 import re
 import markdown
@@ -16,6 +16,26 @@ CHAPTERS = [
     ("part5-transitions", "The Transitions"),
     ("part6-what-comes-next", "What Comes Next"),
 ]
+
+TEMPLATES_DIR = VISION_DIR / "templates"
+
+
+def load_shared_css():
+    return (TEMPLATES_DIR / "shared.css").read_text()
+
+
+def load_nav(active_page="book", extra=""):
+    nav = (TEMPLATES_DIR / "nav.html").read_text()
+    nav = nav.replace("{nav_active_essay}", "active" if active_page == "essay" else "")
+    nav = nav.replace("{nav_active_book}", "active" if active_page == "book" else "")
+    nav = nav.replace("{nav_active_zh}", "active" if active_page == "zh" else "")
+    nav = nav.replace("{nav_extra}", extra)
+    return nav
+
+
+def load_shared_js():
+    return (TEMPLATES_DIR / "shared.js").read_text()
+
 
 INTERSTITIALS = {
     1: """
@@ -260,10 +280,25 @@ def slugify(text: str) -> str:
     return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
 
 
-def build_content() -> tuple[str, list[dict]]:
+def tag_paragraphs(html: str, chapter_num: int, counter: list[int]) -> tuple[str, list[str]]:
+    """Add id='ab-CH-N' to each <p> tag and collect plain text."""
+    paras = []
+    def replacer(m):
+        content = m.group(1)
+        idx = counter[0]
+        counter[0] += 1
+        plain = re.sub(r'<[^>]+>', '', content).strip()
+        paras.append(plain)
+        return f'<p id="ab-{chapter_num}-{idx}">{content}</p>'
+    tagged = re.sub(r'<p>(.*?)</p>', replacer, html, flags=re.DOTALL)
+    return tagged, paras
+
+
+def build_content() -> tuple[str, list[dict], dict]:
     md = markdown.Markdown(extensions=['tables', 'fenced_code', 'footnotes', 'smarty'])
     sections_html = []
     toc_entries = []
+    chapter_paras: dict[int, list[str]] = {}
 
     for i, (chapter_slug, chapter_title) in enumerate(CHAPTERS, 1):
         chapter_dir = VISION_DIR / chapter_slug
@@ -272,6 +307,8 @@ def build_content() -> tuple[str, list[dict]]:
 
         chapter_id = slugify(chapter_title)
         toc_entries.append({"id": chapter_id, "title": f"Part {i}: {chapter_title}", "level": 0})
+        para_counter = [0]
+        ch_paras: list[str] = []
 
         if i in PULLQUOTES:
             quote, attr = PULLQUOTES[i]
@@ -288,6 +325,8 @@ def build_content() -> tuple[str, list[dict]]:
             if index_text:
                 index_html = md.convert(index_text)
                 md.reset()
+                index_html, p = tag_paragraphs(index_html, i, para_counter)
+                ch_paras.extend(p)
                 sections_html.append(f'<div class="chapter-intro">{index_html}</div>')
 
         sections_html.append('</section>')
@@ -307,6 +346,8 @@ def build_content() -> tuple[str, list[dict]]:
 
             section_html = md.convert(section_text)
             md.reset()
+            section_html, p = tag_paragraphs(section_html, i, para_counter)
+            ch_paras.extend(p)
 
             sections_html.append(f'<section class="subsection fade-in" id="{section_id}">')
             sections_html.append(f'<h2 class="section-title">{section_title}</h2>')
@@ -319,14 +360,20 @@ def build_content() -> tuple[str, list[dict]]:
         if i in INTERSTITIALS:
             sections_html.append(INTERSTITIALS[i])
 
-    return '\n'.join(sections_html), toc_entries
+        chapter_paras[i] = ch_paras
+
+    return '\n'.join(sections_html), toc_entries, chapter_paras
 
 
-def build_toc_html(entries: list[dict]) -> str:
+def build_toc_html(entries: list[dict], back_matter_entries: list[dict] = None) -> str:
     items = ['<a href="#abstract" class="toc-chapter">Abstract</a>']
+    items.append('<a href="#preface" class="toc-chapter">Preface</a>')
     for entry in entries:
         cls = "toc-chapter" if entry["level"] == 0 else "toc-section"
         items.append(f'<a href="#{entry["id"]}" class="{cls}">{entry["title"]}</a>')
+    if back_matter_entries:
+        for entry in back_matter_entries:
+            items.append(f'<a href="#{entry["id"]}" class="toc-chapter">{entry["title"]}</a>')
     return '\n'.join(items)
 
 
@@ -335,121 +382,97 @@ TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agent Accountability: The Missing Infrastructure for the AI Economy</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>Trust at Scale — Jason Sun</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+{shared_css}
 
-  :root, [data-theme="dark"] {
-    --bg: #05070c;
-    --bg-surface: #0d1117;
-    --bg-elevated: #161b22;
-    --text: #e6edf3;
-    --text-dim: #8b949e;
-    --text-dimmer: #484f58;
-    --accent: #6aaefc;
-    --accent-dim: rgba(106,174,252,0.12);
-    --green: #3fb950;
-    --green-dim: rgba(63,185,80,0.12);
-    --orange: #d29922;
-    --orange-dim: rgba(210,153,34,0.12);
-    --red: #f85149;
-    --purple: #bc8cff;
-    --cyan: #39d2c0;
-    --border: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.15);
-    --shadow: 0 2px 12px rgba(0,0,0,0.4);
-    --max-width: 720px;
-    --toc-width: 220px;
-  }
-  [data-theme="light"] {
-    --bg: #ffffff;
-    --bg-surface: #f6f8fa;
-    --bg-elevated: #eef1f5;
-    --text: #1f2328;
-    --text-dim: #59636e;
-    --text-dimmer: #8b949e;
-    --accent: #0969da;
-    --accent-dim: rgba(9,105,218,0.08);
-    --green: #1a7f37;
-    --green-dim: rgba(26,127,55,0.08);
-    --orange: #9a6700;
-    --orange-dim: rgba(154,103,0,0.08);
-    --red: #cf222e;
-    --purple: #8250df;
-    --cyan: #0891b2;
-    --border: rgba(0,0,0,0.08);
-    --border-strong: rgba(0,0,0,0.15);
-    --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
+  /* --- Book-specific overrides --- */
+  :root { --toc-width: 220px; }
 
-  html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
-
-  body {
-    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: clamp(15px, 1.45vw, 18px);
-    font-weight: 400;
-    line-height: 1.80;
-    color: var(--text);
-    background: var(--bg);
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.3s, color 0.3s;
+  .audio-player {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+    background: var(--bg-elevated); border-top: 1px solid var(--border-strong);
+    padding: 10px 20px; display: none; align-items: center; gap: 12px;
+    font-family: 'Inter Tight', sans-serif; backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
-
-  /* --- Theme toggle --- */
-  .theme-toggle {
-    position: fixed; top: 20px; right: 20px; z-index: 300;
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 1px solid var(--border-strong); background: var(--bg-surface);
-    color: var(--text-dim); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; transition: all 0.2s; box-shadow: var(--shadow);
+  .audio-player.visible { display: flex; }
+  .audio-player-toggle {
+    position: fixed; bottom: 20px; right: 20px; z-index: 299;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent); color: var(--bg); border: none; cursor: pointer;
+    font-size: 20px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4); transition: transform 0.2s;
   }
-  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
-
-  /* --- Progress bar --- */
-  .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 200; width: 0; }
-
-  /* --- Hero --- */
-  .hero {
-    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
-    align-items: center; text-align: center; padding: 40px 24px; position: relative; overflow: hidden;
+  .audio-player-toggle:hover { transform: scale(1.1); }
+  .audio-player-toggle.hidden { display: none; }
+  .ap-btn {
+    background: none; border: none; color: var(--text); cursor: pointer;
+    font-size: 18px; padding: 4px 8px; border-radius: 4px; flex-shrink: 0;
   }
-  .hero::before {
-    content: ''; position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 800px; height: 800px;
-    background: radial-gradient(circle, var(--accent-dim) 0%, transparent 60%);
-    pointer-events: none; animation: heroPulse 6s ease-in-out infinite;
+  .ap-btn:hover { background: var(--accent-dim); color: var(--accent); }
+  .ap-play { font-size: 24px; }
+  .ap-chapter-info {
+    display: flex; flex-direction: column; min-width: 140px; flex-shrink: 0;
   }
-  @keyframes heroPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-    50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  .ap-chapter-title { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .ap-chapter-num { font-size: 11px; color: var(--text-dim); }
+  .ap-progress-wrap {
+    flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0;
   }
-  .hero-eyebrow {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 13px; font-weight: 500; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 20px; position: relative;
+  .ap-time { font-size: 11px; color: var(--text-dim); font-variant-numeric: tabular-nums; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .ap-progress-bar {
+    flex: 1; height: 4px; background: var(--border-strong); border-radius: 2px;
+    cursor: pointer; position: relative; min-width: 60px; touch-action: none;
   }
-  .hero-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(36px, 6vw, 72px); font-weight: 700;
-    letter-spacing: -0.04em; line-height: 1.0; margin-bottom: 20px; position: relative;
+  .ap-progress-bar:hover, .ap-progress-bar.dragging { height: 6px; }
+  .ap-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0; transition: width 0.1s linear; pointer-events: none; }
+  .ap-progress-bar::before { content: ''; position: absolute; top: -12px; bottom: -12px; left: 0; right: 0; }
+  .ap-progress-thumb { position: absolute; right: -6px; top: 50%; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; transform: translateY(-50%); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .ap-progress-bar:hover .ap-progress-thumb, .ap-progress-bar.dragging .ap-progress-thumb { opacity: 1; }
+  .ap-speed {
+    font-size: 11px; color: var(--text-dim); cursor: pointer; background: var(--bg-surface);
+    border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px;
+    font-family: 'JetBrains Mono', monospace; flex-shrink: 0;
   }
-  .hero-subtitle {
-    font-size: clamp(16px, 2vw, 22px); font-weight: 300;
-    color: var(--text-dim); max-width: 560px; line-height: 1.5; margin-bottom: 20px;
+  .ap-speed:hover { color: var(--accent); border-color: var(--accent); }
+  .ap-chapter-list {
+    position: absolute; bottom: 100%; left: 0; right: 0;
+    background: var(--bg-elevated); border-top: 1px solid var(--border-strong);
+    max-height: 300px; overflow-y: auto; display: none;
   }
-  .hero-author { font-size: 14px; color: var(--text-dimmer); position: relative; }
-  .scroll-cue {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    color: var(--text-dimmer); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
-    animation: bounce 2.1s ease-in-out infinite;
+  .ap-chapter-list.open { display: block; }
+  .ap-chapter-item {
+    padding: 10px 20px; cursor: pointer; font-size: 13px; color: var(--text-dim);
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .scroll-cue::after { content: '  \\2193'; }
-  @keyframes bounce { 0%,100%{ transform:translateX(-50%) translateY(0); } 50%{ transform:translateX(-50%) translateY(8px); } }
+  .ap-chapter-item:hover { background: var(--accent-dim); color: var(--text); }
+  .ap-chapter-item.active { color: var(--accent); font-weight: 600; }
+  .ap-chapter-dur { font-size: 11px; color: var(--text-dimmer); font-family: 'JetBrains Mono', monospace; }
+  @media (max-width: 768px) {
+    .audio-player { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+    .ap-btn { font-size: 22px; padding: 8px 12px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .ap-play { font-size: 28px; }
+    .ap-speed { font-size: 13px; padding: 6px 10px; min-height: 44px; }
+    .ap-chapter-info { min-width: 80px; flex: 1; }
+    .ap-chapter-title { max-width: none; }
+    .ap-progress-wrap { order: 10; width: 100%; }
+    .ap-chapter-list { max-height: 60vh; }
+    .ap-chapter-item { padding: 14px 20px; font-size: 15px; min-height: 48px; }
+  }
+  p[id^="ab-"] { transition: background 0.3s, border-color 0.3s; border-left: 3px solid transparent; padding-left: 8px; margin-left: -11px; border-radius: 2px; cursor: pointer; }
+  p[id^="ab-"]:hover { background: var(--accent-dim); }
+  p[id^="ab-"].ab-active { background: var(--accent-dim); border-left-color: var(--accent); }
+  .ap-follow { font-size: 11px; color: var(--text-dim); cursor: pointer; background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; flex-shrink: 0; }
+  .ap-follow:hover { color: var(--accent); border-color: var(--accent); }
+  .ap-follow.on { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+  @media print { .audio-player, .audio-player-toggle { display: none !important; } }
 
   /* --- Abstract --- */
   .abstract {
@@ -525,30 +548,12 @@ TEMPLATE = """<!DOCTYPE html>
     letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 20px;
   }
 
-  /* --- Typography --- */
+  /* --- Book typography overrides --- */
   h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(17px, 2vw, 24px); font-weight: 700; line-height: 1.2;
-    margin: 36px 0 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: clamp(17px, 2vw, 24px); font-weight: 700;
+    margin: 36px 0 14px; padding-top: 14px;
   }
-  h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(14px, 1.55vw, 18px); font-weight: 600;
-    color: var(--accent); line-height: 1.3; margin: 28px 0 10px;
-  }
-  p { margin: 14px 0; }
-  strong { font-weight: 600; color: var(--text); }
-  [data-theme="dark"] strong { color: #fff; }
-  em { font-style: italic; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  blockquote {
-    border-left: 2px solid var(--accent); padding: 4px 0 4px 20px;
-    margin: 20px 0; color: var(--text-dim); font-style: italic;
-  }
-  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
-  ul, ol { margin: 14px 0 14px 24px; }
-  li { margin: 5px 0; }
+  hr { margin: 40px 0; }
 
   /* --- Tables --- */
   table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
@@ -559,16 +564,13 @@ TEMPLATE = """<!DOCTYPE html>
   }
   td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
 
-  /* --- Code --- */
-  code {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.88em;
-    background: var(--bg-surface); padding: 2px 6px; border-radius: 4px; color: var(--accent);
+  /* --- Inline callout (blockquote in chapter body) --- */
+  .chapter-section blockquote {
+    border-left: 3px solid var(--accent); margin: 24px 0; padding: 16px 20px;
+    background: var(--bg-surface); border-radius: 0 8px 8px 0;
+    font-size: 14px; line-height: 1.65; color: var(--text-dim);
   }
-  pre {
-    background: var(--bg-surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 16px 20px; margin: 20px 0; overflow-x: auto; line-height: 1.5;
-  }
-  pre code { background: none; padding: 0; color: var(--text); }
+  .chapter-section blockquote strong { color: var(--text); }
 
   /* --- Pullquote --- */
   .pullquote {
@@ -871,6 +873,50 @@ TEMPLATE = """<!DOCTYPE html>
     .reg-grid { flex-direction: column; align-items: center; }
   }
 
+  /* --- Dedication --- */
+  .dedication {
+    max-width: var(--max-width); margin: 0 auto; padding: 120px 24px 80px;
+    text-align: center; font-style: italic; color: var(--text-dim);
+    font-size: clamp(16px, 1.6vw, 20px); line-height: 1.8;
+  }
+
+  /* --- Preface --- */
+  .preface {
+    max-width: var(--max-width); margin: 0 auto; padding: 80px 24px 60px;
+    border-bottom: 1px solid var(--border);
+  }
+  .preface-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+  .preface p { color: var(--text-dim); font-size: clamp(15px, 1.5vw, 18px); line-height: 1.8; }
+  .preface em { color: var(--text-dimmer); }
+
+  /* --- Back Matter --- */
+  .back-matter {
+    margin-top: 120px; padding-top: 60px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .back-matter-section { padding: 40px 0; }
+  .back-matter-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 3vw, 32px); font-weight: 700;
+    letter-spacing: -0.02em; border-top: none; padding-top: 0;
+    margin: 0 0 24px;
+  }
+  .back-matter-section + .back-matter-section { border-top: 1px solid var(--border); padding-top: 60px; }
+  .glossary-section p { margin: 16px 0; }
+  .glossary-section p strong { color: var(--accent); font-weight: 600; }
+  .about-author p { font-size: clamp(15px, 1.5vw, 18px); color: var(--text-dim); }
+
+  /* --- Colophon --- */
+  .colophon {
+    max-width: var(--max-width); margin: 0 auto; padding: 80px 24px 120px;
+    text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+  }
+  .colophon p { margin: 4px 0; }
+
   /* --- Print --- */
   @media print {
     :root, [data-theme="dark"], [data-theme="light"] {
@@ -882,12 +928,16 @@ TEMPLATE = """<!DOCTYPE html>
     body { font-size: 11pt; line-height: 1.6; }
     .hero { min-height: auto; padding: 60px 0; page-break-after: always; }
     .hero::before { display: none; }
-    .toc, .progress-bar, .scroll-cue, .theme-toggle { display: none; }
+    .toc, .progress-bar, .scroll-cue, .site-nav { display: none; }
     .article { max-width: 100%; padding: 0; }
     .chapter-break { page-break-before: always; padding: 40px 0 20px; margin-top: 0; }
     .visual-break, .pullquote { page-break-inside: avoid; }
     .force-grid, .cap-grid, .protocol-compose, .traction-grid, .cta-section { page-break-inside: avoid; }
     .fade-in { opacity: 1; transform: none; }
+    .dedication { page-break-after: always; }
+    .preface { page-break-after: always; }
+    .back-matter { page-break-before: always; }
+    .colophon { page-break-before: always; }
     a { color: var(--accent); }
     a[href]::after { content: none; }
   }
@@ -895,14 +945,39 @@ TEMPLATE = """<!DOCTYPE html>
 </head>
 <body>
 
+{nav}
 <div class="progress-bar" id="progress"></div>
-<button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">&#9788;</button>
+
+<div class="audio-player" id="audioPlayer">
+  <div class="ap-chapter-list" id="apChapterList"></div>
+  <button class="ap-btn" id="apChapBtn" title="Chapters">&#9776;</button>
+  <button class="ap-btn" id="apPrev" title="Previous">&#9198;</button>
+  <button class="ap-btn ap-play" id="apPlay" title="Play">&#9654;</button>
+  <button class="ap-btn" id="apNext" title="Next">&#9197;</button>
+  <div class="ap-chapter-info" id="apInfo">
+    <div class="ap-chapter-title" id="apTitle">The World Has Changed</div>
+    <div class="ap-chapter-num" id="apNum">Part 1 of 6</div>
+  </div>
+  <div class="ap-progress-wrap">
+    <span class="ap-time" id="apTimeCur">0:00</span>
+    <div class="ap-progress-bar" id="apProgressBar"><div class="ap-progress-fill" id="apProgressFill"><div class="ap-progress-thumb"></div></div></div>
+    <span class="ap-time" id="apTimeRem">-0:00</span>
+  </div>
+  <button class="ap-speed" id="apSpeed">1.0x</button>
+  <button class="ap-follow on" id="apFollow" title="Auto-scroll to current paragraph">following</button>
+  <button class="ap-btn" id="apClose" title="Close">&times;</button>
+</div>
+<audio id="apAudio" preload="auto"></audio>
 
 <div class="hero">
   <div class="hero-eyebrow">Jason Sun</div>
-  <h1 class="hero-title">Agent Accountability</h1>
-  <p class="hero-subtitle">The missing infrastructure for the AI economy.</p>
-  <p class="hero-author">Jason Sun &middot; May 2026</p>
+  <h1 class="hero-title">Trust at Scale</h1>
+  <p class="hero-subtitle">The accountability infrastructure for the agent economy.</p>
+  <p class="hero-author">May 2026</p>
+  <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
+    <a href="#" id="listenCTA" onclick="document.getElementById('audioToggle').click(); return false;" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">Listen to the audiobook</a>
+  </div>
+  <p style="margin-top: 12px; font-size: 13px; color: var(--text-dim); font-family: 'Inter Tight', sans-serif;">~7 hours &middot; click any paragraph to jump in</p>
   <div class="scroll-cue">scroll</div>
 </div>
 
@@ -917,33 +992,42 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
 </div>
 
+{dedication}
+
+<div class="preface" id="preface">
+  <div class="preface-label">Preface</div>
+{preface}
+</div>
+
 <nav class="toc" id="toc">
 {toc}
 </nav>
 
 <article class="article" id="article">
 {content}
+<div class="back-matter">
+{backmatter}
+</div>
 </article>
+
+<div class="colophon">
+  <p>&copy; 2026 Jason Sun. All rights reserved.</p>
+  <p>First edition, May 2026</p>
+  <p>Set in Inter Tight and Space Grotesk. Audiobook narrated with Kokoro TTS.</p>
+</div>
 
 <script>
 (function() {
-  var toggle = document.getElementById('themeToggle');
-  var html = document.documentElement;
-  var saved = localStorage.getItem('theme');
-  if (saved) { html.setAttribute('data-theme', saved); }
-  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
-  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
-  updateIcon();
-  toggle.addEventListener('click', function() {
-    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    updateIcon();
-  });
+  // analytics
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'book' }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview');
 
-  var progress = document.getElementById('progress');
+{shared_js}
+
   var toc = document.getElementById('toc');
-  var heroH = window.innerHeight;
 
   var tocLinks = toc.querySelectorAll('a');
   var sectionEls = [];
@@ -998,10 +1082,9 @@ TEMPLATE = """<!DOCTYPE html>
   }, { threshold: 0.3 });
   barFills.forEach(function(el) { barObs.observe(el); });
 
+  var heroH = window.innerHeight;
   function onScroll() {
     var sy = window.scrollY;
-    var docH = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.width = (sy / docH * 100) + '%';
     toc.classList.toggle('visible', sy > heroH * 0.7);
     var active = null;
     var threshold = window.innerHeight * 0.15;
@@ -1022,6 +1105,276 @@ TEMPLATE = """<!DOCTYPE html>
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  // --- Inline audio player ---
+  var apChapters = [
+    { part: 1, title: 'The World Has Changed', file: 'audio/part01-world-changed.mp3', duration: 3275.6, sectionId: 'the-world-has-changed' },
+    { part: 2, title: 'The Void', file: 'audio/part02-the-void.mp3', duration: 4121.9, sectionId: 'the-void' },
+    { part: 3, title: 'The Pattern', file: 'audio/part03-the-pattern.mp3', duration: 2721.2, sectionId: 'the-pattern' },
+    { part: 4, title: 'What the Stack Requires', file: 'audio/part04-the-stack.mp3', duration: 5045.4, sectionId: 'what-the-stack-requires' },
+    { part: 5, title: 'The Transitions', file: 'audio/part05-transitions.mp3', duration: 6468.9, sectionId: 'the-transitions' },
+    { part: 6, title: 'What Comes Next', file: 'audio/part06-what-comes-next.mp3', duration: 4217.2, sectionId: 'what-comes-next' }
+  ];
+  var apSpeeds = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+  var apSpeedIdx = 1;
+  var apCurrent = 0;
+  var apAudio = document.getElementById('apAudio');
+  var apPlayer = document.getElementById('audioPlayer');
+  var apToggle = document.getElementById('audioToggle');
+  var apPlay = document.getElementById('apPlay');
+  var apPrev = document.getElementById('apPrev');
+  var apNext = document.getElementById('apNext');
+  var apTitle = document.getElementById('apTitle');
+  var apNum = document.getElementById('apNum');
+  var apTimeCur = document.getElementById('apTimeCur');
+  var apTimeRem = document.getElementById('apTimeRem');
+  var apProgressBar = document.getElementById('apProgressBar');
+  var apProgressFill = document.getElementById('apProgressFill');
+  var apSpeed = document.getElementById('apSpeed');
+  var apClose = document.getElementById('apClose');
+  var apChapBtn = document.getElementById('apChapBtn');
+  var apChapterList = document.getElementById('apChapterList');
+
+  function apFmt(s) {
+    if (isNaN(s) || s < 0) s = 0;
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = Math.floor(s % 60);
+    if (h > 0) return h + ':' + (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function apRevealUpTo(el) {
+    var all = document.querySelectorAll('.fade-in');
+    var elRect = el.getBoundingClientRect();
+    var elTop = elRect.top + window.scrollY;
+    for (var i = 0; i < all.length; i++) {
+      var r = all[i].getBoundingClientRect();
+      if (r.top + window.scrollY <= elTop + window.innerHeight) all[i].classList.add('visible');
+      else break;
+    }
+  }
+
+  var apScrollOnLoad = false;
+  function apLoadChapter(idx) {
+    if (idx < 0 || idx >= apChapters.length) return;
+    apCurrent = idx;
+    var ch = apChapters[idx];
+    apAudio.src = ch.file;
+    apTitle.textContent = ch.title;
+    apNum.textContent = 'Part ' + ch.part + ' of ' + apChapters.length;
+    apProgressFill.style.width = '0%';
+    apTimeCur.textContent = '0:00';
+    apTimeRem.textContent = '-' + apFmt(ch.duration);
+    apBuildChapterList();
+    apSaveState();
+    if (apScrollOnLoad && ch.sectionId) {
+      var el = document.getElementById(ch.sectionId);
+      if (el) { apRevealUpTo(el); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+    apScrollOnLoad = true;
+  }
+
+  function apBuildChapterList() {
+    apChapterList.innerHTML = '';
+    apChapters.forEach(function(ch, i) {
+      var el = document.createElement('div');
+      el.className = 'ap-chapter-item' + (i === apCurrent ? ' active' : '');
+      el.innerHTML = '<span>Part ' + ch.part + ': ' + ch.title + '</span><span class="ap-chapter-dur">' + apFmt(ch.duration) + '</span>';
+      el.addEventListener('click', function() { apLoadChapter(i); apAudio.play(); apChapterList.classList.remove('open'); });
+      apChapterList.appendChild(el);
+    });
+  }
+
+  function apSaveState() {
+    try { localStorage.setItem('ab-state', JSON.stringify({ ch: apCurrent, time: apAudio.currentTime || 0, speed: apSpeedIdx })); } catch(e) {}
+  }
+
+  function apRestoreState() {
+    try {
+      var s = JSON.parse(localStorage.getItem('ab-state'));
+      if (s) {
+        apCurrent = s.ch || 0;
+        apSpeedIdx = s.speed || 1;
+        apLoadChapter(apCurrent);
+        apAudio.addEventListener('loadedmetadata', function onLoad() {
+          apAudio.currentTime = s.time || 0;
+          apAudio.removeEventListener('loadedmetadata', onLoad);
+        });
+        apAudio.playbackRate = apSpeeds[apSpeedIdx];
+        apSpeed.textContent = apSpeeds[apSpeedIdx] + 'x';
+      } else {
+        apLoadChapter(0);
+      }
+    } catch(e) { apLoadChapter(0); }
+  }
+
+  apToggle.addEventListener('click', function() {
+    var show = !apPlayer.classList.contains('visible');
+    apPlayer.classList.toggle('visible', show);
+    apToggle.classList.toggle('active', show);
+  });
+  apClose.addEventListener('click', function() {
+    apAudio.pause();
+    apPlayer.classList.remove('visible');
+    apToggle.classList.remove('active');
+  });
+  apPlay.addEventListener('click', function() { if (apAudio.paused) apAudio.play(); else apAudio.pause(); });
+  apAudio.addEventListener('play', function() {
+    apPlay.innerHTML = '&#10074;&#10074;';
+    track('play', { chapter: apCurrent + 1, title: apChapters[apCurrent].title, time: Math.round(apAudio.currentTime) });
+  });
+  apAudio.addEventListener('pause', function() { apPlay.innerHTML = '&#9654;'; apSaveState(); });
+  apAudio.addEventListener('timeupdate', function() {
+    var dur = apAudio.duration || apChapters[apCurrent].duration;
+    apProgressFill.style.width = (apAudio.currentTime / dur * 100) + '%';
+    apTimeCur.textContent = apFmt(apAudio.currentTime);
+    apTimeRem.textContent = '-' + apFmt(dur - apAudio.currentTime);
+  });
+  apAudio.addEventListener('ended', function() {
+    track('complete', { chapter: apCurrent + 1, title: apChapters[apCurrent].title });
+    if (apCurrent < apChapters.length - 1) { apLoadChapter(apCurrent + 1); apAudio.play(); }
+    else { apPlay.innerHTML = '&#9654;'; }
+  });
+  apPrev.addEventListener('click', function() {
+    if (apAudio.currentTime > 5) apAudio.currentTime = 0;
+    else if (apCurrent > 0) { apLoadChapter(apCurrent - 1); apAudio.play(); }
+  });
+  apNext.addEventListener('click', function() {
+    if (apCurrent < apChapters.length - 1) { apLoadChapter(apCurrent + 1); apAudio.play(); }
+  });
+  apSpeed.addEventListener('click', function() {
+    apSpeedIdx = (apSpeedIdx + 1) % apSpeeds.length;
+    apAudio.playbackRate = apSpeeds[apSpeedIdx];
+    apSpeed.textContent = apSpeeds[apSpeedIdx] + 'x';
+    apSaveState();
+  });
+  function apSeekSync() {
+    apSyncParagraph();
+    if (apActivePara) {
+      var el = document.getElementById(apActivePara);
+      if (el) { apRevealUpTo(el); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }
+  }
+  (function() {
+    var dragging = false;
+    function seekTo(x) {
+      var rect = apProgressBar.getBoundingClientRect();
+      var pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+      var dur = apAudio.duration || apChapters[apCurrent].duration;
+      apAudio.currentTime = pct * dur;
+      apProgressFill.style.width = (pct * 100) + '%';
+    }
+    apProgressBar.addEventListener('mousedown', function(e) { dragging = true; apProgressBar.classList.add('dragging'); seekTo(e.clientX); });
+    document.addEventListener('mousemove', function(e) { if (dragging) seekTo(e.clientX); });
+    document.addEventListener('mouseup', function() { if (dragging) { dragging = false; apProgressBar.classList.remove('dragging'); apSeekSync(); } });
+    apProgressBar.addEventListener('touchstart', function(e) { dragging = true; apProgressBar.classList.add('dragging'); seekTo(e.touches[0].clientX); }, { passive: true });
+    document.addEventListener('touchmove', function(e) { if (dragging) seekTo(e.touches[0].clientX); }, { passive: true });
+    document.addEventListener('touchend', function() { if (dragging) { dragging = false; apProgressBar.classList.remove('dragging'); apSeekSync(); } });
+  })();
+  apChapBtn.addEventListener('click', function() { apChapterList.classList.toggle('open'); });
+  document.addEventListener('click', function(e) {
+    if (!apChapterList.contains(e.target) && e.target !== apChapBtn) apChapterList.classList.remove('open');
+  });
+  setInterval(apSaveState, 10000);
+
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', function() { apAudio.play(); });
+    navigator.mediaSession.setActionHandler('pause', function() { apAudio.pause(); });
+    navigator.mediaSession.setActionHandler('previoustrack', function() { apPrev.click(); });
+    navigator.mediaSession.setActionHandler('nexttrack', function() { apNext.click(); });
+    apAudio.addEventListener('play', function() {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: apChapters[apCurrent].title, artist: 'Jason Sun', album: 'Trust at Scale' });
+    });
+  }
+
+  // --- Paragraph sync / highlighting ---
+  var apAlignments = {alignments};
+  var apFollow = true;
+  var apFollowBtn = document.getElementById('apFollow');
+  var apLastUserScroll = 0;
+  var apActivePara = null;
+
+  window.addEventListener('scroll', function() { apLastUserScroll = Date.now(); }, { passive: true });
+  apFollowBtn.addEventListener('click', function() {
+    apFollow = !apFollow;
+    apFollowBtn.classList.toggle('on', apFollow);
+    apFollowBtn.textContent = apFollow ? 'following' : 'follow';
+    if (apFollow && apActivePara) {
+      var el = document.getElementById(apActivePara);
+      if (el) { apRevealUpTo(el); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      apLastUserScroll = 0;
+    }
+  });
+
+  function apSyncParagraph() {
+    var timings = apAlignments[apCurrent + 1];
+    if (!timings) return;
+    var t = apAudio.currentTime;
+    var found = null;
+    for (var k = 0; k < timings.length; k++) {
+      if (timings[k] && t >= timings[k][0] && t < timings[k][1]) { found = k; break; }
+    }
+    if (found === null) {
+      for (var k = timings.length - 1; k >= 0; k--) {
+        if (timings[k] && t >= timings[k][0]) { found = k; break; }
+      }
+    }
+    var paraId = found !== null ? 'ab-' + (apCurrent + 1) + '-' + found : null;
+    if (paraId === apActivePara) return;
+    if (apActivePara) { var old = document.getElementById(apActivePara); if (old) old.classList.remove('ab-active'); }
+    apActivePara = paraId;
+    if (!paraId) return;
+    var el = document.getElementById(paraId);
+    if (!el) return;
+    el.classList.add('ab-active');
+    if (apFollow && !apAudio.paused && (Date.now() - apLastUserScroll > 8000)) {
+      var rect = el.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        apRevealUpTo(el);
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }
+  apAudio.addEventListener('timeupdate', apSyncParagraph);
+  apAudio.addEventListener('pause', function() {
+    if (apActivePara) { var el = document.getElementById(apActivePara); if (el) el.classList.remove('ab-active'); apActivePara = null; }
+  });
+
+  document.addEventListener('click', function(e) {
+    var p = e.target.closest('p[id^="ab-"]');
+    if (!p) return;
+    if (window.getSelection().toString().length > 0) return;
+    var parts = p.id.split('-');
+    var ch = parseInt(parts[1]);
+    var idx = parseInt(parts[2]);
+    var timings = apAlignments[ch];
+    if (!timings || !timings[idx]) return;
+    var startTime = timings[idx][0];
+    apPlayer.classList.add('visible');
+    apToggle.classList.add('active');
+    if (apCurrent + 1 !== ch) {
+      apLoadChapter(ch - 1);
+      apAudio.addEventListener('loadedmetadata', function onLoad() {
+        apAudio.currentTime = startTime;
+        apAudio.play();
+        apAudio.removeEventListener('loadedmetadata', onLoad);
+      });
+    } else {
+      apAudio.currentTime = startTime;
+      apAudio.play();
+    }
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function() {});
+    navigator.serviceWorker.addEventListener('controllerchange', function() { location.reload(); });
+    navigator.serviceWorker.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'updated' && apAudio.paused) location.reload();
+    });
+  }
+
+  apRestoreState();
 })();
 </script>
 
@@ -1029,16 +1382,416 @@ TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 
+def align_paragraphs_to_timestamps(chapter_paras: dict[int, list[str]]) -> dict:
+    """Align source paragraphs to Whisper segment timestamps using cumulative word counts."""
+    import json as _json
+    ts_dir = VISION_DIR / "timestamps"
+    chapter_slugs = {
+        1: "part01-world-changed", 2: "part02-the-void", 3: "part03-the-pattern",
+        4: "part04-the-stack", 5: "part05-transitions", 6: "part06-what-comes-next",
+    }
+    result = {}
+    for ch_num, paras in chapter_paras.items():
+        ts_file = ts_dir / f"{chapter_slugs[ch_num]}.json"
+        if not ts_file.exists():
+            continue
+        segments = _json.loads(ts_file.read_text())
+        # skip title segments
+        segs = [s for s in segments if not re.match(r'^Part \d', s['text'].strip())]
+        if not segs or not paras:
+            continue
+
+        # cumulative word counts for paragraphs
+        para_words = [len(re.findall(r'\w+', p)) for p in paras]
+        para_cum = []
+        total = 0
+        for wc in para_words:
+            para_cum.append((total, total + wc))
+            total += wc
+        total_para_words = total
+
+        # cumulative word counts for segments
+        seg_cum = []
+        total = 0
+        for s in segs:
+            wc = len(s['text'].split())
+            seg_cum.append((total, total + wc, s['start'], s['end']))
+            total += wc
+        total_seg_words = total
+
+        if total_para_words == 0 or total_seg_words == 0:
+            continue
+
+        scale = total_seg_words / total_para_words
+        timings = []
+        for p_start, p_end in para_cum:
+            scaled_start = p_start * scale
+            scaled_end = p_end * scale
+            first_t = None
+            last_t = None
+            for sw_start, sw_end, t_start, t_end in seg_cum:
+                if sw_end > scaled_start and sw_start < scaled_end:
+                    if first_t is None:
+                        first_t = t_start
+                    last_t = t_end
+            if first_t is not None:
+                timings.append([round(first_t, 1), round(last_t, 1)])
+            else:
+                timings.append(None)
+        result[ch_num] = timings
+        print(f"  ch{ch_num}: {len(paras)} paragraphs aligned to {len(segs)} segments")
+    return result
+
+
+FRONT_MATTER_DIR = VISION_DIR / "front-matter"
+BACK_MATTER_DIR = VISION_DIR / "back-matter"
+
+BACK_MATTER_FILES = [
+    ("acknowledgments.mdx", "Acknowledgments"),
+    ("glossary.mdx", "Glossary"),
+    ("whats-next.mdx", "What's Next"),
+    ("about-author.mdx", "About the Author"),
+]
+
+
+def build_preface() -> str:
+    md = markdown.Markdown(extensions=['smarty'])
+    preface_file = FRONT_MATTER_DIR / "preface.mdx"
+    if not preface_file.exists():
+        return ""
+    text = read_mdx(preface_file)
+    text = re.sub(r'^#\s+.*$', '', text, count=1, flags=re.MULTILINE).strip()
+    html = md.convert(text)
+    return html
+
+
+def build_back_matter() -> tuple[str, list[dict]]:
+    md = markdown.Markdown(extensions=['tables', 'smarty'])
+    sections = []
+    toc_entries = []
+    for filename, title in BACK_MATTER_FILES:
+        filepath = BACK_MATTER_DIR / filename
+        if not filepath.exists():
+            continue
+        text = read_mdx(filepath)
+        text = re.sub(r'^#\s+.*$', '', text, count=1, flags=re.MULTILINE).strip()
+        section_id = slugify(title)
+        html = md.convert(text)
+        md.reset()
+        css_class = "glossary-section" if "glossary" in filename else ""
+        css_class = "about-author" if "about-author" in filename else css_class
+        sections.append(f'<div class="back-matter-section {css_class}" id="{section_id}">')
+        sections.append(f'<h2>{title}</h2>')
+        sections.append(html)
+        sections.append('</div>')
+        toc_entries.append({"id": section_id, "title": title})
+    return '\n'.join(sections), toc_entries
+
+
+INDEX_CONTENT_FILE = VISION_DIR / "index-content.html"
+INDEX_OUT_FILE = VISION_DIR / "index.html"
+
+INDEX_TEMPLATE = """<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jason Sun — Trust at Scale</title>
+<meta name="description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. A thesis on agent accountability by Jason Sun.">
+<meta property="og:title" content="Trust at Scale — Jason Sun">
+<meta property="og:description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. Read the book or the essay.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jasonsun.org">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+{shared_css}
+
+  /* --- Index-specific --- */
+  .mini-toc {{ max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }}
+  .mini-toc-inner {{
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 20px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 10px; justify-content: center;
+  }}
+  .mini-toc a {{
+    font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500;
+    color: var(--text-dimmer); text-decoration: none;
+    padding: 4px 12px; border-radius: 6px; border: 1px solid transparent;
+    transition: all 0.2s; white-space: nowrap;
+  }}
+  .mini-toc a:hover {{ color: var(--text-dim); background: var(--bg-elevated); border-color: var(--border); }}
+  .mini-toc a.active {{ color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }}
+
+  .article {{ max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px; }}
+
+  .layer-diagram {{
+    max-width: 560px; margin: 32px auto; padding: 24px;
+    background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  }}
+  .layer-item {{
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 16px; margin: 4px 0; border-radius: 8px; font-size: 14px; transition: background 0.2s;
+  }}
+  .layer-item:hover {{ background: var(--bg-elevated); }}
+  .layer-num {{ font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent); min-width: 20px; }}
+  .layer-name {{ font-family: 'Space Grotesk', sans-serif; font-weight: 600; min-width: 120px; }}
+  .layer-desc {{ color: var(--text-dim); font-size: 13px; }}
+
+  .cta-block {{
+    margin: 60px 0 40px; padding: 40px 32px; text-align: center;
+    background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  }}
+  .cta-block p {{ color: var(--text-dim); font-size: 15px; margin: 8px 0 20px; }}
+  .cta-link {{
+    display: inline-block; padding: 12px 28px;
+    background: var(--accent); color: var(--bg); text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    border-radius: 8px; transition: opacity 0.2s;
+  }}
+  .cta-link:hover {{ opacity: 0.85; text-decoration: none; }}
+
+  .resume-toast {{
+    position: fixed; bottom: 24px; right: 24px; z-index: 500;
+    background: var(--bg-surface); border: 1px solid var(--border-strong);
+    border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow);
+    max-width: 320px; transform: translateY(120%); transition: transform 0.3s ease;
+  }}
+  .resume-toast.show {{ transform: translateY(0); }}
+  .resume-toast-text {{ font-size: 13px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }}
+  .resume-toast-text strong {{ color: var(--accent); }}
+  .resume-toast-actions {{ display: flex; gap: 8px; }}
+  .resume-toast-actions button {{
+    flex: 1; padding: 8px 14px; border-radius: 6px; border: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: opacity 0.2s;
+  }}
+  .resume-toast-actions button:hover {{ opacity: 0.85; }}
+  .resume-btn {{ background: var(--accent); color: var(--bg); }}
+  .dismiss-btn {{ background: var(--bg-elevated); color: var(--text-dim); border: 1px solid var(--border) !important; }}
+
+  @media (max-width: 640px) {{
+    .article {{ padding: 40px 16px 80px; }}
+    .layer-item {{ flex-direction: column; align-items: flex-start; gap: 4px; }}
+    .cta-block {{ padding: 28px 20px; }}
+    .mini-toc {{ padding: 0 16px; }}
+    .mini-toc-inner {{ gap: 4px; padding: 12px 14px; }}
+    .mini-toc a {{ font-size: 11px; padding: 4px 8px; }}
+    .resume-toast {{ left: 16px; right: 16px; bottom: 16px; max-width: none; }}
+  }}
+
+  @media print {{
+    .article {{ max-width: 100%; padding: 0; }}
+    .mini-toc, .resume-toast {{ display: none; }}
+    .cta-block {{ border: 2px solid #ddd; }}
+  }}
+</style>
+</head>
+<body>
+
+{nav}
+<div class="progress-bar" id="progress"></div>
+<div class="reading-time" id="readingTime"></div>
+
+<div class="resume-toast" id="resumeToast">
+  <div class="resume-toast-text">Resume reading from <strong id="resumeSection"></strong>?</div>
+  <div class="resume-toast-actions">
+    <button class="resume-btn" id="resumeBtn">Resume</button>
+    <button class="dismiss-btn" id="dismissBtn">Dismiss</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Jason Sun</div>
+  <h1 class="hero-title">Trust at Scale</h1>
+  <p class="hero-subtitle">AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet.</p>
+  <p class="hero-author">May 2026</p>
+  <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
+    <a href="/book.html" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">Read the book</a>
+    <a href="/book-zh.html" style="display: inline-block; padding: 12px 28px; background: var(--bg-elevated); color: var(--text); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; border: 1px solid var(--border-strong); transition: opacity 0.2s;">&#20013;&#25991;&#29256;</a>
+  </div>
+  <div class="hero-reading-time" id="heroReadTime" style="margin-top: 12px;"></div>
+  <div class="scroll-cue">or read the essay below</div>
+</div>
+
+{mini_toc}
+
+<article class="article" id="article">
+{index_content}
+</article>
+
+<script>
+(function() {{
+{shared_js}
+
+  // --- Reading time ---
+  var article = document.getElementById('article');
+  var words = article.textContent.split(/\\s+/).length;
+  var totalMin = Math.ceil(words / 220);
+  document.getElementById('heroReadTime').textContent = '~' + totalMin + ' min read';
+  var rtEl = document.getElementById('readingTime');
+  var heroH = window.innerHeight;
+
+  // --- Mini TOC active tracking ---
+  var tocLinks = document.querySelectorAll('.mini-toc a');
+  var sectionEls = [];
+  tocLinks.forEach(function(link) {{
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) sectionEls.push({{ el: el, link: link }});
+  }});
+
+  tocLinks.forEach(function(link) {{
+    link.addEventListener('click', function(e) {{
+      e.preventDefault();
+      var el = document.getElementById(link.getAttribute('href').slice(1));
+      if (el) el.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+    }});
+  }});
+
+  // --- Resume reading ---
+  var STORAGE_KEY = 'vision-essay-pos';
+  var resumeToast = document.getElementById('resumeToast');
+  var resumeSection = document.getElementById('resumeSection');
+  var resumeBtn = document.getElementById('resumeBtn');
+  var dismissBtn = document.getElementById('dismissBtn');
+  var savedPos = null;
+  try {{ savedPos = JSON.parse(localStorage.getItem(STORAGE_KEY)); }} catch(e) {{}}
+  if (savedPos && savedPos.pct > 5 && savedPos.pct < 95) {{
+    resumeSection.textContent = savedPos.section + ' (' + savedPos.pct + '%)';
+    setTimeout(function() {{ resumeToast.classList.add('show'); }}, 800);
+  }}
+  resumeBtn.addEventListener('click', function() {{
+    resumeToast.classList.remove('show');
+    if (savedPos) {{
+      var target = savedPos.pct / 100 * (document.documentElement.scrollHeight - window.innerHeight);
+      window.scrollTo({{ top: target, behavior: 'smooth' }});
+    }}
+  }});
+  dismissBtn.addEventListener('click', function() {{ resumeToast.classList.remove('show'); }});
+
+  var saveTimer = null;
+  function savePosition(section, pct) {{
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function() {{
+      try {{ localStorage.setItem(STORAGE_KEY, JSON.stringify({{ section: section, pct: pct }})); }} catch(e) {{}}
+    }}, 500);
+  }}
+
+  // --- Scroll handler ---
+  var currentSection = '';
+  function onScroll() {{
+    var sy = window.scrollY;
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = Math.round(sy / docH * 100);
+
+    var minLeft = Math.max(1, Math.ceil((100 - pct) / 100 * totalMin));
+    if (sy > heroH * 0.5) {{
+      rtEl.textContent = minLeft + ' min left';
+      rtEl.classList.add('visible');
+    }} else {{
+      rtEl.classList.remove('visible');
+    }}
+
+    var active = null;
+    var threshold = window.innerHeight * 0.2;
+    for (var i = sectionEls.length - 1; i >= 0; i--) {{
+      if (sectionEls[i].el.getBoundingClientRect().top <= threshold) {{ active = sectionEls[i]; break; }}
+    }}
+    tocLinks.forEach(function(l) {{ l.classList.remove('active'); }});
+    if (active) {{
+      active.link.classList.add('active');
+      currentSection = active.link.textContent;
+    }}
+    if (pct > 5) savePosition(currentSection || 'the beginning', pct);
+  }}
+
+  window.addEventListener('scroll', onScroll, {{ passive: true }});
+  onScroll();
+}})();
+</script>
+
+</body>
+</html>"""
+
+
+def build_index(shared_css: str, nav_html: str, shared_js: str, word_count: int):
+    """Build index.html from templates and index-content.html."""
+    content = INDEX_CONTENT_FILE.read_text()
+
+    sections = re.findall(r'id="([^"]+)"', content)
+    h2_sections = []
+    for s_id in sections:
+        label = s_id.replace('-', ' ').title().replace('The ', 'The ')
+        h2_match = re.search(rf'id="{re.escape(s_id)}"[^>]*>([^<]+)', content)
+        if h2_match:
+            label = h2_match.group(1)
+        h2_sections.append((s_id, label))
+
+    mini_toc_links = '\n'.join(
+        f'    <a href="#{sid}">{label}</a>' for sid, label in h2_sections
+    )
+    mini_toc = f'''<nav class="mini-toc" id="miniToc">
+  <div class="mini-toc-inner">
+{mini_toc_links}
+  </div>
+</nav>'''
+
+    content = content.replace("{word_count}", f"{word_count:,}")
+
+    html = (INDEX_TEMPLATE
+        .replace("{shared_css}", shared_css)
+        .replace("{nav}", nav_html)
+        .replace("{shared_js}", shared_js)
+        .replace("{mini_toc}", mini_toc)
+        .replace("{index_content}", content)
+        .replace("{{", "{").replace("}}", "}"))
+    INDEX_OUT_FILE.write_text(html)
+    print(f"Written to {INDEX_OUT_FILE}")
+
+
 def main():
+    shared_css = load_shared_css()
+    shared_js = load_shared_js()
+    book_nav = load_nav("book", '<button class="nav-theme" id="audioToggle" title="Listen to audiobook">&#9835;</button>')
+    index_nav = load_nav("essay")
+
     print("Building vision book...")
-    content, toc_entries = build_content()
-    toc_html = build_toc_html(toc_entries)
-    html = TEMPLATE.replace("{toc}", toc_html).replace("{content}", content)
+    content, toc_entries, chapter_paras = build_content()
+
+    print("Building front matter...")
+    preface_html = build_preface()
+
+    print("Building back matter...")
+    backmatter_html, backmatter_toc = build_back_matter()
+
+    toc_html = build_toc_html(toc_entries, backmatter_toc)
+
+    print("Aligning paragraphs to audio timestamps...")
+    alignments = align_paragraphs_to_timestamps(chapter_paras)
+    import json as _json
+    alignment_js = _json.dumps(alignments)
+
+    html = (TEMPLATE
+        .replace("{shared_css}", shared_css)
+        .replace("{shared_js}", shared_js)
+        .replace("{nav}", book_nav)
+        .replace("{dedication}", "")
+        .replace("{preface}", preface_html)
+        .replace("{toc}", toc_html)
+        .replace("{content}", content)
+        .replace("{backmatter}", backmatter_html)
+        .replace("{alignments}", alignment_js))
     OUT_FILE.write_text(html)
     print(f"Written to {OUT_FILE}")
-    print(f"  {len(toc_entries)} TOC entries")
+    print(f"  {len(toc_entries)} chapter/section TOC entries + {len(backmatter_toc)} back matter entries")
     word_count = len(re.findall(r'\w+', content))
     print(f"  ~{word_count:,} words")
+
+    print("\nBuilding index page...")
+    build_index(shared_css, index_nav, shared_js, word_count)
 
 
 if __name__ == "__main__":

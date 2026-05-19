@@ -1,0 +1,100 @@
+# The Hardware Crossover
+
+There's a chart that nobody in the AI industry talks about publicly, but everyone knows is real. It shows two lines crossing.
+
+The first line is the cost of cloud AI inference — what you pay per token to providers like OpenAI, Anthropic, and Google. This line has been going down, but slowly, and the providers have every incentive to keep it above zero.
+
+The second line is the cost of running your own inference — buying GPUs, running open-source models, managing the infrastructure yourself. This line has been plummeting.
+
+The two lines are crossing right now. And when they cross, the economics of AI change permanently.
+
+## Five Years Ago
+
+In 2021, if you wanted to run a large language model yourself, here's what you needed:
+
+- **Hardware:** 8x NVIDIA A100 GPUs at $10,000 each. That's $80,000 just for the GPUs, before the server chassis, cooling, networking, and storage. Total system cost: $150,000-$250,000.
+- **Models:** GPT-3 was proprietary. The open alternatives — GPT-2, early BERT variants — were research toys. You could run them, but the output quality was unusable for production workloads.
+- **Software:** No inference servers. No quantization tools. No orchestration frameworks. You needed an ML team to write custom serving code, manage model loading, handle batching, and optimize throughput.
+- **Expertise:** You needed ML engineers who understood transformer architectures, inference optimization, and GPU programming. These people cost $300,000-$500,000 per year and were nearly impossible to hire.
+
+The total cost of running your own inference in 2021: $500,000-$1,000,000 per year, minimum. For output quality that was dramatically worse than what GPT-3's API could produce. The math was simple: pay OpenAI $0.02 per 1K tokens.
+
+## Today
+
+Fast-forward to 2026. The landscape has inverted.
+
+- **Hardware:** A single NVIDIA RTX 5090 has 32GB VRAM and costs $2,000. A server with 4x RTX 5090s — 128GB total VRAM — costs $15,000-$20,000. That's enough to run a 70-billion parameter model with room to spare. The NVIDIA B300 — the latest data center GPU — offers an order of magnitude improvement in inference throughput per dollar compared to A100s from five years ago.
+- **Models:** Llama 3.1 405B, DeepSeek R1, Qwen 2.5, Mistral Large — open-weight models that match or exceed GPT-4's performance on most benchmarks. Not on all tasks. Not perfectly. But close enough that for most business applications, the quality difference is negligible.
+- **Software:** vLLM, llama.cpp, Ollama, TensorRT-LLM — production-grade inference servers that handle batching, quantization, and serving automatically. Install in minutes. No ML expertise required.
+- **Expertise:** You don't need an ML team anymore. You need someone who can run Docker and read documentation. The tooling has abstracted away the complexity.
+
+The total cost of running your own inference today: $20,000-$40,000 one-time hardware investment, plus $200-$500/month in electricity. After the hardware pays for itself — typically in 3-6 months for any organization spending more than $5,000/month on API calls — inference is effectively free at the margin.
+
+## The Crossover Math
+
+Let me make this concrete with actual numbers.
+
+**Scenario: Mid-size professional services firm**
+- Processing 5,000 documents per month
+- Average document: 10,000 tokens input, 2,000 tokens output
+- Using GPT-4o at current pricing: ~$0.0025/1K input, ~$0.01/1K output
+- Monthly API cost: (5,000 x 10 x $0.0025) + (5,000 x 2 x $0.01) = $125 + $100 = $225/month
+
+At $225/month, cloud AI wins. The hassle of running your own infrastructure isn't worth it.
+
+But that's a small workload. Scale it up.
+
+**Scenario: Same firm, 18 months later**
+- Processing 50,000 documents per month (expanded across departments)
+- Running AI-assisted analysis, report generation, and quality review
+- Multiple model calls per document (extraction, analysis, generation, review)
+- Average: 5 API calls per document, 15,000 tokens total per document
+- Monthly API cost: $4,000-$8,000/month
+
+Now the math changes. A $30,000 server running Llama 3 pays for itself in 4-6 months. After that, the marginal cost of inference is electricity — maybe $300/month. The firm saves $40,000-$90,000 per year, every year, forever.
+
+And this is before accounting for the non-financial benefits: data stays on-premises, no vendor lock-in, no model deprecation risk, no subpoena exposure, full control over model versions and behavior.
+
+**Scenario: Enterprise or government**
+- Processing millions of documents per year
+- Strict data residency requirements
+- Multi-year contracts with defined SLAs
+- Monthly cloud AI cost: $50,000-$500,000/month
+
+At this scale, the case for own infrastructure isn't just strong — it's overwhelming. A $500,000 GPU cluster running open-source models pays for itself in 1-3 months and provides better performance, better privacy, and better control than any cloud API.
+
+## The Trend Line
+
+The hardware trend is undeniable. GPU performance per dollar doubles roughly every 18-24 months. Open-source model quality improves every quarter. Inference software matures every month.
+
+Project this forward five years:
+
+- GPUs that cost $10,000 today will cost $2,000 and deliver 4x the performance.
+- Open-source models will match the best proprietary models on virtually all tasks.
+- Inference software will be as easy to deploy as a web server.
+- A complete AI inference appliance — GPU, model, software, management interface — will be the size of a mini-fridge and cost less than a car.
+
+This isn't science fiction. It's extrapolation from trends that have held for decades. Moore's Law applied to AI inference. The question isn't whether this will happen — it's when. And "when" is closer than most people think.
+
+## What's Missing
+
+If the hardware is cheap and the models are free, why isn't everyone running their own AI already?
+
+Because hardware and models are necessary but not sufficient. You also need:
+
+1. **Workflow orchestration.** A model can answer a question. But a business process requires chaining multiple model calls, handling errors, managing state, and routing work to humans at defined checkpoints. There's no off-the-shelf solution for this that works with self-hosted models.
+
+2. **Data integration.** Documents don't live in a vacuum. They're in SharePoint, Google Drive, local file servers, email, CRMs, ERPs. Connecting AI workflows to existing data sources requires integration work that most organizations can't do themselves.
+
+3. **Governance and audit.** Running your own model doesn't automatically give you accountability. You still need to track what data went in, what came out, who reviewed it, and what decisions were made. This requires purpose-built tooling.
+
+4. **Usability.** Most inference servers are designed for ML engineers. They expose command-line interfaces, require configuration files, and assume familiarity with model architectures. A tax accountant or immigration lawyer can't use vLLM. They need something that looks like software, not like a terminal.
+
+The hardware crossover creates the possibility of sovereign AI. But possibility isn't reality. Converting cheap hardware and free models into a usable, governable, auditable AI system requires a software layer that doesn't exist yet.
+
+That's the gap. And it's a gap that's about to matter a lot, because there's one more problem that makes everything else urgent.
+
+---
+
+*Previous: [The Workflow Gap](./02-workflow-gap.mdx)*
+*Next: [The Accountability Void](./04-accountability-void.mdx)*

@@ -1,0 +1,100 @@
+# ACP: Compute
+
+## The Other Protocol
+
+AEP handles accountability — what happened, what it cost, where the data went. ACP handles the compute substrate — how agents acquire the workers that do the actual work.
+
+The distinction matters because the compute layer has fundamentally different constraints than the accountability layer. Accountability is asynchronous: cost records and provenance chains can be assembled after execution completes. Compute allocation is synchronous and time-critical: when an agent needs workers, it needs them now, and double-booking a worker pool is a system failure, not a billing dispute.
+
+ACP is the Agent Compute Protocol. It defines how agents request compute resources at runtime, how the system allocates them atomically, and how resources are released and accounted for when the work is done.
+
+## Why Dynamic Allocation
+
+The naive approach to compute for AI agents is static provisioning: decide how many workers you need, start them, keep them running. This is how most agent platforms work today. You configure your deployment with a fixed number of workers, and every workflow execution uses that pool.
+
+Static provisioning fails in three predictable ways.
+
+**Over-provisioning.** You keep workers running for peak load, but peak load happens 10% of the time. The other 90% of the time, you are paying for idle compute. For GPU workers, this is ruinous — a single A100 GPU costs $3-4 per hour. A pool of 8 GPUs sitting idle overnight costs $24-32 for producing nothing.
+
+**Under-provisioning.** You provision for average load, and then a large job arrives. The workflow needs 20 workers to index 100,000 documents in a reasonable time. You have 4. The job takes 5x longer, the user waits, and you cannot accept another large job until the first one finishes.
+
+**Inflexibility.** Different workflows need different capabilities. A document analysis workflow needs CPU workers with large memory. An embedding workflow needs GPU workers. A code analysis workflow needs workers with specific toolchains installed. Static provisioning forces you to choose one worker type and over-provision it, or maintain multiple static pools and over-provision all of them.
+
+ACP solves these by making compute allocation dynamic. Agents request what they need, when they need it, for as long as they need it.
+
+## The Four Messages
+
+ACP is deliberately simple. Four messages, one lifecycle.
+
+**`allocate`** — An agent requests workers. "I need 5 CPU workers for 10 minutes." The request specifies a capability type (`cpu-general`, `gpu-inference`, etc.), a count, an estimated duration, and optionally a budget limit.
+
+**`allocated`** — The Resource Broker responds. The response carries one of four statuses:
+- `granted`: all requested workers are available and reserved.
+- `partial`: some workers are available; you asked for 5 but got 3.
+- `denied`: no workers are available, or the budget is insufficient.
+- `queued`: the request is accepted and will be fulfilled when capacity frees up.
+
+When the status is `granted` or `partial`, the response includes an allocation ID and a queue endpoint — a Redis Stream address where the agent can submit jobs. The broker also returns pricing information: cost per worker-minute and estimated total cost for the requested duration.
+
+**`release`** — The agent is done. It sends a release message with the allocation ID and a reason (`completed`, `cancelled`, `error`). The broker restores the reserved capacity to the available pool.
+
+**`usage_report`** — The broker responds with actual usage: total duration, worker-seconds consumed, and final cost. This cost record feeds into the AEP cost tree — ACP allocation costs are composed into the overall execution cost, just like LLM call costs.
+
+That is the entire protocol. Four messages. One direction for requests (agent to broker), one direction for responses (broker to agent). No subscriptions, no callbacks, no streaming, no bidirectional channels. The simplicity is the point.
+
+## Atomic Allocation via Redis Lua
+
+The hardest part of dynamic allocation is concurrency. When two agents simultaneously request workers from the same pool, you cannot have both check the available count, both see "5 available," and both allocate 5 — leaving the pool at negative 5.
+
+ACP handles this with a Redis Lua script that runs atomically on the server:
+
+```lua
+local available = tonumber(redis.call('HGET', KEYS[1], 'available') or '0')
+local requested = tonumber(ARGV[1])
+if available <= 0 then
+    return 0
+end
+local granted = math.min(requested, available)
+redis.call('HSET', KEYS[1], 'available', tostring(available - granted))
+return granted
+```
+
+This script executes as a single operation on the Redis server. No interleaving. No race conditions. No retry loops. Two concurrent requests hit the same pool: one gets its workers, the other gets what remains or gets denied. The state is always consistent.
+
+We chose Redis Lua scripts over `MULTI/EXEC` (Redis transactions) because `MULTI/EXEC` uses optimistic concurrency — it can fail under contention and requires the caller to retry. Lua scripts are pessimistic — they hold the Redis server for the duration of the script (microseconds) and cannot be interrupted. Under high concurrency, the Lua approach is simpler and correct by construction.
+
+## Worker Self-Registration
+
+Workers do not need to be configured in a central registry. They self-register.
+
+When a worker connects to the system, it increments the capacity counter for its capability type: `HINCRBY worker:capacity:cpu-general total 1` and `HINCRBY worker:capacity:cpu-general available 1`. When it disconnects, it decrements both counters. The broker discovers available capabilities dynamically by scanning `worker:capacity:*` keys.
+
+This means adding capacity is zero-configuration. Start a new worker, point it at Redis, and it appears in the broker's capacity pool. Stop a worker, and it disappears. No manifest files, no deployment configurations, no restarts of the broker.
+
+For the Sovereign Compute Fabric, this is essential. When a user plugs in a new compute node — a desktop, a server, a GPU box — and runs the Citadel CLI, that node's workers self-register through the VPN mesh and become available for allocation. The user does not configure anything on the platform side. The capacity just appears.
+
+## The Three-Level Scaling Roadmap
+
+ACP is designed as a three-level system. Each level adds capability without changing the four-message protocol.
+
+**Level 1: Static Pool + Redis.** Workers self-register capacity on connect. The broker checks and reserves atomically via Lua scripts. This is what exists today. It handles the common case: a known set of workers, deterministic capacity, fast allocation. The limitation is that when capacity runs out, the answer is "denied." There is no mechanism to create more capacity.
+
+**Level 2: KEDA Autoscaling.** When capacity hits zero, KEDA (Kubernetes Event-Driven Autoscaler) scales up new worker pods based on Redis queue depth. The agent's request might return `queued` instead of `denied`, and a new worker spins up to handle it within minutes. The four messages are unchanged — the agent still sends `allocate` and gets `allocated`. The difference is that "denied" becomes rare because the system creates capacity on demand.
+
+**Level 3: KAI GPU Scheduling.** GPU-aware scheduling for heterogeneous hardware. An allocation request for GPU inference needs to consider not just "is a GPU available?" but "which GPU?" An A100 is different from an H100 is different from an RTX 3090. KAI (Kubernetes AI Scheduler) handles GPU topology, memory requirements, multi-GPU allocation, and preemption. The four messages are still unchanged. The broker just gets smarter about how it fulfills requests.
+
+Each level builds on the previous. Level 1 is sufficient for single-organization deployments with predictable workloads. Level 2 handles variable workloads in cloud environments. Level 3 handles GPU-heavy AI workloads where hardware heterogeneity matters. An organization starts at Level 1 and moves up as their needs grow.
+
+## ACP and AEP Together
+
+The two protocols complement each other. ACP tells you what compute was allocated. AEP tells you what that compute cost and what it produced.
+
+When an agent allocates 5 workers via ACP and uses them to process 100,000 documents, the ACP usage report tells you: 5 workers, 542 seconds, $225.96. That cost record flows into the AEP cost tree as a leaf node, alongside the LLM call costs and other expenses. The total workflow cost includes both the LLM inference costs (tracked by AEP directly) and the compute allocation costs (tracked by ACP, reported to AEP).
+
+Provenance works the same way. The 100,000 documents were processed by specific workers, producing specific intermediate results, which fed into specific model inferences. The AEP provenance chain includes the ACP compute step as a node in the citation graph. You can trace the conclusion all the way back through the compute allocation to the specific workers and data that produced it.
+
+This is the complete picture: what work was done (AEP provenance), what it cost (AEP cost records + ACP usage reports), what compute was used (ACP allocations), and what data governance was enforced (AEP governance). Two protocols, one accountability layer.
+
+---
+
+[Back to chapter overview](./index.mdx)

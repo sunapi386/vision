@@ -1,0 +1,71 @@
+# Culture
+
+Culture in a three-person company isn't a slide in an all-hands presentation. It's not values printed on the wall of an office you don't have. Culture at our scale is simply: how do we make decisions when nobody is watching? The answer reveals itself in the tools we choose, the processes we follow, and the things we refuse to compromise on.
+
+## Open Source by Default
+
+Our code lives in the open. The aceteam-ai GitHub organization is public. The workflow engine, the node libraries, the CLI tools — all open source.
+
+This is a deliberate strategic choice, not an ideological one. Open source does three things for a small company that closed source cannot:
+
+First, it builds trust. When a police service or a university evaluates our platform, they can read the code. They can audit it. They can verify that the data handling works the way we say it does. In an industry saturated with black-box AI products making unverifiable claims, "read the source" is a competitive advantage.
+
+Second, it attracts talent. The best engineers want to work on open source. They want their contributions visible. They want to build a portfolio that follows them beyond any single employer. When we eventually hire, our open source presence is both a recruiting tool and a vetting mechanism — contribute to the project first, join the company second.
+
+Third, it forces quality. When your code is public, you write it like someone is reading it — because someone is. You write documentation. You write tests. You think about API design. The social pressure of public code produces better engineering than any internal code review process.
+
+## Protocol-First Thinking
+
+We don't build features. We build protocols.
+
+The distinction matters. A feature is an implementation — it solves a specific problem in a specific way. A protocol is an interface — it defines how components communicate, and anyone can build implementations on top of it. Features create lock-in. Protocols create ecosystems.
+
+This shows up throughout our architecture. The workflow engine doesn't call specific AI models — it speaks a protocol that any model can implement. The node library doesn't hardcode data sources — it defines interfaces that any data source can satisfy. The marketplace doesn't curate workflows — it provides a protocol for publishing, discovering, and composing them.
+
+Protocol-first thinking is slower at the start. Building the interface before the implementation feels like unnecessary abstraction when you're trying to ship. But it compounds. Every new integration, every new model, every new data source — they all slot in without rewriting the core. The protocol becomes a force multiplier that rewards patience with exponential composability.
+
+## Dogfooding Everything
+
+We use our own platform for everything. Internal workflows run on AceTeam. Documentation is managed through our own systems. When we demo to a customer, we're not showing a polished demo environment — we're showing the same instance we use every day.
+
+This matters because it closes the feedback loop to zero. When something is slow, we notice. When a UX pattern is confusing, we feel the confusion. When a feature doesn't work the way it should, we're the first ones bitten. Every bug we fix for ourselves is a bug we prevent for our customers.
+
+Dogfooding also prevents the most common failure mode in product development: building things you don't actually use. It's easy to design features that look good in a roadmap document. It's harder to build features that survive contact with daily use. If we won't use it, we don't ship it.
+
+## Remote-First, Distributed
+
+The team is distributed across San Jose and Toronto. We don't have an office. We don't have office hours. We have a shared codebase, a set of protocols, and a mutual understanding that output matters more than presence.
+
+Remote-first isn't a pandemic accommodation. It's an architecture decision. A distributed team forces you to write things down — decisions, context, rationale. You can't rely on hallway conversations or whiteboard sessions that only three people witnessed. Everything has to be legible in a GitHub issue, a commit message, or a document.
+
+This documentation-as-architecture approach means that our institutional knowledge isn't trapped in anyone's head. When a new person joins, they can read their way into understanding. When someone is unavailable, the work continues because the context is in the system, not in the person.
+
+## Technical Rigor
+
+We're a small team. We can't afford to be sloppy. Technical rigor isn't perfectionism — it's risk management at our scale. A production bug that a fifty-person team triages in an hour takes our three-person team half a day. We can't afford those half-days.
+
+So we invest in the things that prevent them:
+
+**Nix reproducible builds.** Every developer, every CI pipeline, every deployment — the same environment, every time. No "works on my machine." No debugging dependency conflicts. No surprises in production because someone had a different version of Python installed. Nix is complex to set up and annoying to learn, but once it's running, you never think about environments again. For a team of three, that time savings is existential.
+
+**Typed protocols.** TypeScript on the frontend, Python with type hints on the backend, Go for infrastructure tooling. Types catch bugs at compile time that would otherwise show up as 3 AM production pages. When your team is three people and there's no on-call rotation, catching errors before they deploy isn't a best practice — it's a survival strategy.
+
+**Test coverage.** Every feature ships with tests. Not because we love writing tests, but because we can't afford regression bugs. When you're moving fast with a small team, the only thing preventing you from breaking everything you've already built is a test suite that tells you what you just destroyed.
+
+**Infrastructure as code.** Helm charts, Kubernetes manifests, deployment scripts — everything is versioned, everything is reproducible, everything can be torn down and rebuilt from scratch. We run a three-node K3s cluster with self-hosted CI/CD runners, container registry, and staging environments that spin up per branch. This is infrastructure that most companies don't build until they have a dedicated DevOps team. We built it because we had to — when you can't afford downtime, you invest in making recovery trivial.
+
+## Small Team, High Velocity
+
+"We don't need a 150-person team to do this. We need 3 people who each do the work of 10."
+
+This isn't bravado. It's arithmetic. The average engineer at a large company spends 30-40% of their time in meetings, 20% on process overhead (code reviews, planning sessions, status updates), and maybe 40-50% actually building things. In a three-person team, that overhead collapses. Every hour is a building hour.
+
+But the real multiplier isn't just the absence of overhead. It's the presence of context. In a three-person team, everyone understands the entire system. There's no handoff between the "frontend team" and the "backend team" and the "infrastructure team." There's just the team, and everyone can work on anything. That contextual density means decisions happen in minutes, not weeks. It means integration is continuous, not a quarterly event. It means the gap between "I have an idea" and "it's in production" is measured in hours, not sprints.
+
+The AI tooling makes this possible in a way it wouldn't have been five years ago. Code generation, automated testing, deployment automation, documentation generation — these tools don't replace the humans, but they amplify them. Three people with modern AI tooling can sustain a velocity that used to require ten.
+
+The caveat is that this doesn't scale linearly. At some point, we'll need more people. But the goal isn't to stay at three forever — it's to stay at three until we've proven enough that the next hires are force multipliers, not warm bodies filling roles on an org chart.
+
+---
+
+*Next: [Chapter 11 — The Future](../ch11-the-future/index.mdx)*

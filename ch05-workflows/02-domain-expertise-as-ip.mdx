@@ -1,0 +1,69 @@
+# Domain Expertise as IP
+
+## The Kung Fu Transfer
+
+There is a scene in The Matrix where Neo sits in a chair, a cable plugs into his skull, and a program uploads martial arts directly into his brain. He opens his eyes and says, "I know kung fu."
+
+That scene is science fiction. But what it depicts -- the perfect transfer of an expert's skill into another person's mind, bit for bit, without loss -- is exactly what workflows make possible for business processes.
+
+When an immigration lawyer builds a TN visa workflow on AceTeam, they are encoding decades of expertise into a reproducible system. Every decision node, every validation check, every human review gate, every conditional branch reflects a lesson learned from a real case. The workflow knows to check for the specific NAFTA profession codes. It knows to flag applications where the supporting letter does not match the employer's description. It knows to escalate when the applicant has a prior refusal. All of this knowledge -- acquired over thousands of applications, years of practice, and countless edge cases -- is captured in the workflow definition.
+
+Now consider what happens when that workflow is shared. A junior lawyer at another firm downloads it. They do not need ten years of experience to process TN visa applications correctly. The workflow guides them through every step, catches the errors that an experienced practitioner would catch, and escalates the cases that require senior judgment. The expert's knowledge has been transferred -- bit for bit, without loss.
+
+This is fundamentally different from how humans transfer knowledge. When a senior accountant trains a junior, the transfer is lossy. The senior cannot articulate every rule they follow, because many of those rules are intuitive -- pattern-matched from years of experience, never formalized. The junior learns through observation, practice, and mistakes. It takes years. And the result is never a perfect copy -- the junior develops their own habits, their own blind spots, their own judgment.
+
+AI workflows do not have this problem. Once you get a workflow right the first time, it works every time exactly the same. The encoding is complete. The transfer is lossless. The copy is identical to the original.
+
+## The IP Layer
+
+This creates a new category of intellectual property. Historically, domain expertise was locked inside people's heads. You could not sell it as a product. You could only sell it as a service -- billable hours from the expert.
+
+Workflows change this. A perfected visa processing workflow is a product. It has defined inputs, predictable outputs, measurable quality. It can be versioned, distributed, and improved. It can serve a hundred clients simultaneously without the expert being involved in any of them. The expert's role shifts from executing the process to improving the system.
+
+Think about what this means for a solo practitioner. An immigration lawyer who has perfected a TN visa workflow has created an asset. They spent years building the expertise. They spent weeks encoding it into a workflow. And now that workflow can generate revenue while they sleep. A client submits a TN visa application through the workflow. The AI processes it, checks it against the encoded rules, flags anything that needs human review. The lawyer reviews flagged items -- maybe 20% of submissions. The other 80% process correctly without intervention.
+
+This is not hypothetical. This is the natural consequence of making domain expertise portable and executable.
+
+## What Makes Workflows Different From Prompts
+
+Someone will object: "Can't you just write a really good prompt?" You can. And it will work for simple tasks. But prompts do not scale to complex processes for three fundamental reasons.
+
+First, prompts are stateless. Each call to an LLM is independent. The model does not remember what it did on the previous step. If step three depends on the output of step one, you have to manually carry that context. A workflow handles data flow between steps automatically -- the output of one node feeds the input of the next.
+
+Second, prompts cannot branch. A prompt produces text. If you need to do different things based on the content of that text -- approve the application or reject it, escalate to a senior or process automatically, route to accounting or route to legal -- you need control flow logic. Prompts do not have if/else. Workflows do.
+
+Third, prompts cannot pause. When a step requires human judgment, the process needs to stop, wait for the human, and continue with their input. A prompt either generates an answer or it does not. A workflow can pause indefinitely, present the current state to a human reviewer, accept their input, and resume processing.
+
+These are not edge cases. They are the defining characteristics of real business processes. Any process worth automating involves state management, conditional branching, and human checkpoints.
+
+## The Calibration Problem
+
+There is a subtlety that most AI companies do not discuss: the hardest part of building an AI system is not making it work. It is knowing when it is working correctly.
+
+A model produces output. Is it good? Is it correct? Is it correct enough for this specific context? These questions require calibration -- the ability to distinguish between good and bad results for a particular domain.
+
+An experienced tax accountant glances at a depreciation calculation and knows immediately if it looks right. Not because they recalculated it in their head, but because they have seen thousands of correct calculations and the number falls within the expected range. When the number is wrong, it stands out. This intuition -- this calibrated sense of correctness -- is the product of years of experience. It cannot be written as a prompt.
+
+But it can be encoded as a workflow. The workflow includes validation nodes that check the output against expected ranges. It includes comparison nodes that flag deviations from historical patterns. It includes human review gates at high-stakes junctures. The accumulated judgment of the expert is distributed across the workflow's nodes and edges, expressed as thresholds, rules, and checkpoints.
+
+This calibration is what separates a useful AI system from a dangerous one. An uncalibrated system generates plausible but potentially incorrect output. A calibrated system knows its own limitations and routes uncertain cases to human experts. The workflow is the mechanism by which calibration is encoded and enforced.
+
+## Compound Knowledge
+
+The compounding effect of workflows is where the economics become extraordinary.
+
+A consultant builds a workflow during a client engagement. That engagement generates revenue -- $50,000 for a tax compliance project, say. Without a workflow, the consultant finishes the engagement, delivers the work product, and moves to the next client. The knowledge stays in their head. The next client starts from scratch.
+
+With a workflow, the consultant finishes the engagement and has two outputs: the work product (deliverable to the client) and the workflow (reusable asset). The workflow can be refined during the next engagement, and the next, and the next. Each engagement makes the workflow better -- more edge cases handled, more validation rules added, more accurate thresholds.
+
+After ten engagements, the workflow encodes the cumulative expertise from all ten. A new consultant using this workflow immediately benefits from the lessons of the previous ten projects. They do not need to make the same mistakes. The knowledge compounds.
+
+This is the opposite of how consulting usually works. In traditional consulting, knowledge depreciates. Each engagement is custom. The learnings are informal. Senior people leave and take their expertise with them. The firm is constantly rebuilding institutional knowledge.
+
+Workflows reverse this. Knowledge accumulates, improves, and persists independent of any individual. When the senior partner retires, the workflows remain. When a new hire joins, they have immediate access to the firm's accumulated expertise -- encoded, executable, and version-controlled.
+
+The next section explores how this discipline mirrors the scientific method.
+
+---
+
+[Previous: Beyond Chatbots](./01-beyond-chatbots.mdx) | [Next: The Science of Work](./03-the-science-of-work.mdx)
