@@ -61,16 +61,34 @@ This produces `book.html` and `index.html`. The audio files and timestamps must 
 
 ## Deploying
 
-`release.py` handles build + deploy to jasonsun.org (served from 192.168.2.244):
+`release.py` handles the full pipeline: build, verify, and deploy to jasonsun.org (served from 192.168.2.244):
 
 ```bash
-python3 release.py              # build + deploy
-python3 release.py tts          # regenerate audio, rebuild, deploy
+python3 release.py              # build + verify + deploy
+python3 release.py tts          # tts + clean + build + verify + deploy
+python3 release.py build        # build only
+python3 release.py verify       # check everything without deploying
 python3 release.py deploy       # deploy existing build
+python3 release.py clean        # convert stale WAVs to OGG
 python3 release.py setup        # install dependencies with uv
 ```
 
 The deploy step tries hostnames `ocean` then `192.168.2.244` via ping and uses whichever responds. It scps HTML/JS files and rsyncs audio directories.
+
+## Verification
+
+`release.py verify` runs automatically before every deploy. It checks:
+
+1. **Paragraph IDs** -- every `<p>` in book.html has a contiguous `ab-{ch}-{idx}` ID
+2. **Alignment data** -- `apAlignments` is embedded in book.html with one `[start, end]` entry per paragraph
+3. **No null timestamps** -- every paragraph has audio (TTS didn't skip any)
+4. **Click-to-seek** -- the JS handler that maps `p[id^="ab-"]` clicks to `apAlignments[ch][idx][0]` is present
+5. **Paragraph sync** -- `apSyncParagraph()` function exists (highlights current paragraph during playback, auto-scrolls in follow mode)
+6. **Audio files** -- all chapter MP3s exist in `audio/` with valid manifest durations
+7. **No stale WAVs** -- no WAV files in `audio-cache/` or `audio/` (cache uses OGG, output uses MP3)
+8. **TTS extraction parity** -- `tts.py verify` confirms paragraph ordering matches `build.py`
+
+If any check fails, deploy is blocked with a specific error message.
 
 ## Dependencies
 
