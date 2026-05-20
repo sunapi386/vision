@@ -15,6 +15,9 @@ audio-zh/
 timestamps/
 timestamps-zh/
 
+# Per-paragraph TTS cache
+audio-cache/
+
 # Runtime
 __pycache__/
 *.pyc

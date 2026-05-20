@@ -97,6 +97,8 @@ body {
 }
 .nav-link:hover { color: var(--text-dim); background: var(--bg-elevated); text-decoration: none; }
 .nav-link.active { color: var(--accent); background: var(--accent-dim); }
+.nav-about { font-size: 12px; opacity: 0.6; }
+.nav-about:hover { opacity: 1; }
 .nav-theme {
   width: 32px; height: 32px; border-radius: 50%;
   background: none; border: 1px solid var(--border);
