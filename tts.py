@@ -136,9 +136,15 @@ def extract_narration_units(chapter_num: int, chapter_slug: str, chapter_title: 
 def synthesize_unit(pipeline, text: str) -> np.ndarray | None:
     """Synthesize a single text unit, using cache. Returns numpy audio array."""
     h = cache_key(text)
-    cached = CACHE_DIR / f"{h}.wav"
-    if cached.exists():
-        audio, _ = sf.read(str(cached), dtype="float32")
+    cached_ogg = CACHE_DIR / f"{h}.ogg"
+    cached_wav = CACHE_DIR / f"{h}.wav"
+    if cached_ogg.exists():
+        audio, _ = sf.read(str(cached_ogg), dtype="float32")
+        return audio
+    if cached_wav.exists():
+        audio, _ = sf.read(str(cached_wav), dtype="float32")
+        sf.write(str(cached_ogg), audio, SAMPLE_RATE, format="OGG", subtype="VORBIS")
+        cached_wav.unlink()
         return audio
 
     chunks = []
@@ -154,7 +160,7 @@ def synthesize_unit(pipeline, text: str) -> np.ndarray | None:
         return None
 
     combined = np.concatenate(chunks)
-    sf.write(str(cached), combined, SAMPLE_RATE)
+    sf.write(str(cached_ogg), combined, SAMPLE_RATE, format="OGG", subtype="VORBIS")
     return combined
 
 
@@ -173,7 +179,7 @@ def synthesize_chapter(pipeline, units: list[dict]) -> tuple[np.ndarray, list]:
 
     for i, unit in enumerate(units):
         h = cache_key(unit["text"])
-        was_cached = (CACHE_DIR / f"{h}.wav").exists()
+        was_cached = (CACHE_DIR / f"{h}.ogg").exists() or (CACHE_DIR / f"{h}.wav").exists()
 
         audio = synthesize_unit(pipeline, unit["text"])
         if audio is None:
@@ -213,7 +219,12 @@ def synthesize_chapter(pipeline, units: list[dict]) -> tuple[np.ndarray, list]:
 
 def wav_to_mp3(wav_path: Path, mp3_path: Path):
     subprocess.run(
-        ["ffmpeg", "-y", "-i", str(wav_path), "-codec:a", "libmp3lame", "-b:a", "64k", str(mp3_path)],
+        [
+            "ffmpeg", "-y", "-i", str(wav_path),
+            "-codec:a", "libmp3lame", "-q:a", "7",
+            "-ar", "24000", "-ac", "1",
+            str(mp3_path),
+        ],
         capture_output=True,
     )
 
