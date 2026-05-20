@@ -4,14 +4,35 @@ The accountability infrastructure for the agent economy. A book and essay by Jas
 
 **Live at [jasonsun.org](https://jasonsun.org)**
 
+## Setup
+
+Requires Python 3.10+ and [uv](https://docs.astral.sh/uv/). Also needs `ffmpeg` for audio encoding.
+
+```bash
+# Install all dependencies (build + TTS)
+python3 release.py setup
+
+# Or manually:
+uv pip install -e ".[tts]" --break-system-packages
+```
+
 ## Quick start
 
 ```bash
-# Build the HTML book + essay
-python3 build.py
+# Build + deploy to jasonsun.org
+python3 release.py
 
-# Generate English audiobook (requires Kokoro)
-python3 tts.py
+# Build only (no deploy)
+python3 release.py build
+
+# Regenerate audio, rebuild, and deploy
+python3 release.py tts
+
+# Deploy only (skip build)
+python3 release.py deploy
+
+# Just build HTML (no deploy)
+python3 build.py
 
 # Verify TTS paragraph alignment without generating audio
 python3 tts.py verify
@@ -23,6 +44,8 @@ python3 tts.py verify
 .
 ├── build.py                 # Main build script (book.html + index.html)
 ├── tts.py                   # English TTS with per-paragraph caching
+├── release.py               # Build + deploy to jasonsun.org
+├── pyproject.toml           # Python dependencies (use: uv pip install -e ".[tts]")
 ├── index-content.html       # Essay page content (jasonsun.org landing)
 ├── templates/
 │   ├── shared.css           # Shared styles (book + essay)

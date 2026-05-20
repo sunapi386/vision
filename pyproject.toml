@@ -1,0 +1,28 @@
+[project]
+name = "vision"
+version = "1.0.0"
+description = "Trust at Scale - book build and TTS pipeline"
+requires-python = ">=3.10"
+
+dependencies = [
+    "markdown>=3.6",
+]
+
+[project.optional-dependencies]
+tts = [
+    "kokoro>=0.9",
+    "misaki[en]>=0.9",
+    "numpy>=1.26",
+    "soundfile>=0.12",
+    "torch>=2.0",
+    "spacy>=3.7",
+    "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+]
+tts-zh = [
+    "misaki[zh]>=0.9",
+]
+
+[project.scripts]
+vision-build = "build:main"
+vision-tts = "tts:main"
+vision-release = "release:main"
