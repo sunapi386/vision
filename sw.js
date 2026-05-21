@@ -1,4 +1,4 @@
-var CACHE = 'trust-at-scale-v5';
+var CACHE = 'trust-at-scale-v8';
 var AUDIO_FILES = [
   'audio/part01-world-changed.mp3',
   'audio/part02-the-void.mp3',

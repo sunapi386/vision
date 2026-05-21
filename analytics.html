@@ -211,6 +211,35 @@ tr:hover td { background: var(--accent-dim); }
 
 .loc-flag { font-size: 16px; line-height: 1; }
 .loc-label { font-size: 12px; color: var(--dim); }
+
+/* heatmap */
+.heatmap-wrap { overflow-x: auto; }
+.heatmap { border-collapse: collapse; width: 100%; font-size: 11px; }
+.heatmap th, .heatmap td { padding: 0; text-align: center; }
+.hm-loc {
+  text-align: right; white-space: nowrap; padding: 4px 10px 4px 0;
+  font-size: 12px; color: var(--dim); min-width: 130px;
+  position: sticky; left: 0; background: var(--surface); z-index: 1;
+}
+.hm-day {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--dimmer); padding: 2px 0 6px; white-space: nowrap;
+  writing-mode: vertical-lr; transform: rotate(180deg);
+  height: 52px; vertical-align: bottom;
+}
+.hm-cell {
+  width: 28px; min-width: 28px; height: 26px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--text); border-radius: 3px; cursor: default;
+  border: 1px solid var(--border);
+}
+.hm-cell:hover { border-color: var(--accent); }
+.hm-total {
+  font-weight: 600; color: var(--accent);
+  background: var(--accent-dim) !important; border-color: var(--border-strong);
+}
+[data-theme="light"] .hm-cell { color: var(--text); }
+[data-theme="light"] .hm-cell[style*="transparent"] { color: transparent; }
 </style>
 </head>
 <body>
@@ -493,6 +522,8 @@ tr:hover td { background: var(--accent-dim); }
     var totalPlays = 0, totalCompletes = 0;
     var locations = {};
     var referrers = {};
+    var locByDay = {};
+    var locByDayIPs = {};
 
     events.forEach(function(e) {
       ips[e.ip] = true;
@@ -503,7 +534,17 @@ tr:hover td { background: var(--accent-dim); }
         var locKey = loc.city + ', ' + loc.cc;
         if (!locations[locKey]) locations[locKey] = { count: 0, cc: loc.cc, city: loc.city, country: loc.country, ips: {} };
         locations[locKey].ips[e.ip] = true;
-        if (e.event === 'pageview') locations[locKey].count++;
+        if (e.event === 'pageview') {
+          locations[locKey].count++;
+          var eDay = (e.ts || '').slice(0, 10);
+          if (eDay) {
+            if (!locByDay[locKey]) locByDay[locKey] = {};
+            locByDay[locKey][eDay] = (locByDay[locKey][eDay] || 0) + 1;
+            if (!locByDayIPs[locKey]) locByDayIPs[locKey] = {};
+            if (!locByDayIPs[locKey][eDay]) locByDayIPs[locKey][eDay] = {};
+            locByDayIPs[locKey][eDay][e.ip] = true;
+          }
+        }
       }
 
       // referrer aggregation
@@ -611,6 +652,76 @@ tr:hover td { background: var(--accent-dim); }
       out += '<div class="legend-item"><div class="legend-dot" style="background:#39d2c0"></div>Heartbeats</div>';
       out += '</div></div>';
       out += '<div class="chart-wrap">' + buildLineChart(byDay, days) + '</div>';
+      out += '</div>';
+    }
+
+    // --- location x date heatmap ---
+    var hmLocsAll = Object.keys(locByDay);
+    var hmDays = days.length > 30 ? days.slice(-30) : days;
+
+    if (hmLocsAll.length > 0 && hmDays.length > 0) {
+      // precompute both modes
+      var hmData = {};
+      hmLocsAll.forEach(function(k) {
+        hmData[k] = { pv: {}, ip: {}, pvTotal: 0, ipTotal: 0, cc: (locations[k] || {}).cc || '' };
+        var allIPs = {};
+        hmDays.forEach(function(d) {
+          var pv = (locByDay[k] || {})[d] || 0;
+          var ipSet = (locByDayIPs[k] || {})[d] || {};
+          var ipCount = Object.keys(ipSet).length;
+          hmData[k].pv[d] = pv;
+          hmData[k].ip[d] = ipCount;
+          hmData[k].pvTotal += pv;
+          hmData[k].ipTotal += ipCount;
+          Object.keys(ipSet).forEach(function(ip) { allIPs[ip] = true; });
+        });
+        hmData[k].ipUniq = Object.keys(allIPs).length;
+      });
+
+      // store for toggle rebuild
+      window._hmData = hmData;
+      window._hmDays = hmDays;
+      window._hmMode = window._hmMode || 'ip';
+      window._buildHeatmap = function() {
+        var mode = window._hmMode;
+        var sorted = Object.keys(hmData).map(function(k) {
+          return { key: k, total: mode === 'ip' ? hmData[k].ipUniq : hmData[k].pvTotal, pv: hmData[k].pvTotal, cc: hmData[k].cc };
+        }).sort(function(a, b) { return b.total - a.total || b.pv - a.pv; }).slice(0, 12);
+
+        var hmMax = 0;
+        sorted.forEach(function(l) {
+          window._hmDays.forEach(function(d) {
+            var v = mode === 'ip' ? hmData[l.key].ip[d] : hmData[l.key].pv[d];
+            if (v > hmMax) hmMax = v;
+          });
+        });
+
+        var h = '<div class="heatmap-wrap"><table class="heatmap"><thead><tr><th class="hm-loc"></th>';
+        window._hmDays.forEach(function(d) { h += '<th class="hm-day">' + d.slice(5) + '</th>'; });
+        h += '<th class="hm-day">Total</th></tr></thead><tbody>';
+
+        sorted.forEach(function(loc) {
+          h += '<tr><td class="hm-loc">' + ccToFlag(loc.cc) + ' ' + loc.key + '</td>';
+          window._hmDays.forEach(function(d) {
+            var v = mode === 'ip' ? hmData[loc.key].ip[d] : hmData[loc.key].pv[d];
+            var opacity = hmMax > 0 ? (v / hmMax) : 0;
+            var bg = v === 0 ? 'transparent' : 'rgba(106,174,252,' + (0.15 + opacity * 0.75).toFixed(2) + ')';
+            h += '<td class="hm-cell" style="background:' + bg + '" title="' + loc.key + ' / ' + d + ': ' + v + (mode === 'ip' ? ' unique IPs' : ' pageviews') + '">' + (v || '') + '</td>';
+          });
+          h += '<td class="hm-cell hm-total">' + loc.total + '</td></tr>';
+        });
+        h += '</tbody></table></div>';
+        return h;
+      };
+
+      out += '<div class="panel panel-full">';
+      out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+      out += '<div class="panel-title" style="margin-bottom:0">Visitors by Location &times; Date</div>';
+      out += '<div class="hm-toggle">';
+      out += '<button class="filter-btn' + (window._hmMode === 'ip' ? ' active' : '') + '" onclick="window._hmMode=\'ip\';document.getElementById(\'hm-grid\').innerHTML=window._buildHeatmap();document.querySelectorAll(\'.hm-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">Unique IPs</button>';
+      out += '<button class="filter-btn' + (window._hmMode === 'pv' ? ' active' : '') + '" onclick="window._hmMode=\'pv\';document.getElementById(\'hm-grid\').innerHTML=window._buildHeatmap();document.querySelectorAll(\'.hm-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">Pageviews</button>';
+      out += '</div></div>';
+      out += '<div id="hm-grid">' + window._buildHeatmap() + '</div>';
       out += '</div>';
     }
 
