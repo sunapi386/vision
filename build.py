@@ -265,6 +265,24 @@ PULLQUOTES = {
     6: ("The question is not whether this infrastructure gets built. It is whether it gets designed.", "On what comes next"),
 }
 
+ABSTRACT_PARAGRAPHS = [
+    '<strong>AI is reshaping who does work, not just where it happens.</strong> Agents draft contracts, triage patients, process invoices, write reports. The revolution is here. But when Agent A calls Agent B calls Agent C across three organizations &mdash; nobody can account for what happened, what it cost, or whether the data was handled correctly.',
+    'This is not a feature gap. It is a <strong>category gap</strong> &mdash; the same kind of gap that double-entry bookkeeping filled for commerce, that TLS filled for the internet, that container standards filled for software deployment.',
+    'Seven independent forces &mdash; regulatory, economic, safety, legal, environmental, geopolitical, enterprise &mdash; are converging on the same requirement: <strong>standardized agent accountability.</strong> None of them are coordinating. They all need the same infrastructure.',
+    'This document traces the pattern: the world has changed, a void exists in the infrastructure, history shows how that void always gets filled, and a specific seven-layer stack is what the agent economy requires. It examines the transitions &mdash; organizational, human, governmental, economic &mdash; that must happen simultaneously. And it projects what work looks like when the infrastructure exists.',
+    'The accountability layer will be built. The question is whether it is designed intentionally as a coherent stack, or cobbled together from incompatible patches.',
+]
+
+AUDIO_SLUGS = {
+    "front-matter": "part00-front-matter",
+    "part1-world-changed": "part01-world-changed",
+    "part2-the-void": "part02-the-void",
+    "part3-the-pattern": "part03-the-pattern",
+    "part4-the-stack": "part04-the-stack",
+    "part5-transitions": "part05-transitions",
+    "part6-what-comes-next": "part06-what-comes-next",
+}
+
 
 def read_mdx(path: Path) -> str:
     text = path.read_text()
@@ -984,11 +1002,7 @@ TEMPLATE = """<!DOCTYPE html>
 <div class="abstract" id="abstract">
   <div class="abstract-label">Abstract</div>
   <div class="abstract-text">
-    <p><strong>AI is reshaping who does work, not just where it happens.</strong> Agents draft contracts, triage patients, process invoices, write reports. The revolution is here. But when Agent A calls Agent B calls Agent C across three organizations &mdash; nobody can account for what happened, what it cost, or whether the data was handled correctly.</p>
-    <p>This is not a feature gap. It is a <strong>category gap</strong> &mdash; the same kind of gap that double-entry bookkeeping filled for commerce, that TLS filled for the internet, that container standards filled for software deployment.</p>
-    <p>Seven independent forces &mdash; regulatory, economic, safety, legal, environmental, geopolitical, enterprise &mdash; are converging on the same requirement: <strong>standardized agent accountability.</strong> None of them are coordinating. They all need the same infrastructure.</p>
-    <p>This document traces the pattern: the world has changed, a void exists in the infrastructure, history shows how that void always gets filled, and a specific seven-layer stack is what the agent economy requires. It examines the transitions &mdash; organizational, human, governmental, economic &mdash; that must happen simultaneously. And it projects what work looks like when the infrastructure exists.</p>
-    <p>The accountability layer will be built. The question is whether it is designed intentionally as a coherent stack, or cobbled together from incompatible patches.</p>
+{abstract_content}
   </div>
 </div>
 
@@ -1019,11 +1033,42 @@ TEMPLATE = """<!DOCTYPE html>
 <script>
 (function() {
   // analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  var _t0 = Date.now();
   function track(event, data) {
-    var payload = Object.assign({ event: event, page: 'book' }, data || {});
+    var payload = Object.assign({ event: event, page: 'book', sid: _sid }, data || {});
     try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
   }
-  track('pageview');
+  track('pageview', { path: location.pathname });
+
+  // heartbeat: time-on-page + scroll depth every 30s
+  var _maxScroll = 0;
+  window.addEventListener('scroll', function() {
+    var pct = Math.round(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100);
+    if (pct > _maxScroll) _maxScroll = pct;
+  }, { passive: true });
+  setInterval(function() {
+    if (document.hidden) return;
+    track('heartbeat', { elapsed: Math.round((Date.now() - _t0) / 1000), scroll: _maxScroll });
+  }, 30000);
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) track('leave', { elapsed: Math.round((Date.now() - _t0) / 1000), scroll: _maxScroll });
+  });
+
+  // section visibility: track when each part enters the viewport
+  var _seenParts = {};
+  if (window.IntersectionObserver) {
+    var partObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting && !_seenParts[e.target.id]) {
+          _seenParts[e.target.id] = true;
+          track('section_view', { section: e.target.id, elapsed: Math.round((Date.now() - _t0) / 1000) });
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('section.chapter-break').forEach(function(el) { partObs.observe(el); });
+  }
 
 {shared_js}
 
@@ -1107,14 +1152,7 @@ TEMPLATE = """<!DOCTYPE html>
   });
 
   // --- Inline audio player ---
-  var apChapters = [
-    { part: 1, title: 'The World Has Changed', file: 'audio/part01-world-changed.mp3', duration: 3275.6, sectionId: 'the-world-has-changed' },
-    { part: 2, title: 'The Void', file: 'audio/part02-the-void.mp3', duration: 4121.9, sectionId: 'the-void' },
-    { part: 3, title: 'The Pattern', file: 'audio/part03-the-pattern.mp3', duration: 2721.2, sectionId: 'the-pattern' },
-    { part: 4, title: 'What the Stack Requires', file: 'audio/part04-the-stack.mp3', duration: 5045.4, sectionId: 'what-the-stack-requires' },
-    { part: 5, title: 'The Transitions', file: 'audio/part05-transitions.mp3', duration: 6468.9, sectionId: 'the-transitions' },
-    { part: 6, title: 'What Comes Next', file: 'audio/part06-what-comes-next.mp3', duration: 4217.2, sectionId: 'what-comes-next' }
-  ];
+  var apChapters = {chapters_js};
   var apSpeeds = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
   var apSpeedIdx = 1;
   var apCurrent = 0;
@@ -1162,7 +1200,7 @@ TEMPLATE = """<!DOCTYPE html>
     var ch = apChapters[idx];
     apAudio.src = ch.file;
     apTitle.textContent = ch.title;
-    apNum.textContent = 'Part ' + ch.part + ' of ' + apChapters.length;
+    apNum.textContent = ch.part > 0 ? 'Part ' + ch.part + ' of ' + (apChapters.length - 1) : '';
     apProgressFill.style.width = '0%';
     apTimeCur.textContent = '0:00';
     apTimeRem.textContent = '-' + apFmt(ch.duration);
@@ -1180,7 +1218,7 @@ TEMPLATE = """<!DOCTYPE html>
     apChapters.forEach(function(ch, i) {
       var el = document.createElement('div');
       el.className = 'ap-chapter-item' + (i === apCurrent ? ' active' : '');
-      el.innerHTML = '<span>Part ' + ch.part + ': ' + ch.title + '</span><span class="ap-chapter-dur">' + apFmt(ch.duration) + '</span>';
+      el.innerHTML = '<span>' + (ch.part > 0 ? 'Part ' + ch.part + ': ' : '') + ch.title + '</span><span class="ap-chapter-dur">' + apFmt(ch.duration) + '</span>';
       el.addEventListener('click', function() { apLoadChapter(i); apAudio.play(); apChapterList.classList.remove('open'); });
       apChapterList.appendChild(el);
     });
@@ -1222,17 +1260,26 @@ TEMPLATE = """<!DOCTYPE html>
   apPlay.addEventListener('click', function() { if (apAudio.paused) apAudio.play(); else apAudio.pause(); });
   apAudio.addEventListener('play', function() {
     apPlay.innerHTML = '&#10074;&#10074;';
-    track('play', { chapter: apCurrent + 1, title: apChapters[apCurrent].title, time: Math.round(apAudio.currentTime) });
+    track('play', { chapter: apChapters[apCurrent].part, title: apChapters[apCurrent].title, time: Math.round(apAudio.currentTime) });
   });
   apAudio.addEventListener('pause', function() { apPlay.innerHTML = '&#9654;'; apSaveState(); });
+  var _audioMilestones = {};
   apAudio.addEventListener('timeupdate', function() {
     var dur = apAudio.duration || apChapters[apCurrent].duration;
     apProgressFill.style.width = (apAudio.currentTime / dur * 100) + '%';
     apTimeCur.textContent = apFmt(apAudio.currentTime);
     apTimeRem.textContent = '-' + apFmt(dur - apAudio.currentTime);
+    var pct = Math.floor(apAudio.currentTime / dur * 100);
+    var key = apCurrent + '-';
+    [25, 50, 75].forEach(function(m) {
+      if (pct >= m && !_audioMilestones[key + m]) {
+        _audioMilestones[key + m] = true;
+        track('audio_progress', { chapter: apChapters[apCurrent].part, pct: m });
+      }
+    });
   });
   apAudio.addEventListener('ended', function() {
-    track('complete', { chapter: apCurrent + 1, title: apChapters[apCurrent].title });
+    track('complete', { chapter: apChapters[apCurrent].part, title: apChapters[apCurrent].title });
     if (apCurrent < apChapters.length - 1) { apLoadChapter(apCurrent + 1); apAudio.play(); }
     else { apPlay.innerHTML = '&#9654;'; }
   });
@@ -1308,7 +1355,7 @@ TEMPLATE = """<!DOCTYPE html>
   });
 
   function apSyncParagraph() {
-    var timings = apAlignments[apCurrent + 1];
+    var timings = apAlignments[apCurrent];
     if (!timings) return;
     var t = apAudio.currentTime;
     var found = null;
@@ -1320,7 +1367,7 @@ TEMPLATE = """<!DOCTYPE html>
         if (timings[k] && t >= timings[k][0]) { found = k; break; }
       }
     }
-    var paraId = found !== null ? 'ab-' + (apCurrent + 1) + '-' + found : null;
+    var paraId = found !== null ? 'ab-' + apCurrent + '-' + found : null;
     if (paraId === apActivePara) return;
     if (apActivePara) { var old = document.getElementById(apActivePara); if (old) old.classList.remove('ab-active'); }
     apActivePara = paraId;
@@ -1353,8 +1400,8 @@ TEMPLATE = """<!DOCTYPE html>
     var startTime = timings[idx][0];
     apPlayer.classList.add('visible');
     apToggle.classList.add('active');
-    if (apCurrent + 1 !== ch) {
-      apLoadChapter(ch - 1);
+    if (apCurrent !== ch) {
+      apLoadChapter(ch);
       apAudio.addEventListener('loadedmetadata', function onLoad() {
         apAudio.currentTime = startTime;
         apAudio.play();
@@ -1386,13 +1433,16 @@ def align_paragraphs_to_timestamps(chapter_paras: dict[int, list[str]]) -> dict:
     """Load per-paragraph timestamps generated by tts.py."""
     import json as _json
     ts_dir = VISION_DIR / "timestamps"
-    chapter_slugs = {
-        1: "part01-world-changed", 2: "part02-the-void", 3: "part03-the-pattern",
-        4: "part04-the-stack", 5: "part05-transitions", 6: "part06-what-comes-next",
-    }
+    ch_to_slug = {0: AUDIO_SLUGS["front-matter"]}
+    for ch_slug, _ in CHAPTERS:
+        num = int(ch_slug.split("-")[0].replace("part", ""))
+        ch_to_slug[num] = AUDIO_SLUGS[ch_slug]
     result = {}
     for ch_num in chapter_paras:
-        ts_file = ts_dir / f"{chapter_slugs[ch_num]}.json"
+        slug = ch_to_slug.get(ch_num)
+        if not slug:
+            continue
+        ts_file = ts_dir / f"{slug}.json"
         if not ts_file.exists():
             continue
         timings = _json.loads(ts_file.read_text())
@@ -1426,6 +1476,35 @@ def build_preface() -> str:
     return html
 
 
+def build_front_matter() -> tuple[str, str, list[str]]:
+    """Build abstract + preface with ab-0-{idx} paragraph tagging.
+    Returns (abstract_html, preface_html, para_texts).
+    """
+    counter = [0]
+    paras: list[str] = []
+
+    abstract_parts = []
+    for p_html in ABSTRACT_PARAGRAPHS:
+        idx = counter[0]
+        counter[0] += 1
+        plain = re.sub(r'<[^>]+>', '', p_html).strip()
+        paras.append(plain)
+        abstract_parts.append(f'    <p id="ab-0-{idx}">{p_html}</p>')
+    abstract_html = '\n'.join(abstract_parts)
+
+    preface_raw = build_preface()
+    def tag_fm(m):
+        content = m.group(1)
+        idx = counter[0]
+        counter[0] += 1
+        plain = re.sub(r'<[^>]+>', '', content).strip()
+        paras.append(plain)
+        return f'<p id="ab-0-{idx}">{content}</p>'
+    preface_html = re.sub(r'<p>(.*?)</p>', tag_fm, preface_raw, flags=re.DOTALL)
+
+    return abstract_html, preface_html, paras
+
+
 def build_back_matter() -> tuple[str, list[dict]]:
     md = markdown.Markdown(extensions=['tables', 'smarty'])
     sections = []
@@ -1447,6 +1526,27 @@ def build_back_matter() -> tuple[str, list[dict]]:
         sections.append('</div>')
         toc_entries.append({"id": section_id, "title": title})
     return '\n'.join(sections), toc_entries
+
+
+def build_chapters_js() -> str:
+    """Build the apChapters JS array from manifest (if available) or defaults."""
+    import json as _json
+    audio_dir = VISION_DIR / "audio"
+    manifest_path = audio_dir / "manifest.json"
+    durations = {}
+    if manifest_path.exists():
+        manifest = _json.loads(manifest_path.read_text())
+        for ch in manifest.get("chapters", []):
+            durations[ch.get("part", 0)] = ch.get("duration", 0)
+
+    entries = []
+    entries.append("{ part: 0, title: 'Abstract \\u0026 Preface', file: 'audio/part00-front-matter.mp3', duration: %.1f, sectionId: 'abstract' }" % durations.get(0, 0))
+    for i, (ch_slug, title) in enumerate(CHAPTERS, 1):
+        audio_slug = AUDIO_SLUGS[ch_slug]
+        dur = durations.get(i, 0)
+        section_id = slugify(title)
+        entries.append("{ part: %d, title: '%s', file: 'audio/%s.mp3', duration: %.1f, sectionId: '%s' }" % (i, title, audio_slug, dur, section_id))
+    return '[\n    ' + ',\n    '.join(entries) + '\n  ]'
 
 
 INDEX_CONTENT_FILE = VISION_DIR / "index-content.html"
@@ -1749,12 +1849,16 @@ def main():
     content, toc_entries, chapter_paras = build_content()
 
     print("Building front matter...")
-    preface_html = build_preface()
+    abstract_html, preface_html, fm_paras = build_front_matter()
+    chapter_paras[0] = fm_paras
 
     print("Building back matter...")
     backmatter_html, backmatter_toc = build_back_matter()
 
     toc_html = build_toc_html(toc_entries, backmatter_toc)
+
+    print("Building audio player chapters...")
+    chapters_js = build_chapters_js()
 
     print("Aligning paragraphs to audio timestamps...")
     alignments = align_paragraphs_to_timestamps(chapter_paras)
@@ -1766,13 +1870,16 @@ def main():
         .replace("{shared_js}", shared_js)
         .replace("{nav}", book_nav)
         .replace("{dedication}", "")
+        .replace("{abstract_content}", abstract_html)
         .replace("{preface}", preface_html)
         .replace("{toc}", toc_html)
+        .replace("{chapters_js}", chapters_js)
         .replace("{content}", content)
         .replace("{backmatter}", backmatter_html)
         .replace("{alignments}", alignment_js))
     OUT_FILE.write_text(html)
     print(f"Written to {OUT_FILE}")
+    print(f"  {len(fm_paras)} front-matter paragraphs tagged (ab-0-*)")
     print(f"  {len(toc_entries)} chapter/section TOC entries + {len(backmatter_toc)} back matter entries")
     word_count = len(re.findall(r'\w+', content))
     print(f"  ~{word_count:,} words")

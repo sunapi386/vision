@@ -38,6 +38,7 @@ CHAPTERS = [
 ]
 
 AUDIO_SLUGS = {
+    "front-matter": "part00-front-matter",
     "part1-world-changed": "part01-world-changed",
     "part2-the-void": "part02-the-void",
     "part3-the-pattern": "part03-the-pattern",
@@ -129,6 +130,47 @@ def extract_narration_units(chapter_num: int, chapter_slug: str, chapter_title: 
         html = md_converter.convert(text)
         md_converter.reset()
         process_html(html)
+
+    return units, para_texts
+
+
+def extract_front_matter_units() -> tuple[list[dict], list[str]]:
+    """Extract abstract + preface narration units for TTS.
+    Uses ABSTRACT_PARAGRAPHS from build.py for the abstract,
+    and front-matter/preface.mdx for the preface.
+    """
+    import sys
+    sys.path.insert(0, str(VISION_DIR))
+    from build import ABSTRACT_PARAGRAPHS
+
+    units: list[dict] = []
+    para_texts: list[str] = []
+    para_idx = 0
+
+    units.append({"kind": "heading", "text": "Abstract"})
+    for p_html in ABSTRACT_PARAGRAPHS:
+        raw_plain = re.sub(r'<[^>]+>', '', p_html).strip()
+        tts_text = htmllib.unescape(raw_plain)
+        units.append({"kind": "para", "text": tts_text, "para_idx": para_idx})
+        para_texts.append(raw_plain)
+        para_idx += 1
+
+    units.append({"kind": "heading", "text": "Preface"})
+    preface_file = VISION_DIR / "front-matter" / "preface.mdx"
+    if preface_file.exists():
+        text = read_mdx(preface_file)
+        text = re.sub(r'^#\s+.*$', '', text, count=1, flags=re.MULTILINE).strip()
+        md_converter = markdown.Markdown(extensions=["smarty"])
+        html = md_converter.convert(text)
+        for m in re.finditer(r"<p\b[^>]*>(.*?)</p>", html, re.DOTALL):
+            content = m.group(1)
+            raw_plain = re.sub(r"<[^>]+>", "", content).strip()
+            tts_text = htmllib.unescape(raw_plain)
+            if not raw_plain or len(raw_plain) < 3:
+                continue
+            units.append({"kind": "para", "text": tts_text, "para_idx": para_idx})
+            para_texts.append(raw_plain)
+            para_idx += 1
 
     return units, para_texts
 
@@ -234,21 +276,22 @@ def verify_extraction():
     import sys
 
     sys.path.insert(0, str(VISION_DIR))
-    from build import build_content
+    from build import build_content, build_front_matter
 
-    print("Running build_content() for verification...")
+    print("Running build_content() + build_front_matter() for verification...")
     _, _, build_chapter_paras = build_content()
+    _, _, build_fm_paras = build_front_matter()
+    build_chapter_paras[0] = build_fm_paras
 
     ok = True
-    for i, (chapter_slug, chapter_title) in enumerate(CHAPTERS, 1):
-        units, para_texts = extract_narration_units(i, chapter_slug, chapter_title)
-        build_paras = build_chapter_paras.get(i, [])
+
+    def check(label, para_texts, build_paras, units):
+        nonlocal ok
         n_h = sum(1 for u in units if u["kind"] == "heading")
         n_p = sum(1 for u in units if u["kind"] == "para")
-
         if len(para_texts) != len(build_paras):
             ok = False
-            print(f"  ch{i}: MISMATCH count tts={len(para_texts)} build={len(build_paras)}")
+            print(f"  {label}: MISMATCH count tts={len(para_texts)} build={len(build_paras)}")
             for j in range(min(len(para_texts), len(build_paras))):
                 if para_texts[j][:50] != build_paras[j][:50]:
                     print(f"    First diff at idx {j}:")
@@ -262,15 +305,51 @@ def verify_extraction():
                     mismatches += 1
             if mismatches:
                 ok = False
-                print(f"  ch{i}: {mismatches} text mismatches ({n_h}h + {n_p}p)")
+                print(f"  {label}: {mismatches} text mismatches ({n_h}h + {n_p}p)")
             else:
-                print(f"  ch{i}: OK {n_h} headings + {n_p} paragraphs")
+                print(f"  {label}: OK {n_h} headings + {n_p} paragraphs")
+
+    fm_units, fm_paras = extract_front_matter_units()
+    check("fm", fm_paras, build_chapter_paras.get(0, []), fm_units)
+
+    for i, (chapter_slug, chapter_title) in enumerate(CHAPTERS, 1):
+        units, para_texts = extract_narration_units(i, chapter_slug, chapter_title)
+        check(f"ch{i}", para_texts, build_chapter_paras.get(i, []), units)
 
     if ok:
         print("\nAll chapters verified.")
     else:
         print("\nWARNING: mismatches found. Fix extraction before generating audio.")
     return ok
+
+
+def synthesize_and_export(pipeline, part_num: int, slug_key: str, label: str, units: list[dict], durations: dict, all_timings: dict):
+    """Synthesize a chapter/section, export MP3 + timestamps."""
+    n_h = sum(1 for u in units if u["kind"] == "heading")
+    n_p = sum(1 for u in units if u["kind"] == "para")
+    print(f"  {n_h} headings + {n_p} paragraphs = {len(units)} narration units")
+
+    audio, timings = synthesize_chapter(pipeline, units)
+    audio_slug = AUDIO_SLUGS[slug_key]
+
+    if len(audio) > 0:
+        wav_path = AUDIO_OUT / f"{audio_slug}.wav"
+        mp3_path = AUDIO_OUT / f"{audio_slug}.mp3"
+
+        sf.write(str(wav_path), audio, SAMPLE_RATE)
+        duration = len(audio) / SAMPLE_RATE
+        durations[part_num] = round(duration, 1)
+        print(f"  WAV: {wav_path.name} ({duration:.0f}s)")
+
+        wav_to_mp3(wav_path, mp3_path)
+        if mp3_path.exists():
+            print(f"  MP3: {mp3_path.name} ({mp3_path.stat().st_size / 1024 / 1024:.1f} MB)")
+            wav_path.unlink()
+
+        all_timings[part_num] = timings
+
+        ts_path = TS_OUT / f"{audio_slug}.json"
+        ts_path.write_text(json.dumps(timings, indent=2))
 
 
 def generate_audio():
@@ -282,25 +361,40 @@ def generate_audio():
     CACHE_DIR.mkdir(exist_ok=True)
     TS_OUT.mkdir(exist_ok=True)
 
-    # Verify extraction first
     sys.path.insert(0, str(VISION_DIR))
-    from build import build_content
+    from build import build_content, build_front_matter
 
     print("Verifying paragraph extraction against build.py...")
     _, _, build_chapter_paras = build_content()
+    _, _, build_fm_paras = build_front_matter()
+    build_chapter_paras[0] = build_fm_paras
 
     print("\nLoading Kokoro English pipeline...")
     pipeline = KPipeline(lang_code="a")
 
     durations = {}
     all_timings = {}
+    total_parts = len(CHAPTERS) + 1
+
+    print(f"\n[1/{total_parts}] front-matter (abstract + preface)")
+    fm_units, fm_paras = extract_front_matter_units()
+    build_paras = build_chapter_paras.get(0, [])
+    if len(fm_paras) != len(build_paras):
+        print(f"  WARNING: paragraph count mismatch tts={len(fm_paras)} build={len(build_paras)}")
+    else:
+        mismatches = sum(1 for a, b in zip(fm_paras, build_paras) if a != b)
+        if mismatches:
+            print(f"  WARNING: {mismatches} paragraph text mismatches")
+        else:
+            print(f"  Verified: {len(fm_paras)} paragraphs match build.py")
+    synthesize_and_export(pipeline, 0, "front-matter", "front-matter", fm_units, durations, all_timings)
 
     for i, (chapter_slug, chapter_title) in enumerate(CHAPTERS, 1):
         chapter_dir = VISION_DIR / chapter_slug
         if not chapter_dir.exists():
             continue
 
-        print(f"\n[{i}/6] {chapter_slug}")
+        print(f"\n[{i + 1}/{total_parts}] {chapter_slug}")
         units, para_texts = extract_narration_units(i, chapter_slug, chapter_title)
 
         build_paras = build_chapter_paras.get(i, [])
@@ -313,37 +407,20 @@ def generate_audio():
             else:
                 print(f"  Verified: {len(para_texts)} paragraphs match build.py")
 
-        n_h = sum(1 for u in units if u["kind"] == "heading")
-        n_p = sum(1 for u in units if u["kind"] == "para")
-        print(f"  {n_h} headings + {n_p} paragraphs = {len(units)} narration units")
-
-        audio, timings = synthesize_chapter(pipeline, units)
-        audio_slug = AUDIO_SLUGS[chapter_slug]
-
-        if len(audio) > 0:
-            wav_path = AUDIO_OUT / f"{audio_slug}.wav"
-            mp3_path = AUDIO_OUT / f"{audio_slug}.mp3"
-
-            sf.write(str(wav_path), audio, SAMPLE_RATE)
-            duration = len(audio) / SAMPLE_RATE
-            durations[i] = round(duration, 1)
-            print(f"  WAV: {wav_path.name} ({duration:.0f}s)")
-
-            wav_to_mp3(wav_path, mp3_path)
-            if mp3_path.exists():
-                print(f"  MP3: {mp3_path.name} ({mp3_path.stat().st_size / 1024 / 1024:.1f} MB)")
-                wav_path.unlink()
-
-            all_timings[i] = timings
-
-            ts_path = TS_OUT / f"{audio_slug}.json"
-            ts_path.write_text(json.dumps(timings, indent=2))
+        synthesize_and_export(pipeline, i, chapter_slug, chapter_slug, units, durations, all_timings)
 
     manifest = {
         "title": "Trust at Scale",
         "subtitle": "The missing infrastructure for the AI economy",
         "voice": VOICE,
         "chapters": [
+            {
+                "part": 0,
+                "title": "Abstract & Preface",
+                "file": f"{AUDIO_SLUGS['front-matter']}.mp3",
+                "duration": durations.get(0, 0),
+            }
+        ] + [
             {
                 "part": idx,
                 "title": title,

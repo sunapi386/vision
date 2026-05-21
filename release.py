@@ -7,6 +7,7 @@ Usage:
     python3 release.py deploy       # deploy only
     python3 release.py tts          # regenerate audio + build + verify + deploy
     python3 release.py verify       # check paragraph IDs, timestamps, audio sync
+    python3 release.py stats        # fetch and summarize analytics
     python3 release.py setup        # install dependencies with uv
     python3 release.py clean        # convert stale WAVs to OGG, remove temp files
 """
@@ -28,6 +29,7 @@ DEPLOY_FILES = [
     "book.html",
     "index.html",
     "book-zh.html",
+    "analytics.html",
     "sw.js",
     "sw-zh.js",
 ]
@@ -73,7 +75,32 @@ def setup():
 
     run([uv, "pip", "install", "-e", ".[tts]", "--break-system-packages"],
         cwd=str(VISION_DIR))
-    print("\nDependencies installed. Run 'python3 release.py' to build and deploy.")
+
+    # spacy model (Kokoro dependency) - install if missing
+    print("  Checking spacy model...")
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", "import spacy; spacy.load('en_core_web_sm')"],
+            capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            print("  Installing en_core_web_sm...")
+            run([uv, "pip", "install", "--break-system-packages",
+                 "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"])
+        else:
+            print("  en_core_web_sm: OK")
+    except Exception as e:
+        print(f"  WARNING: spacy check failed: {e}")
+
+    # ffmpeg (required for MP3 export via pydub/soundfile)
+    print("  Checking ffmpeg...")
+    if shutil.which("ffmpeg"):
+        print("  ffmpeg: OK")
+    else:
+        print("  WARNING: ffmpeg not found. TTS MP3 export will fail.")
+        print("  Install it: sudo apt install ffmpeg")
+
+    print("\nSetup complete. Run 'python3 release.py' to build and deploy.")
 
 
 def clean():
@@ -116,20 +143,21 @@ def verify():
 
     html = book.read_text()
 
-    # 1. Paragraph IDs per chapter
+    # 1. Paragraph IDs per chapter (0 = front-matter, 1-6 = parts)
     print("  Checking paragraph IDs...")
     para_counts = {}
-    for ch in range(1, NUM_CHAPTERS + 1):
+    for ch in range(0, NUM_CHAPTERS + 1):
+        label = "fm" if ch == 0 else f"ch{ch}"
         ids = [int(x) for x in re.findall(rf'id="ab-{ch}-(\d+)"', html)]
         if not ids:
-            errors.append(f"ch{ch}: no ab- paragraph IDs found")
+            errors.append(f"{label}: no ab- paragraph IDs found")
             continue
         expected = list(range(max(ids) + 1))
         missing = set(expected) - set(ids)
         if missing:
-            errors.append(f"ch{ch}: missing paragraph IDs: {sorted(missing)[:5]}...")
+            errors.append(f"{label}: missing paragraph IDs: {sorted(missing)[:5]}...")
         para_counts[ch] = len(ids)
-        print(f"    ch{ch}: {len(ids)} paragraphs (ab-{ch}-0 .. ab-{ch}-{max(ids)})")
+        print(f"    {label}: {len(ids)} paragraphs (ab-{ch}-0 .. ab-{ch}-{max(ids)})")
 
     # 2. Alignment data embedded
     print("  Checking alignment data...")
@@ -138,20 +166,21 @@ def verify():
         errors.append("no apAlignments found in book.html")
     else:
         alignments = json.loads(m.group(1))
-        for ch in range(1, NUM_CHAPTERS + 1):
+        for ch in range(0, NUM_CHAPTERS + 1):
+            label = "fm" if ch == 0 else f"ch{ch}"
             key = str(ch)
             if key not in alignments:
-                errors.append(f"ch{ch}: no alignment data")
+                errors.append(f"{label}: no alignment data")
                 continue
             timings = alignments[key]
             n_ts = len(timings)
             n_para = para_counts.get(ch, 0)
             n_null = sum(1 for t in timings if t is None)
             if n_ts != n_para:
-                errors.append(f"ch{ch}: {n_ts} timestamps vs {n_para} paragraph IDs")
+                errors.append(f"{label}: {n_ts} timestamps vs {n_para} paragraph IDs")
             if n_null > 0:
-                errors.append(f"ch{ch}: {n_null} paragraphs with no audio")
-            print(f"    ch{ch}: {n_ts} timestamps, {n_ts - n_null} with audio")
+                errors.append(f"{label}: {n_null} paragraphs with no audio")
+            print(f"    {label}: {n_ts} timestamps, {n_ts - n_null} with audio")
 
     # 3. Click-to-seek handler
     print("  Checking click-to-seek handler...")
@@ -191,17 +220,19 @@ def verify():
     print("  Checking timestamp files...")
     ts_dir = VISION_DIR / "timestamps"
     slugs = {
+        0: "part00-front-matter",
         1: "part01-world-changed", 2: "part02-the-void", 3: "part03-the-pattern",
         4: "part04-the-stack", 5: "part05-transitions", 6: "part06-what-comes-next",
     }
     for ch, slug in slugs.items():
+        label = "fm" if ch == 0 else f"ch{ch}"
         ts_file = ts_dir / f"{slug}.json"
         if not ts_file.exists():
             errors.append(f"timestamps/{slug}.json missing")
             continue
         ts_data = json.loads(ts_file.read_text())
         if ts_data and isinstance(ts_data[0], dict):
-            errors.append(f"ch{ch}: timestamps still in old Whisper format")
+            errors.append(f"{label}: timestamps still in old Whisper format")
 
     # 7. No stale WAVs
     print("  Checking for stale WAVs...")
@@ -254,6 +285,95 @@ def tts():
     clean()
 
 
+def stats():
+    """Fetch and summarize analytics from the server."""
+    from collections import defaultdict
+    from datetime import datetime, timedelta
+
+    print("\n--- Stats ---")
+    host = resolve_host()
+
+    result = subprocess.run(
+        ["ssh", host, f"cat {DEPLOY_PATH}analytics.jsonl"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        print("  Could not read analytics.jsonl from server")
+        sys.exit(1)
+
+    events = []
+    for line in result.stdout.strip().split("\n"):
+        if not line:
+            continue
+        try:
+            events.append(json.loads(line))
+        except Exception:
+            pass
+
+    if not events:
+        print("  No events recorded yet")
+        return
+
+    now = datetime.fromisoformat(events[-1]["ts"].replace("Z", "+00:00"))
+    day_ago = now - timedelta(days=1)
+    week_ago = now - timedelta(days=7)
+
+    sessions = defaultdict(lambda: {"events": [], "pages": set(), "max_scroll": 0, "audio_chapters": set(), "duration": 0})
+    event_counts = defaultdict(int)
+    section_views = defaultdict(int)
+    audio_plays = defaultdict(int)
+
+    for e in events:
+        event_counts[e.get("event", "unknown")] += 1
+        sid = e.get("sid")
+        if sid:
+            sessions[sid]["events"].append(e)
+            sessions[sid]["pages"].add(e.get("page", ""))
+            if e.get("event") == "heartbeat":
+                sessions[sid]["max_scroll"] = max(sessions[sid]["max_scroll"], e.get("scroll", 0))
+                sessions[sid]["duration"] = max(sessions[sid]["duration"], e.get("elapsed", 0))
+            if e.get("event") == "section_view":
+                section_views[e.get("section", "")] += 1
+            if e.get("event") == "play":
+                audio_plays[e.get("chapter", "")] += 1
+                sessions[sid]["audio_chapters"].add(e.get("chapter", ""))
+
+    total_sessions = len(sessions)
+    recent_sessions = sum(1 for s in sessions.values()
+                          if any(e.get("ts", "") > day_ago.isoformat() for e in s["events"]))
+
+    print(f"  Total events: {len(events)}")
+    print(f"  Event breakdown: {dict(event_counts)}")
+    print(f"  Unique sessions (all time): {total_sessions}")
+    print(f"  Sessions (last 24h): {recent_sessions}")
+
+    if sessions:
+        durations = [s["duration"] for s in sessions.values() if s["duration"] > 0]
+        scrolls = [s["max_scroll"] for s in sessions.values() if s["max_scroll"] > 0]
+        listeners = [s for s in sessions.values() if s["audio_chapters"]]
+
+        if durations:
+            avg_dur = sum(durations) / len(durations)
+            print(f"  Avg session duration: {avg_dur:.0f}s ({avg_dur/60:.1f}min)")
+            print(f"  Max session duration: {max(durations)}s ({max(durations)/60:.1f}min)")
+        if scrolls:
+            print(f"  Avg max scroll: {sum(scrolls)/len(scrolls):.0f}%")
+            print(f"  Readers reaching bottom (90%+): {sum(1 for s in scrolls if s >= 90)}/{len(scrolls)}")
+        if listeners:
+            print(f"  Audio listeners: {len(listeners)}/{total_sessions} sessions")
+            print(f"  Avg chapters listened: {sum(len(s['audio_chapters']) for s in listeners)/len(listeners):.1f}")
+
+    if section_views:
+        print("\n  Section reach:")
+        for section, count in sorted(section_views.items(), key=lambda x: -x[1]):
+            print(f"    {section}: {count} viewers")
+
+    if audio_plays:
+        print("\n  Audio plays by chapter:")
+        for ch, count in sorted(audio_plays.items()):
+            print(f"    {ch}: {count} plays")
+
+
 def deploy():
     print("\n--- Deploy ---")
     host = resolve_host()
@@ -291,6 +411,8 @@ def main():
         deploy()
     elif mode == "verify":
         verify()
+    elif mode == "stats":
+        stats()
     elif mode == "setup":
         setup()
     elif mode == "clean":
