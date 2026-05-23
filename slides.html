@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accountable Agents — Jason Sun | Upper Bound 2026</title>
+<meta name="description" content="Accountable Agents: A Protocol for Trust in Autonomous AI. Talk by Jason Sun at Upper Bound 2026, Edmonton.">
+<meta property="og:title" content="Accountable Agents — Jason Sun">
+<meta property="og:description" content="A Protocol for Trust in Autonomous AI. Upper Bound 2026.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jasonsun.org/slides.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 960px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 16px;
+  color: var(--text); text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.nav-links { display: flex; align-items: center; gap: 6px; }
+.nav-link {
+  font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 10px; border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--accent-dim); }
+.nav-link.active { color: var(--accent); }
+.nav-theme {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all 0.2s;
+}
+.nav-theme:hover { border-color: var(--border-strong); color: var(--text); }
+
+#progress {
+  position: fixed; top: var(--nav-height); left: 0; z-index: 299;
+  height: 2px; width: 0; background: var(--accent);
+  transition: width 0.1s linear;
+}
+
+.hero {
+  padding: calc(var(--nav-height) + 60px) 24px 40px;
+  text-align: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+.hero h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.hero .subtitle {
+  font-size: clamp(14px, 1.8vw, 18px);
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.hero .meta {
+  font-size: 13px;
+  color: var(--text-dimmer);
+}
+
+.slides-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.slide-item {
+  margin-bottom: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  transition: border-color 0.2s;
+}
+.slide-item:hover {
+  border-color: var(--border-strong);
+}
+.slide-item img {
+  width: 100%;
+  display: block;
+}
+.slide-num {
+  padding: 8px 16px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dimmer);
+  font-family: 'JetBrains Mono', monospace;
+}
+.slide-notes {
+  padding: 12px 16px 16px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+.slide-notes p {
+  margin-bottom: 8px;
+}
+.slide-notes p:last-child {
+  margin-bottom: 0;
+}
+
+.cta {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  text-align: center;
+}
+.cta p {
+  color: var(--text-dim);
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+.cta a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.cta a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .hero { padding-top: calc(var(--nav-height) + 32px); }
+  .slide-item { border-radius: 4px; margin-bottom: 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/slides.html" class="nav-link active">Slides</a>
+      <a href="/#about" class="nav-link">About</a>
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div id="progress"></div>
+
+<div class="hero">
+  <h1>Accountable Agents</h1>
+  <div class="subtitle">A Protocol for Trust in Autonomous AI</div>
+  <div class="meta">Upper Bound 2026 &middot; Edmonton &middot; May 21, 2026</div>
+</div>
+
+<div class="slides-container">
+
+  <div class="slide-item">
+    <img src="slides/slide-01.png" alt="Slide 1" loading="lazy">
+    <div class="slide-num">1 / 20</div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-02.png" alt="Slide 2" loading="lazy">
+    <div class="slide-num">2 / 20</div>
+    <div class="slide-notes">
+      <p>Every enterprise wants AI agents. None of them trust them enough to let them run. AI agents are doing a lot of the real work, but the problem is what we trust the AI to do or not.</p>
+      <p>Human business runs on trust. We don't work with people we don't trust. We have receipts, audits, provenance. The AI infrastructure stack is missing all of it.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-03.png" alt="Slide 3" loading="lazy">
+    <div class="slide-num">3 / 20</div>
+    <div class="slide-notes">
+      <p>University of Waterloo, computer science. After graduating, Apple in Cupertino, then Amazon Lab 126 in Sunnyvale working on infrastructure for robots. Now building accountability infrastructure for AI agents.</p>
+      <p>Most organizations aren't running agent workflows in production yet. By next year it should be closer to 80%, if we're building this trust layer right.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-04.png" alt="Slide 4" loading="lazy">
+    <div class="slide-num">4 / 20</div>
+    <div class="slide-notes">
+      <p>You don't do business with people you don't trust. Trust is codified by contracts, enforced by law, by authority. You can take them to court.</p>
+      <p>A consulting firm engages a client with an engagement letter. Subcontracts inherit context: what you can and can't do. NDAs, purchase orders. All of these contracts float downwards. Every step has documentation, and you can trace the chain where each piece of data went.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-05.png" alt="Slide 5" loading="lazy">
+    <div class="slide-num">5 / 20</div>
+    <div class="slide-notes">
+      <p>What does the agentic stack have right now? If I message some AI to run workflows, say process a document, what kind of data governance should this data have? Is it sensitive? HIPAA? PIA? The API doesn't know. As it goes further down (classification service, embedding database, maybe storing data) who knows? We have no idea, because there's no contract. The protocol is missing.</p>
+      <p>The fact that I'm in this room talking to every one of you is because we all speak English. It's a language we have in common. That's why we can communicate, and communication leads to trust. In English we can write those contracts. English is a protocol we all speak, but none of us invented it.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-06.png" alt="Slide 6" loading="lazy">
+    <div class="slide-num">6 / 20</div>
+    <div class="slide-notes">
+      <p><strong>Cost attribution.</strong> If you want to subcontract out, you negotiate on price. That's not being scoped in APIs right now. A founder friend set up OpenClaw and overnight had $135,000 in Gemini API calls. Google recognized this as systemic. Their APIs are now tiered because people are blowing up their API costs.</p>
+      <p><strong>Data provenance.</strong> You wouldn't accept a PhD thesis without citations. In Mata v. Avianca, a law firm used ChatGPT for document drafting. The citations were hallucinated. The judge fined them $5,000. Small fine, but the firm's trustworthiness and reputation took a huge hit.</p>
+      <p><strong>Governance boundaries.</strong> If a hospital network's AI is dealing with an insurance agent bot, and the insurance agent has sensitive data (medical records, PII), where's the governance? Usually there are retention records: retain for 18 months, then delete. If the insurance company doesn't get this context, how is it supposed to know?</p>
+      <p><strong>Safety enforcement.</strong> Because of the three pillars above, we can do enforcement. If an organization has policies, like a bot shouldn't give financial advice, now you can enforce it because the governance policies are part of the contract.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-07.png" alt="Slide 7" loading="lazy">
+    <div class="slide-num">7 / 20</div>
+    <div class="slide-notes">
+      <p>Stop asking "does the AI understand?" Start thinking about who's accountable if things go wrong. Who is liable if a lawsuit hits you?</p>
+      <p>If I own a dental shop and want a chatbot on my website, and that chatbot gives wrong information, medical advice, and somebody's injured, maybe dead. Who's liable? The dental office? The chatbot provider? The model behind it? Right now, there is no accountability.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-08.png" alt="Slide 8" loading="lazy">
+    <div class="slide-num">8 / 20</div>
+    <div class="slide-notes">
+      <p>The accountability envelope. Context flows down: budget limits, governance policies, consent, identity chain, provenance. My agent calls Agent A, which talks to Agent B. The human gate is there for the safety classifier. PASS, FLAG, or BLOCK. With all this context, we can do enforcement at runtime.</p>
+      <p>This is where human-in-the-loop comes in. Decisions AI shouldn't make, like giving refunds. A car manufacturer's chatbot was attacked to give out discounts through prompt injection. Discounts should be human-gated.</p>
+      <p>The principle: trust but verify. The bot does what we want, we trust it, but we verify it separately with a human in the loop. Results flow up: cost trees, citations, confidence scores.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-09.png" alt="Slide 9" loading="lazy">
+    <div class="slide-num">9 / 20</div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-10.png" alt="Slide 10" loading="lazy">
+    <div class="slide-num">10 / 20</div>
+    <div class="slide-notes">
+      <p>A multi-step workflow running on AceTeam. On the right-hand side is the receipt: nested blocks showing each step of the workflow and its results.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-11.png" alt="Slide 11" loading="lazy">
+    <div class="slide-num">11 / 20</div>
+    <div class="slide-notes">
+      <p>Human-gated approvals. Pending actions are first-class citizens. If a workflow node is stopped, it should escalate.</p>
+      <p>In manufacturing, any employee can pull the Andon cord to stop the assembly line when they see a quality or safety problem. Toyota built its reputation for reliability on this principle. The same concept applies to AI: any workflow that isn't confident in its decision should be able to raise a flag and say stop, let's escalate, bring in an expert.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-12.png" alt="Slide 12" loading="lazy">
+    <div class="slide-num">12 / 20</div>
+    <div class="slide-notes">
+      <p>The agent had doubt whether to proceed with a draft. So we review it. It's like checking your inbox: you check your approvals queue, and it's waiting for intervention. What if this is a one-way door, like an email blast? Very costly to undo. That's why you need the human gate.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-13.png" alt="Slide 13" loading="lazy">
+    <div class="slide-num">13 / 20</div>
+    <div class="slide-notes">
+      <p>Receipts and cost trees. Every node timed and priced. The grocery-store receipt for an agent workflow.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-14.png" alt="Slide 14" loading="lazy">
+    <div class="slide-num">14 / 20</div>
+    <div class="slide-notes">
+      <p><strong>Receipts.</strong> Go to the grocery store, walk out with groceries, you also get the receipt. Name, cost.</p>
+      <p><strong>Footnotes.</strong> Where did this piece of data come from?</p>
+      <p><strong>NDAs.</strong> Buy a carton of milk. It says put it in the fridge. That's governance policy. It expires, you throw it away after. We're missing that in the agent tech stack.</p>
+      <p><strong>Verdicts.</strong> Third-party trust-and-verify. Buy an apple pie, somebody certifies it's safe. The FDA or someone. That's the safety attestation.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-15.png" alt="Slide 15" loading="lazy">
+    <div class="slide-num">15 / 20</div>
+    <div class="slide-notes">
+      <p>Accounting has developed in key stages throughout history. Double-entry bookkeeping from the Merchants of Venice. SWIFT for banking transfers. SSL/TLS from Netscape. The company is gone, but the protocol survived. Docker/OCI for containers, adopted by every major player.</p>
+      <p>Agents? What is the accountability protocol for agents?</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-16.png" alt="Slide 16" loading="lazy">
+    <div class="slide-num">16 / 20</div>
+    <div class="slide-notes">
+      <p>Gaps in the agent tech stack. Identity: how do you know who authorized an agent? Payment rails: agents transacting with each other. Observability: what happened in a multi-org workflow? Accountability: the four pillars. Insurance: you can't insure a black box, but you could insure a workflow because it's more predictable.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-17.png" alt="Slide 17" loading="lazy">
+    <div class="slide-num">17 / 20</div>
+    <div class="slide-notes">
+      <p><strong>Regulatory.</strong> The EU passed an act mandating citations and audit trails for high-risk AI.</p>
+      <p><strong>Legal.</strong> If you take an AI-generated document to court, we need all the metadata that's not in the document.</p>
+      <p><strong>Enterprise.</strong> Auditing: where did data go? Who touched it? Who authorized this transaction?</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-18.png" alt="Slide 18" loading="lazy">
+    <div class="slide-num">18 / 20</div>
+    <div class="slide-notes">
+      <p>We're in the stage of chat right now. Chat is empowering to the individual. Each of you has played with chatbots, it helps with personal work. That's personal empowerment. But for it to empower the business, a business needs more than a chatbot. A business needs accountability, because businesses operate with liability in mind. Accountability empowers organizations.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-19.png" alt="Slide 19" loading="lazy">
+    <div class="slide-num">19 / 20</div>
+    <div class="slide-notes">
+      <p>Org A calls Org B calls Org C. Who did what? Who's accountable for this result? That is the missing protocol we're building. It's open. Let's build the network. A trust network, so all our agents can talk with each other. If we were all bankers, we'd all do business through SWIFT.</p>
+    </div>
+  </div>
+
+  <div class="slide-item">
+    <img src="slides/slide-20.png" alt="Slide 20" loading="lazy">
+    <div class="slide-num">20 / 20</div>
+  </div>
+
+</div>
+
+<div class="cta">
+  <p>Read the full thesis: <a href="/book.html">Trust at Scale</a></p>
+  <p><a href="https://github.com/aceteam-ai/aep-quickstart">Try the protocol</a> &middot; <a href="https://www.linkedin.com/in/sunapi386/">Connect on LinkedIn</a> &middot; <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a></p>
+</div>
+
+<script>
+var toggle = document.getElementById('themeToggle');
+var html = document.documentElement;
+var saved = localStorage.getItem('theme');
+if (saved) { html.setAttribute('data-theme', saved); }
+else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+updateIcon();
+toggle.addEventListener('click', function() {
+  var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateIcon();
+});
+
+var siteNav = document.getElementById('siteNav');
+function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+
+var progress = document.getElementById('progress');
+function updateProgress() {
+  var docH = document.documentElement.scrollHeight - window.innerHeight;
+  if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+updateProgress();
+</script>
+
+</body>
+</html>

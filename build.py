@@ -1705,7 +1705,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
   <div class="about-inner">
     <h2>About</h2>
     <p>I'm Jason Sun. I run <a href="https://aceteam.ai">AceTeam</a>, where we build accountability infrastructure for autonomous AI: cost attribution, provenance tracking, governance enforcement. The layer that lets organizations actually trust agent output.</p>
-    <p><a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a></p>
+    <p><a href="https://github.com/aceteam-ai/aep-quickstart">Try the protocol</a> &middot; <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a></p>
   </div>
 </div>
 

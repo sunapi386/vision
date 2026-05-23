@@ -30,6 +30,7 @@ DEPLOY_FILES = [
     "index.html",
     "book-zh.html",
     "analytics.html",
+    "slides.html",
     "sw.js",
     "sw-zh.js",
 ]
@@ -37,6 +38,7 @@ DEPLOY_FILES = [
 DEPLOY_DIRS = [
     "audio",
     "audio-zh",
+    "slides",
 ]
 
 NUM_CHAPTERS = 6

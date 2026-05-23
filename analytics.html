@@ -380,13 +380,15 @@ tr:hover td { background: var(--accent-dim); }
     return d;
   }
 
-  function buildLineChart(byDay, days) {
+  function buildLineChart(byDay, days, customSeries) {
     if (days.length < 2) {
-      // fallback to simple bars for 1 day
       var d = days[0], b = byDay[d];
-      var total = b.pageview + b.play + b.heartbeat + b.other;
-      return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span>' +
-        ' &mdash; ' + total + ' events</div>';
+      if (customSeries) {
+        var cv = customSeries.map(function(s) { return (b[s.k] || 0); }).reduce(function(a, c) { return a + c; }, 0);
+        return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span> &mdash; ' + cv + '</div>';
+      }
+      var total = (b.pageview || 0) + (b.play || 0) + (b.heartbeat || 0) + (b.other || 0);
+      return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span> &mdash; ' + total + ' events</div>';
     }
 
     var W = 800, H = 220;
@@ -394,7 +396,7 @@ tr:hover td { background: var(--accent-dim); }
     var cW = W - P.l - P.r, cH = H - P.t - P.b;
     var n = days.length;
 
-    var series = [
+    var series = customSeries || [
       { k: 'pageview', label: 'Pageviews', color: '#6aaefc', darkColor: '#6aaefc', lightColor: '#0969da' },
       { k: 'play', label: 'Plays', color: '#3fb950', darkColor: '#3fb950', lightColor: '#1a7f37' },
       { k: 'heartbeat', label: 'Heartbeats', color: '#39d2c0', darkColor: '#39d2c0', lightColor: '#0891b2' }
@@ -520,6 +522,9 @@ tr:hover td { background: var(--accent-dim); }
     var plays = {}, completes = {}, sectionViews = {}, audioProgress = {};
     var devices = { mobile: 0, desktop: 0 };
     var totalPlays = 0, totalCompletes = 0;
+    var referrerIPs = {}, sectionIPs = {}, playIPs = {}, completeIPs = {};
+    var deviceIPs = { mobile: {}, desktop: {} };
+    var pageIPs = { book: {}, listen: {}, other: {} };
     var locations = {};
     var referrers = {};
     var locByDay = {};
@@ -553,18 +558,21 @@ tr:hover td { background: var(--accent-dim); }
           var refHost = e.ref.replace(/https?:\/\//, '').split('/')[0];
           if (refHost && refHost.indexOf('jasonsun.org') === -1) {
             referrers[refHost] = (referrers[refHost] || 0) + 1;
+            if (!referrerIPs[refHost]) referrerIPs[refHost] = {};
+            if (e.ip) referrerIPs[refHost][e.ip] = true;
           }
         } catch (ex) {}
       }
 
       var day = (e.ts || '').slice(0, 10);
       if (day) {
-        if (!byDay[day]) byDay[day] = { pageview: 0, play: 0, heartbeat: 0, other: 0, total: 0 };
+        if (!byDay[day]) byDay[day] = { pageview: 0, play: 0, heartbeat: 0, other: 0, total: 0, ips: {} };
         if (e.event === 'pageview') byDay[day].pageview++;
         else if (e.event === 'play') byDay[day].play++;
         else if (e.event === 'heartbeat') byDay[day].heartbeat++;
         else byDay[day].other++;
         byDay[day].total++;
+        if (e.ip) byDay[day].ips[e.ip] = true;
       }
 
       var sid = e.sid;
@@ -582,23 +590,32 @@ tr:hover td { background: var(--accent-dim); }
       }
 
       if (e.event === 'pageview') {
-        if (e.page === 'book') pages.book++;
-        else if (e.page === 'listen') pages.listen++;
-        else pages.other++;
-        if (e.ua) { if (/Mobile|Android|iPhone/.test(e.ua)) devices.mobile++; else devices.desktop++; }
+        if (e.page === 'book') { pages.book++; if (e.ip) pageIPs.book[e.ip] = true; }
+        else if (e.page === 'listen') { pages.listen++; if (e.ip) pageIPs.listen[e.ip] = true; }
+        else { pages.other++; if (e.ip) pageIPs.other[e.ip] = true; }
+        if (e.ua) {
+          if (/Mobile|Android|iPhone/.test(e.ua)) { devices.mobile++; if (e.ip) deviceIPs.mobile[e.ip] = true; }
+          else { devices.desktop++; if (e.ip) deviceIPs.desktop[e.ip] = true; }
+        }
       }
       if (e.event === 'play') {
         var t = e.title || ('Ch ' + e.chapter);
         plays[t] = (plays[t] || 0) + 1;
+        if (!playIPs[t]) playIPs[t] = {};
+        if (e.ip) playIPs[t][e.ip] = true;
         totalPlays++;
       }
       if (e.event === 'complete') {
         var t2 = e.title || ('Ch ' + e.chapter);
         completes[t2] = (completes[t2] || 0) + 1;
+        if (!completeIPs[t2]) completeIPs[t2] = {};
+        if (e.ip) completeIPs[t2][e.ip] = true;
         totalCompletes++;
       }
       if (e.event === 'section_view') {
         sectionViews[e.section] = (sectionViews[e.section] || 0) + 1;
+        if (!sectionIPs[e.section]) sectionIPs[e.section] = {};
+        if (e.ip) sectionIPs[e.section][e.ip] = true;
       }
       if (e.event === 'audio_progress') {
         var key = (e.chapter || '?') + ' @' + e.pct + '%';
@@ -643,15 +660,150 @@ tr:hover td { background: var(--accent-dim); }
     // --- activity line chart ---
     var days = Object.keys(byDay).sort();
     if (days.length > 0) {
+      window._actByDay = byDay;
+      window._actDays = days;
+      window._actMode = window._actMode || 'ip';
+      window._buildActivity = function() {
+        var mode = window._actMode;
+        var h = '';
+        if (mode === 'ip') {
+          var ipByDay = {};
+          days.forEach(function(d) { ipByDay[d] = { ip: Object.keys(byDay[d].ips || {}).length }; });
+          h += '<div class="legend"><div class="legend-item"><div class="legend-dot" style="background:#6aaefc"></div>Unique IPs</div></div>';
+          h += '<div class="chart-wrap">' + buildLineChart(ipByDay, days, [{ k: 'ip', label: 'Unique IPs', color: '#6aaefc' }]) + '</div>';
+        } else {
+          h += '<div class="legend">';
+          h += '<div class="legend-item"><div class="legend-dot" style="background:#6aaefc"></div>Pageviews</div>';
+          h += '<div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div>Plays</div>';
+          h += '<div class="legend-item"><div class="legend-dot" style="background:#39d2c0"></div>Heartbeats</div>';
+          h += '</div>';
+          h += '<div class="chart-wrap">' + buildLineChart(byDay, days) + '</div>';
+        }
+        return h;
+      };
       out += '<div class="panel panel-full">';
       out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
       out += '<div class="panel-title" style="margin-bottom:0">Activity</div>';
-      out += '<div class="legend">';
-      out += '<div class="legend-item"><div class="legend-dot" style="background:#6aaefc"></div>Pageviews</div>';
-      out += '<div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div>Plays</div>';
-      out += '<div class="legend-item"><div class="legend-dot" style="background:#39d2c0"></div>Heartbeats</div>';
+      out += '<div class="act-toggle">';
+      out += '<button class="filter-btn' + (window._actMode === 'ip' ? ' active' : '') + '" onclick="window._actMode=\'ip\';document.getElementById(\'act-chart\').innerHTML=window._buildActivity();window._setupChartHover();document.querySelectorAll(\'.act-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">Unique IPs</button>';
+      out += '<button class="filter-btn' + (window._actMode === 'ev' ? ' active' : '') + '" onclick="window._actMode=\'ev\';document.getElementById(\'act-chart\').innerHTML=window._buildActivity();window._setupChartHover();document.querySelectorAll(\'.act-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">Events</button>';
       out += '</div></div>';
-      out += '<div class="chart-wrap">' + buildLineChart(byDay, days) + '</div>';
+      out += '<div id="act-chart">' + window._buildActivity() + '</div>';
+      out += '</div>';
+    }
+
+    // --- hourly heatmap (last 7 days, always shown regardless of range filter) ---
+    var now7 = new Date();
+    var cutoff7 = new Date(now7 - 7 * 86400000);
+    var hourPV = {};
+    var hourIPs = {};
+    var hourDays = {};
+    var hourEvents = {};
+    ALL_EVENTS.forEach(function(e) {
+      if (e.event !== 'pageview' || !e.ts) return;
+      var d = new Date(e.ts);
+      if (d < cutoff7) return;
+      var dayKey = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+      var hour = d.getHours();
+      hourDays[dayKey] = true;
+      if (!hourPV[dayKey]) hourPV[dayKey] = {};
+      hourPV[dayKey][hour] = (hourPV[dayKey][hour] || 0) + 1;
+      if (!hourIPs[dayKey]) hourIPs[dayKey] = {};
+      if (!hourIPs[dayKey][hour]) hourIPs[dayKey][hour] = {};
+      if (e.ip) hourIPs[dayKey][hour][e.ip] = true;
+      if (!hourEvents[dayKey]) hourEvents[dayKey] = {};
+      if (!hourEvents[dayKey][hour]) hourEvents[dayKey][hour] = [];
+      hourEvents[dayKey][hour].push({ ip: e.ip, ts: e.ts, page: e.page || e.path || '' });
+    });
+    var hourDayKeys = Object.keys(hourDays).sort();
+    if (hourDayKeys.length > 0) {
+      window._hourPV = hourPV;
+      window._hourIPs = hourIPs;
+      window._hourEvents = hourEvents;
+      window._hourDayKeys = hourDayKeys;
+      window._hourMode = window._hourMode || 'ip';
+      var weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      window._buildHourly = function() {
+        var mode = window._hourMode;
+        var hMax = 0;
+        hourDayKeys.forEach(function(dk) {
+          for (var h = 0; h < 24; h++) {
+            var v = mode === 'ip' ? Object.keys((hourIPs[dk] || {})[h] || {}).length : ((hourPV[dk] || {})[h] || 0);
+            if (v > hMax) hMax = v;
+          }
+        });
+        var h = '<div class="heatmap-wrap"><table class="heatmap"><thead><tr><th class="hm-loc"></th>';
+        for (var hh = 0; hh < 24; hh++) {
+          h += '<th class="hm-day" style="height:36px">' + ('0' + hh).slice(-2) + '</th>';
+        }
+        h += '</tr></thead><tbody>';
+        hourDayKeys.forEach(function(dk) {
+          var wd = weekdays[new Date(dk + 'T12:00:00').getDay()];
+          h += '<tr><td class="hm-loc">' + wd + ' ' + dk.slice(5) + '</td>';
+          for (var hr = 0; hr < 24; hr++) {
+            var v = mode === 'ip' ? Object.keys((hourIPs[dk] || {})[hr] || {}).length : ((hourPV[dk] || {})[hr] || 0);
+            var opacity = hMax > 0 ? (v / hMax) : 0;
+            var bg = v === 0 ? 'transparent' : 'rgba(106,174,252,' + (0.15 + opacity * 0.75).toFixed(2) + ')';
+            h += '<td class="hm-cell' + (v > 0 ? ' hm-click' : '') + '" style="background:' + bg + (v > 0 ? ';cursor:pointer' : '') + '" title="' + dk + ' ' + ('0' + hr).slice(-2) + ':00 — ' + v + (mode === 'ip' ? ' unique IPs' : ' pageviews') + '"' + (v > 0 ? ' onclick="window._showHourDetail(\'' + dk + '\',' + hr + ')"' : '') + '>' + (v || '') + '</td>';
+          }
+          h += '</tr>';
+        });
+        h += '</tbody></table></div>';
+        return h;
+      };
+
+      out += '<div class="panel panel-full">';
+      out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+      out += '<div class="panel-title" style="margin-bottom:0">Hourly Activity (last 7 days, local time)</div>';
+      out += '<div class="hourly-toggle">';
+      out += '<button class="filter-btn' + (window._hourMode === 'ip' ? ' active' : '') + '" onclick="window._hourMode=\'ip\';document.getElementById(\'hourly-grid\').innerHTML=window._buildHourly();document.querySelectorAll(\'.hourly-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">Unique IPs</button>';
+      out += '<button class="filter-btn' + (window._hourMode === 'pv' ? ' active' : '') + '" onclick="window._hourMode=\'pv\';document.getElementById(\'hourly-grid\').innerHTML=window._buildHourly();document.querySelectorAll(\'.hourly-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">Pageviews</button>';
+      out += '</div></div>';
+      window._showHourDetail = function(dk, hr) {
+        var el = document.getElementById('hourly-detail');
+        if (!el) return;
+        var evts = (hourEvents[dk] || {})[hr] || [];
+        if (evts.length === 0) { el.innerHTML = ''; return; }
+        var byIP = {};
+        evts.forEach(function(ev) {
+          var ip = ev.ip || 'unknown';
+          if (!byIP[ip]) byIP[ip] = { times: [], pages: {} };
+          byIP[ip].times.push(ev.ts);
+          if (ev.page) byIP[ip].pages[ev.page] = true;
+        });
+        var ipKeys = Object.keys(byIP).sort(function(a, b) { return byIP[b].times.length - byIP[a].times.length; });
+        var h = '<div style="margin-top:12px;padding:14px 16px;background:var(--elevated);border:1px solid var(--border);border-radius:8px">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+        h += '<span style="font-size:12px;color:var(--accent);font-weight:600">' + dk + ' ' + ('0' + hr).slice(-2) + ':00 - ' + ('0' + hr).slice(-2) + ':59</span>';
+        h += '<button class="btn-sm" onclick="document.getElementById(\'hourly-detail\').innerHTML=\'\'" style="font-size:11px;padding:2px 8px">Close</button>';
+        h += '</div>';
+        h += '<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>';
+        h += '<th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--dim)">IP</th>';
+        h += '<th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--dim)">Location</th>';
+        h += '<th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--dim)">Page</th>';
+        h += '<th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--dim)">Hits</th>';
+        h += '<th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--dim)">Access Times</th>';
+        h += '</tr></thead><tbody>';
+        ipKeys.forEach(function(ip) {
+          var d = byIP[ip];
+          var times = d.times.map(function(ts) {
+            return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          }).join(', ');
+          var loc = geoLabel(ip);
+          var maskedIP = ip.replace(/(\d+\.\d+\.\d+\.)\d+/, '$1*');
+          var pg = Object.keys(d.pages).join(', ') || '-';
+          h += '<tr><td class="mono" style="padding:4px 8px;border-bottom:1px solid var(--border)">' + maskedIP + '</td>';
+          h += '<td style="padding:4px 8px;border-bottom:1px solid var(--border);white-space:nowrap">' + loc + '</td>';
+          h += '<td style="padding:4px 8px;border-bottom:1px solid var(--border)">' + pg + '</td>';
+          h += '<td class="mono" style="padding:4px 8px;border-bottom:1px solid var(--border)">' + d.times.length + '</td>';
+          h += '<td class="mono" style="padding:4px 8px;border-bottom:1px solid var(--border)">' + times + '</td></tr>';
+        });
+        h += '</tbody></table></div>';
+        el.innerHTML = h;
+      };
+
+      out += '<div id="hourly-grid">' + window._buildHourly() + '</div>';
+      out += '<div id="hourly-detail"></div>';
       out += '</div>';
     }
 
@@ -729,46 +881,69 @@ tr:hover td { background: var(--accent-dim); }
     out += '<div class="grid2">';
 
     // location panel
-    out += '<div class="panel"><div class="panel-title">Visitors by Location</div>';
     var locEntries = Object.keys(locations).map(function(k) {
       return { key: k, count: locations[k].count, cc: locations[k].cc, city: locations[k].city, country: locations[k].country, visitors: Object.keys(locations[k].ips).length };
     }).sort(function(a, b) { return b.visitors - a.visitors; });
-
-    if (locEntries.length > 0) {
-      var locMax = locEntries[0].visitors;
-      out += '<div class="bars">';
-      locEntries.slice(0, 10).forEach(function(loc) {
+    window._locEntries = locEntries;
+    window._locMode = window._locMode || 'ip';
+    window._buildLoc = function() {
+      var mode = window._locMode;
+      var sorted = locEntries.slice().sort(function(a, b) {
+        return mode === 'ip' ? (b.visitors - a.visitors) : (b.count - a.count);
+      });
+      if (sorted.length === 0) {
+        var gc = Object.keys(GEO).length;
+        return gc === 0 ? '<div class="empty">Geo lookup pending (restart tracker service)</div>' : '<div class="empty">No location data for this period</div>';
+      }
+      var mx = mode === 'ip' ? sorted[0].visitors : sorted[0].count;
+      var h = '<div class="bars">';
+      sorted.slice(0, 10).forEach(function(loc) {
         var flag = ccToFlag(loc.cc);
         var label = flag + ' ' + loc.city + ', ' + loc.cc;
-        out += '<div class="bar-r"><div class="bar-l" title="' + esc(loc.country) + '">' + label + '</div>' +
-          '<div class="bar-t"><div class="bar-f accent" style="width:' + (loc.visitors / locMax * 100) + '%"></div></div>' +
-          '<div class="bar-n">' + loc.visitors + '</div></div>';
+        var val = mode === 'ip' ? loc.visitors : loc.count;
+        h += '<div class="bar-r"><div class="bar-l" title="' + esc(loc.country) + '">' + label + '</div>' +
+          '<div class="bar-t"><div class="bar-f accent" style="width:' + (val / mx * 100) + '%"></div></div>' +
+          '<div class="bar-n">' + val + '</div></div>';
       });
-      out += '</div>';
-    } else {
-      var geoCount = Object.keys(GEO).length;
-      if (geoCount === 0) {
-        out += '<div class="empty">Geo lookup pending (restart tracker service)</div>';
-      } else {
-        out += '<div class="empty">No location data for this period</div>';
-      }
-    }
+      h += '</div>';
+      return h;
+    };
+    out += '<div class="panel">';
+    out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
+    out += '<div class="panel-title" style="margin-bottom:0">Visitors by Location</div>';
+    out += '<div class="loc-toggle">';
+    out += '<button class="filter-btn' + (window._locMode === 'ip' ? ' active' : '') + '" onclick="window._locMode=\'ip\';document.getElementById(\'loc-bars\').innerHTML=window._buildLoc();document.querySelectorAll(\'.loc-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">IPs</button>';
+    out += '<button class="filter-btn' + (window._locMode === 'pv' ? ' active' : '') + '" onclick="window._locMode=\'pv\';document.getElementById(\'loc-bars\').innerHTML=window._buildLoc();document.querySelectorAll(\'.loc-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">Views</button>';
+    out += '</div></div>';
+    out += '<div id="loc-bars">' + window._buildLoc() + '</div>';
     out += '</div>';
 
     // referrers panel
-    out += '<div class="panel"><div class="panel-title">Referrers</div>';
-    var refEntries = Object.keys(referrers).map(function(k) { return { host: k, count: referrers[k] }; })
-      .sort(function(a, b) { return b.count - a.count; });
-    if (refEntries.length > 0) {
-      var refMax = refEntries[0].count;
-      out += '<div class="bars">';
-      refEntries.slice(0, 8).forEach(function(r) {
-        out += barRow(r.host, r.count, refMax, 'green');
+    var refEntries = Object.keys(referrers).map(function(k) {
+      return { host: k, count: referrers[k], ips: Object.keys(referrerIPs[k] || {}).length };
+    }).sort(function(a, b) { return b.count - a.count; });
+    window._refEntries = refEntries;
+    window._refMode = window._refMode || 'ip';
+    window._buildRef = function() {
+      var mode = window._refMode;
+      var sorted = refEntries.slice().sort(function(a, b) { return mode === 'ip' ? (b.ips - a.ips) : (b.count - a.count); });
+      if (sorted.length === 0) return '<div class="empty">No external referrers</div>';
+      var mx = mode === 'ip' ? sorted[0].ips : sorted[0].count;
+      var h = '<div class="bars">';
+      sorted.slice(0, 8).forEach(function(r) {
+        h += barRow(r.host, mode === 'ip' ? r.ips : r.count, mx, 'green');
       });
-      out += '</div>';
-    } else {
-      out += '<div class="empty">No external referrers</div>';
-    }
+      h += '</div>';
+      return h;
+    };
+    out += '<div class="panel">';
+    out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
+    out += '<div class="panel-title" style="margin-bottom:0">Referrers</div>';
+    out += '<div class="ref-toggle">';
+    out += '<button class="filter-btn' + (window._refMode === 'ip' ? ' active' : '') + '" onclick="window._refMode=\'ip\';document.getElementById(\'ref-bars\').innerHTML=window._buildRef();document.querySelectorAll(\'.ref-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">IPs</button>';
+    out += '<button class="filter-btn' + (window._refMode === 'pv' ? ' active' : '') + '" onclick="window._refMode=\'pv\';document.getElementById(\'ref-bars\').innerHTML=window._buildRef();document.querySelectorAll(\'.ref-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">Hits</button>';
+    out += '</div></div>';
+    out += '<div id="ref-bars">' + window._buildRef() + '</div>';
     out += '</div>';
 
     out += '</div>'; // grid2
@@ -797,22 +972,40 @@ tr:hover td { background: var(--accent-dim); }
     out += '</div>';
 
     // device + page split
-    out += '<div class="panel"><div class="panel-title">Visitors</div>';
     var dvTotal = devices.mobile + devices.desktop;
-    if (dvTotal > 0) {
-      out += '<div class="bars">';
-      out += barRow('Mobile', devices.mobile, dvTotal, 'orange');
-      out += barRow('Desktop', devices.desktop, dvTotal, 'accent');
-      out += '</div>';
-      out += '<div style="margin-top:14px"><div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Pages</div>';
-      out += '<div class="bars">';
-      var pgTotal = Math.max(pages.book, pages.listen, 1);
-      out += barRow('book.html', pages.book, pgTotal, 'green');
-      out += barRow('listen.html', pages.listen, pgTotal, 'purple');
-      out += '</div></div>';
-    } else {
-      out += '<div class="empty">No visitor data yet</div>';
-    }
+    var dvIPMobile = Object.keys(deviceIPs.mobile).length;
+    var dvIPDesktop = Object.keys(deviceIPs.desktop).length;
+    var pgIPBook = Object.keys(pageIPs.book).length;
+    var pgIPListen = Object.keys(pageIPs.listen).length;
+    window._dvMode = window._dvMode || 'ip';
+    window._buildDv = function() {
+      var mode = window._dvMode;
+      if (dvTotal === 0) return '<div class="empty">No visitor data yet</div>';
+      var mVal = mode === 'ip' ? dvIPMobile : devices.mobile;
+      var dVal = mode === 'ip' ? dvIPDesktop : devices.desktop;
+      var dvMax = Math.max(mVal, dVal, 1);
+      var h = '<div class="bars">';
+      h += barRow('Mobile', mVal, dvMax, 'orange');
+      h += barRow('Desktop', dVal, dvMax, 'accent');
+      h += '</div>';
+      h += '<div style="margin-top:14px"><div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Pages</div>';
+      var bVal = mode === 'ip' ? pgIPBook : pages.book;
+      var lVal = mode === 'ip' ? pgIPListen : pages.listen;
+      var pgMax = Math.max(bVal, lVal, 1);
+      h += '<div class="bars">';
+      h += barRow('book.html', bVal, pgMax, 'green');
+      h += barRow('listen.html', lVal, pgMax, 'purple');
+      h += '</div></div>';
+      return h;
+    };
+    out += '<div class="panel">';
+    out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
+    out += '<div class="panel-title" style="margin-bottom:0">Visitors</div>';
+    out += '<div class="dv-toggle">';
+    out += '<button class="filter-btn' + (window._dvMode === 'ip' ? ' active' : '') + '" onclick="window._dvMode=\'ip\';document.getElementById(\'dv-bars\').innerHTML=window._buildDv();document.querySelectorAll(\'.dv-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">IPs</button>';
+    out += '<button class="filter-btn' + (window._dvMode === 'pv' ? ' active' : '') + '" onclick="window._dvMode=\'pv\';document.getElementById(\'dv-bars\').innerHTML=window._buildDv();document.querySelectorAll(\'.dv-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">Views</button>';
+    out += '</div></div>';
+    out += '<div id="dv-bars">' + window._buildDv() + '</div>';
     out += '</div>';
 
     out += '</div>'; // grid2
@@ -821,50 +1014,79 @@ tr:hover td { background: var(--accent-dim); }
     out += '<div class="grid2">';
 
     // section reach
-    out += '<div class="panel"><div class="panel-title">Section Reach</div>';
-    var svEntries = Object.keys(sectionViews).map(function(k) { return { id: k, count: sectionViews[k] }; });
+    var svEntries = Object.keys(sectionViews).map(function(k) {
+      return { id: k, count: sectionViews[k], ips: Object.keys(sectionIPs[k] || {}).length };
+    });
     svEntries.sort(function(a, b) {
       var na = parseInt(a.id.replace(/\D/g, '')) || 0;
       var nb = parseInt(b.id.replace(/\D/g, '')) || 0;
       return na - nb;
     });
-    if (svEntries.length > 0) {
-      var svMax = Math.max.apply(null, svEntries.map(function(e) { return e.count; }));
-      out += '<div class="bars">';
+    window._svEntries = svEntries;
+    window._svMode = window._svMode || 'ip';
+    window._buildSv = function() {
+      var mode = window._svMode;
+      if (svEntries.length === 0) return '<div class="empty">No section view data yet</div>';
+      var vals = svEntries.map(function(e) { return mode === 'ip' ? e.ips : e.count; });
+      var mx = Math.max.apply(null, vals);
       var svColors = ['accent', 'green', 'orange', 'purple', 'cyan', 'red'];
+      var h = '<div class="bars">';
       svEntries.forEach(function(e, i) {
         var label = e.id.replace('part-', 'Part ').replace(/-/g, ' ');
-        out += barRow(label, e.count, svMax, svColors[i % svColors.length]);
+        h += barRow(label, mode === 'ip' ? e.ips : e.count, mx, svColors[i % svColors.length]);
       });
-      out += '</div>';
-    } else {
-      out += '<div class="empty">No section view data yet</div>';
-    }
+      h += '</div>';
+      return h;
+    };
+    out += '<div class="panel">';
+    out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
+    out += '<div class="panel-title" style="margin-bottom:0">Section Reach</div>';
+    out += '<div class="sv-toggle">';
+    out += '<button class="filter-btn' + (window._svMode === 'ip' ? ' active' : '') + '" onclick="window._svMode=\'ip\';document.getElementById(\'sv-bars\').innerHTML=window._buildSv();document.querySelectorAll(\'.sv-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">IPs</button>';
+    out += '<button class="filter-btn' + (window._svMode === 'ev' ? ' active' : '') + '" onclick="window._svMode=\'ev\';document.getElementById(\'sv-bars\').innerHTML=window._buildSv();document.querySelectorAll(\'.sv-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">Events</button>';
+    out += '</div></div>';
+    out += '<div id="sv-bars">' + window._buildSv() + '</div>';
     out += '</div>';
 
     // audio
-    out += '<div class="panel"><div class="panel-title">Audio Engagement</div>';
-    var playEntries = Object.keys(plays).map(function(k) { return { title: k, plays: plays[k], completes: completes[k] || 0 }; });
+    var playEntries = Object.keys(plays).map(function(k) {
+      return { title: k, plays: plays[k], completes: completes[k] || 0,
+               playIPs: Object.keys(playIPs[k] || {}).length, completeIPs: Object.keys(completeIPs[k] || {}).length };
+    });
     playEntries.sort(function(a, b) { return b.plays - a.plays; });
-    if (playEntries.length > 0) {
-      var pMax = playEntries[0].plays;
-      out += '<div class="bars">';
-      playEntries.forEach(function(p) {
-        out += '<div class="bar-r"><div class="bar-l" title="' + esc(p.title) + '">' + esc(p.title) + '</div>';
-        out += '<div class="bar-t" style="position:relative">';
-        out += '<div class="bar-f green" style="width:' + (p.plays / pMax * 100) + '%;position:absolute;top:0;left:0;height:100%;opacity:0.5"></div>';
-        out += '<div class="bar-f purple" style="width:' + (p.completes / pMax * 100) + '%;position:absolute;top:0;left:0;height:100%"></div>';
-        out += '</div>';
-        out += '<div class="bar-n">' + p.plays + '</div></div>';
+    window._playEntries = playEntries;
+    window._audioMode = window._audioMode || 'ip';
+    window._buildAudio = function() {
+      var mode = window._audioMode;
+      if (playEntries.length === 0) return '<div class="empty">No audio data yet</div>';
+      var sorted = playEntries.slice().sort(function(a, b) { return mode === 'ip' ? (b.playIPs - a.playIPs) : (b.plays - a.plays); });
+      var mx = mode === 'ip' ? sorted[0].playIPs : sorted[0].plays;
+      var h = '<div class="bars">';
+      sorted.forEach(function(p) {
+        var pVal = mode === 'ip' ? p.playIPs : p.plays;
+        var cVal = mode === 'ip' ? p.completeIPs : p.completes;
+        h += '<div class="bar-r"><div class="bar-l" title="' + esc(p.title) + '">' + esc(p.title) + '</div>';
+        h += '<div class="bar-t" style="position:relative">';
+        h += '<div class="bar-f green" style="width:' + (mx > 0 ? pVal / mx * 100 : 0) + '%;position:absolute;top:0;left:0;height:100%;opacity:0.5"></div>';
+        h += '<div class="bar-f purple" style="width:' + (mx > 0 ? cVal / mx * 100 : 0) + '%;position:absolute;top:0;left:0;height:100%"></div>';
+        h += '</div>';
+        h += '<div class="bar-n">' + pVal + '</div></div>';
       });
-      out += '</div>';
-      out += '<div class="legend" style="margin-top:8px">';
-      out += '<div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Plays</div>';
-      out += '<div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Completions</div>';
-      out += '</div>';
-    } else {
-      out += '<div class="empty">No audio data yet</div>';
-    }
+      h += '</div>';
+      h += '<div class="legend" style="margin-top:8px">';
+      h += '<div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Plays</div>';
+      h += '<div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Completions</div>';
+      h += '</div>';
+      return h;
+    };
+    out += '<div class="panel">';
+    out += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
+    out += '<div class="panel-title" style="margin-bottom:0">Audio Engagement</div>';
+    out += '<div class="au-toggle">';
+    out += '<button class="filter-btn' + (window._audioMode === 'ip' ? ' active' : '') + '" onclick="window._audioMode=\'ip\';document.getElementById(\'au-bars\').innerHTML=window._buildAudio();document.querySelectorAll(\'.au-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">IPs</button>';
+    out += '<button class="filter-btn' + (window._audioMode === 'ev' ? ' active' : '') + '" onclick="window._audioMode=\'ev\';document.getElementById(\'au-bars\').innerHTML=window._buildAudio();document.querySelectorAll(\'.au-toggle .filter-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')" style="font-size:10px;padding:3px 8px">Events</button>';
+    out += '</div></div>';
+    out += '<div id="au-bars">' + window._buildAudio() + '</div>';
     out += '</div>';
 
     out += '</div>'; // grid2
@@ -942,6 +1164,7 @@ tr:hover td { background: var(--accent-dim); }
   }
 
   window._setRange = setRange;
+  window._setupChartHover = setupChartHover;
   document.getElementById('refreshBtn').addEventListener('click', load);
   load();
 })();
