@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Build the AceTeam vision document into a single-page HTML book."""
 
+import hashlib
 import re
+from datetime import datetime, timezone
+
 import markdown
 from pathlib import Path
 
@@ -1028,6 +1031,8 @@ TEMPLATE = """<!DOCTYPE html>
   <p>&copy; 2026 Jason Sun. All rights reserved.</p>
   <p>First edition, May 2026</p>
   <p>Set in Inter Tight and Space Grotesk. Audiobook narrated with Kokoro TTS.</p>
+  <p>This is a living draft. Feedback welcome at <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a>.</p>
+  <p>Version {build_version} &middot; SHA-256: <code>{content_hash}</code></p>
 </div>
 
 <script>
@@ -1461,6 +1466,7 @@ BACK_MATTER_FILES = [
     ("acknowledgments.mdx", "Acknowledgments"),
     ("glossary.mdx", "Glossary"),
     ("whats-next.mdx", "What's Next"),
+    ("verification.mdx", "Verification"),
     ("about-author.mdx", "About the Author"),
 ]
 
@@ -1865,6 +1871,8 @@ def main():
     import json as _json
     alignment_js = _json.dumps(alignments)
 
+    build_version = datetime.now(timezone.utc).strftime("%Y.%m.%d-%H%M")
+
     html = (TEMPLATE
         .replace("{shared_css}", shared_css)
         .replace("{shared_js}", shared_js)
@@ -1876,7 +1884,12 @@ def main():
         .replace("{chapters_js}", chapters_js)
         .replace("{content}", content)
         .replace("{backmatter}", backmatter_html)
-        .replace("{alignments}", alignment_js))
+        .replace("{alignments}", alignment_js)
+        .replace("{build_version}", build_version))
+
+    content_hash = hashlib.sha256(html.encode()).hexdigest()[:16]
+    html = html.replace("{content_hash}", content_hash)
+
     OUT_FILE.write_text(html)
     print(f"Written to {OUT_FILE}")
     print(f"  {len(fm_paras)} front-matter paragraphs tagged (ab-0-*)")
