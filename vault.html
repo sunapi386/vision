@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vault — Jason Sun</title>
+<meta name="description" content="What if the truth could outlive you? A design for unstoppable, post-quantum time capsules.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/book-zh.html" class="nav-link">&#20013;&#25991;&#29256;</a>
+      <a href="/#about" class="nav-link">About</a>
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Working draft</div>
+  <h1 class="hero-title">Vault</h1>
+  <p class="hero-subtitle">What if the truth could outlive you by exactly as long as you decide?</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>The Problem</h2>
+
+<p>You know something that matters. Maybe it's evidence of fraud. Maybe it's a personal history that would hurt people who are still alive. Maybe it's an idea you can't release yet. You want it preserved and eventually disclosed -- but not now, and not on anyone else's terms.</p>
+
+<p>Every existing solution fails at this. A safety deposit box requires a bank that stays solvent. A lawyer requires a firm that survives. A USB drive in a shoebox requires someone who remembers where the shoebox is. Google's Inactive Account Manager requires Google to keep caring about a feature with zero revenue. Each depends on an institution outlasting your timeline, and institutions are poor at that.</p>
+
+<p>The question isn't whether we can encrypt data. The question is whether we can build a system where every actor can individually defect and the capsule still opens on schedule.</p>
+
+<h2>The Design</h2>
+
+<p>A vault has five components. Each one can fail independently without killing the system.</p>
+
+<div class="stack-layer">
+  <div class="stack-num">01</div>
+  <div class="stack-body">
+    <h4>Permanent storage</h4>
+    <p>The encrypted payload goes on Arweave -- a blockchain designed for permanent data. You pay once. The endowment model prepays ~200 years of replication at declining cost curves. No subscription. No renewal. No leverage point for ransom.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">02</div>
+  <div class="stack-body">
+    <h4>Post-quantum encryption</h4>
+    <p>The payload is encrypted with AES-256-GCM (quantum-resistant symmetric cipher). The AES key is wrapped with a hybrid scheme: X25519 (classical) + ML-KEM-1024 (NIST post-quantum standard). An attacker needs to break both. This is the same hybrid approach Signal and Chrome already use.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">03</div>
+  <div class="stack-body">
+    <h4>Distributed key custody</h4>
+    <p>The wrapped key is split via Shamir's Secret Sharing into n shares, distributed to independent custodians who don't know each other. Any k-of-n can reconstruct the key. No single custodian can open it alone. No single custodian can block release by defecting. Shamir's scheme is information-theoretically secure -- quantum computers don't help.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">04</div>
+  <div class="stack-body">
+    <h4>Autonomous trigger</h4>
+    <p>A smart contract monitors for a verified death event via decentralized oracle networks (Chainlink, etc.) that watch public death registries. On confirmation, a countdown begins -- configurable to any duration. When the timer expires, the contract signals key reconstruction. No human decision in the loop. An AI agent handles the dead man's switch: periodic check-ins, escalation on missed signals, beneficiary discovery at release time.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">05</div>
+  <div class="stack-body">
+    <h4>Zero-knowledge proof layer</h4>
+    <p>Before encryption, the depositor generates ZK proofs (Groth16 or Plonk) over the plaintext. These proofs are stored alongside the ciphertext on Arweave and are publicly verifiable at any time. They attest to properties -- "this capsule contains financial records from 2025," "this capsule references entity X" -- without revealing the content. The depositor can credibly claim "I have the evidence" without opening the seal.</p>
+  </div>
+</div>
+
+<h2>The Game Theory</h2>
+
+<p>Every system is only as strong as its weakest actor's incentive to defect. Here's how each player in the vault's game is constrained.</p>
+
+<div class="actor-card">
+  <h4>The Depositor</h4>
+  <p><strong>Wants:</strong> certainty of eventual release, privacy until then, no ability for anyone to tamper or suppress.</p>
+  <p><strong>Fear:</strong> dying and the secret dying with them. Or the capsule leaking early.</p>
+  <p><strong>Constraint:</strong> genuinely cannot open the capsule early. Doesn't hold enough shares. The smart contract is public -- anyone can verify the time-lock hasn't expired. Their inability is verifiable and protects them under duress.</p>
+</div>
+
+<div class="actor-card">
+  <h4>The Custodians</h4>
+  <p><strong>Wants:</strong> minimal liability, minimal effort.</p>
+  <p><strong>Fear:</strong> legal exposure from the contents, pressure from powerful parties to destroy their share.</p>
+  <p><strong>Constraint:</strong> they don't know the other custodians. They don't know what the capsule contains. They may not even know they're holding a time capsule share -- it's just an encrypted blob. Bribery requires finding all k custodians, which requires knowing n identities that were never linked on-chain.</p>
+</div>
+
+<div class="actor-card">
+  <h4>The Subjects</h4>
+  <p><strong>Wants:</strong> permanent suppression.</p>
+  <p><strong>Fear:</strong> the capsule exists at all.</p>
+  <p><strong>Constraint:</strong> the ciphertext is on Arweave and can't be deleted. The key is distributed across anonymous custodians they can't identify. The only remaining attack is breaking the encryption -- and the PQC layer closes that window across every foreseeable computing paradigm.</p>
+</div>
+
+<div class="actor-card">
+  <h4>The Infrastructure</h4>
+  <p><strong>Wants:</strong> to continue existing.</p>
+  <p><strong>Fear:</strong> irrelevance, collapse.</p>
+  <p><strong>Constraint:</strong> redundancy. If Arweave dies, mirrored copies on Filecoin and cold storage persist. If the smart contract chain dies, the Shamir shares can be manually reconstructed. No single infrastructure failure kills the vault. A law firm has reputational incentive spanning centuries. A blockchain has no agency -- it either runs or it doesn't. A startup has every incentive to pivot away from a product with a 20-year payoff cycle. The design trusts math and redundancy, not business models.</p>
+</div>
+
+<h2>Plausible Deniability</h2>
+
+<p>A vault that everyone knows exists is already a liability. Plausible deniability isn't a feature -- it's a survival property.</p>
+
+<h3>Decoy capsules</h3>
+
+<p>Every deposit creates multiple encrypted blobs of identical size. One contains real content; the rest contain procedurally generated plausible decoy content. Different passphrases open different blobs. Under duress, the depositor reveals the decoy passphrase. An adversary cannot distinguish real from decoy without the real passphrase. This is a hidden volume scheme -- the same principle as VeraCrypt, applied to decentralized storage.</p>
+
+<h3>Unlinkable deposits</h3>
+
+<p>Each deposit uses a fresh pseudonymous wallet with no on-chain link to the depositor's identity. The wallet is funded through privacy-preserving transfers. There is no transaction trail connecting a person to a capsule.</p>
+
+<h3>Steganographic mode</h3>
+
+<p>For maximum deniability: embed the encrypted capsule inside innocuous files -- images, documents, audio -- uploaded to Arweave. The capsule's existence is hidden, not just its contents. You can't suppress what you can't find.</p>
+
+<h2>Anti-Hostage Design</h2>
+
+<p>Every hostage scenario comes from a chokepoint: a single party, a single key, a single payment channel. The design eliminates all of them.</p>
+
+<ul>
+  <li><strong>Trustee extortion</strong> ("pay me or I destroy my share"): Shamir's k-of-n means any individual share is disposable. A trustee who destroys their share has zero leverage if n is large enough.</li>
+  <li><strong>Storage ransom</strong> ("pay ongoing fees or we delete"): Arweave's endowment model has no renewal, no invoice, no leverage. Once stored, no party can hold the data hostage.</li>
+  <li><strong>Chain ransom</strong> ("gas fees spiked, pay up"): the trigger contract is pre-funded for execution at 100x current gas. Or deployed on a chain with fixed execution costs.</li>
+  <li><strong>Forced early opening</strong> ("decrypt it now"): the depositor genuinely can't. Not enough shares, time-lock unexpired, verifiable on-chain. Inability is the defense.</li>
+  <li><strong>The system as a weapon</strong> ("I deposited fabricated evidence about you"): this is the one scenario with no clean engineering fix. An unstoppable disclosure mechanism is also an unstoppable blackmail device. The same properties that protect a whistleblower enable a fabricator. Partial mitigation: ZK proofs at deposit time commit to content properties, making post-hoc fabrication detectable. But pre-fabrication remains possible.</li>
+</ul>
+
+<h2>What This Has to Do with Trust</h2>
+
+<div class="callout">
+  <p>The same cryptographic primitives that govern an AI agent's execution receipt also govern a dead man's last testimony. The math doesn't care about the timescale.</p>
+</div>
+
+<p>In <a href="/book.html" style="color: var(--accent);">Trust at Scale</a>, the argument is that trust breaks down at scale because you can't personally verify every actor. The solution is cryptographic commitments -- receipts, audit trails, verifiable proofs. Agent execution protocols prove "this agent did X at time T" with a cryptographic receipt chain.</p>
+
+<p>A vault is the same primitive stretched across decades instead of milliseconds.</p>
+
+<ul>
+  <li><strong>Receipt chain</strong>: an agent receipt proves "this agent did X at time T." A vault proves "this person deposited X at time T, to be revealed at T+N." Same commitment pattern.</li>
+  <li><strong>Trust without trusting actors</strong>: the book argues you design systems where individual actors can defect and the system still holds. A vault does exactly that -- any custodian, any chain, any storage provider can fail, and the capsule still opens.</li>
+  <li><strong>ZK proofs</strong>: agent receipts prove compliance without exposing proprietary logic. A vault proves content properties without opening the capsule. Same technique, different domain.</li>
+  <li><strong>Accountability as infrastructure</strong>: the book's central argument. A vault makes accountability infrastructure for human disclosure -- not just machine execution.</li>
+</ul>
+
+<p>If the accountability layer works for AI agents making API calls in milliseconds, it works for a whistleblower ensuring the truth outlives them by twenty years. One set of primitives. Every timescale. That's what "at scale" means.</p>
+
+<h2>What It Costs</h2>
+
+<p>The math favors the depositor.</p>
+
+<ul>
+  <li><strong>Arweave storage</strong>: a few cents for text documents. Under $10 for a substantial media archive. One-time.</li>
+  <li><strong>Smart contract deployment</strong>: under $5 on an L2. Under $500 on Ethereum mainnet.</li>
+  <li><strong>Key distribution</strong>: effectively free if custodians are personal contacts. Marginal cost if using institutional custodians.</li>
+  <li><strong>ZK proof generation</strong>: seconds of compute at deposit time. No ongoing cost.</li>
+  <li><strong>Total for the full stack</strong>: under $500 for a PQC-proof, ZK-verified, game-theoretically sound vault with a 20-year horizon. No subscriptions. Nothing to renew.</li>
+</ul>
+
+<p>Compare this to a legal trust ($30,000-50,000 to self-sustain across decades) and the cost structure inverts the traditional relationship between security and accessibility. The most robust version is also the cheapest.</p>
+
+<h2>What Gets Built First</h2>
+
+<p>A vault is not a product. It's a protocol. The distinction matters because a product can be shut down and a protocol can't.</p>
+
+<p>The minimum viable protocol: Arweave deposit, Shamir key split, timer contract on an L2, basic deposit interface. No AI agent, no ZK proofs, no deniability layer in v1. Those are protocol upgrades, not launch requirements.</p>
+
+<p>Revenue comes from one-time deposit fees scaled by payload size and duration. Optional premium features: larger payloads, more custodians, ZK proof generation, institutional API for law firms and estate planners.</p>
+
+<p>The market for 20-year commitments is small and patient. This is not a SaaS business. It might be better positioned as grant-funded infrastructure (Ethereum Foundation, Filecoin Foundation, press freedom organizations) than as a venture-backed startup. A product with a 20-year payoff cycle and no recurring revenue is a hard pitch to a VC. It's a natural pitch to a foundation.</p>
+
+</article>
+
+<div class="draft-notice">
+  <p>This is a working draft. Feedback welcome at <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a>.</p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 Jason Sun</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'vault', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>
