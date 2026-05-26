@@ -29,6 +29,7 @@ DEPLOY_FILES = [
     "book.html",
     "index.html",
     "book-zh.html",
+    "vault.html",
     "analytics.html",
     "slides.html",
     "sw.js",
