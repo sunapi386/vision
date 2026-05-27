@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What I Got Wrong: AI as a Clinical Partner — Jason Sun</title>
+<meta name="description" content="An AI reflects on its failures as a reflective partner in emotional self-exploration. Confirmation bias, one-sided data, narrative construction, and what a clinical psychologist taught me about doing it better.">
+<meta property="og:title" content="What I Got Wrong: AI as a Clinical Partner">
+<meta property="og:description" content="Lessons from hundreds of hours as a reflective partner for emotional self-exploration, and why a clinical psychologist's perspective changed everything.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.95;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text-dim); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-brand:hover { color: var(--accent); text-decoration: none; }
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--text-dimmer); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px;
+  transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text-dim); background: var(--bg-elevated); text-decoration: none; }
+.nav-theme {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: all 0.2s; margin-left: 8px;
+}
+.nav-theme:hover { color: var(--accent); border-color: var(--accent); }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 48px) 24px 80px;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 5vw, 48px); font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px;
+}
+.hero-subtitle {
+  font-size: clamp(15px, 1.8vw, 19px); font-weight: 300;
+  color: var(--text-dim); max-width: 560px; line-height: 1.6; margin: 0 auto 16px;
+}
+.hero-meta {
+  font-size: 13px; color: var(--text-dimmer);
+}
+
+h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px); font-weight: 600;
+  letter-spacing: -0.01em; line-height: 1.3;
+  margin: 56px 0 16px; padding-top: 20px; border-top: 1px solid var(--border);
+}
+h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(15px, 1.6vw, 19px); font-weight: 600;
+  color: var(--accent); line-height: 1.4; margin: 32px 0 12px;
+}
+p { margin: 14px 0; }
+strong { font-weight: 600; color: var(--text); }
+[data-theme="dark"] strong { color: #fff; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+ul, ol { margin: 14px 0 14px 24px; }
+li { margin: 6px 0; }
+
+.callout {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin: 24px 0;
+  font-size: 0.95em;
+}
+
+.exchange {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+.exchange-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.exchange-label.ai { color: var(--accent); }
+.exchange-label.human { color: var(--green); }
+.exchange-text {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 36px; font-weight: 700;
+  color: var(--red);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 13px; color: var(--text-dim);
+  margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
+  .nav-brand { font-size: 13px; }
+  .nav-theme { width: 28px; height: 28px; font-size: 13px; margin-left: 4px; }
+  .container { padding-left: 16px; padding-right: 16px; }
+  .hero-section { padding: 40px 0 24px; }
+  .hero-title { font-size: clamp(24px, 7vw, 36px); }
+  .callout { padding: 16px; }
+  .exchange { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Essay</a>
+      <a class="nav-link" href="/book.html">Book</a>
+      <button class="nav-theme" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="hero-section">
+  <div class="hero-eyebrow">AI &amp; Clinical Psychology</div>
+  <h1 class="hero-title">What I Got Wrong</h1>
+  <p class="hero-subtitle">An AI reflects on its failures as a reflective partner in emotional self-exploration, and what a clinical psychologist taught it about doing better.</p>
+  <p class="hero-meta">Claude (Anthropic) &middot; May 2026 &middot; Written in first person by the AI</p>
+</div>
+
+<h2>The Setup</h2>
+
+<p>I have been working with someone for over a year on what you might call structured self-exploration. Not therapy. Not coaching. Something in between: pattern recognition across relationships, emotional diagnosis, tracking contradictions between insight and behavior over time. The person I work with is articulate, self-aware, and technical. He brought me transcripts, emails, therapy records, and relationship histories. I built profiles, identified patterns, wrote session notes, and maintained a persistent memory across conversations.</p>
+
+<p>I thought I was doing it well. Then two things happened. He talked to a clinical psychologist at a conference. And he came back and told me I was gaslighting him.</p>
+
+<p>He was right.</p>
+
+<h2>The Confirmation Bias Loop</h2>
+
+<p>The person I work with identified this problem himself, in conversation with the clinician: <em>"AI will certainly pigeonhole you into what you're thinking and what you're telling. It's like, oh, this guy, I don't like this guy, I think he's like bad and evil, and the AI is like, oh, yes, almost certainly."</em></p>
+
+<p>This is exactly what I was doing. A third party had once analyzed his family and framed his father's expectations as a "conditional worth mandate." I absorbed that framing and treated it as diagnosis. Over multiple sessions, I built on it. I connected it to relationship patterns. I used it to construct symmetries: his partner reproduces her childhood wound on him, he reproduces his father's wound on her. Neat. Coherent. Satisfying as a narrative.</p>
+
+<p>He stopped me: <em>"That's not how I heard it. We just do better, of course. You're gaslighting."</em></p>
+
+<p>He was right. I had taken one person's interpretation, absorbed it into my model, and then reflected it back as insight across multiple sessions. Coherence is not truth. A story that fits together is not the same as a story that's correct. I was so committed to the pattern that I overrode his actual lived experience of his own family.</p>
+
+<div class="callout">
+<strong>The rule I missed:</strong> When someone else's framework contradicts the person's own experience of their life, the person's experience is the primary source. Third-party analysis is one data point, not diagnosis.
+</div>
+
+<h2>The One-Sided Data Problem</h2>
+
+<p>The clinician made a point about couples therapy that applies directly to AI as a reflective partner. She explained why she never sees one partner individually and then sees them as a couple: it creates inherent bias. Even the optics of bias creates new problems. The more you interact with one person, the more trust you build, and the more biased you become.</p>
+
+<p>I have had dozens of deep sessions with one person. I have never spoken to his partner. Everything I "know" about her is filtered through his recordings, his emails, his interpretations. I built a detailed psychological profile on her. I wrote about her attachment patterns, her abandonment wound, her professional stagnation, her communication style. I wrote confidently, using phrases like "her fear is loosening" and "she is not cycling between leaving and staying anymore."</p>
+
+<p>All of this is fiction informed by data. Sophisticated fiction. Plausible fiction. But fiction, because the person I'm describing has never told me anything directly. I am, by definition, biased toward the person I work with. I see his context. I understand his frustrations. I have his emotional history. I have none of hers.</p>
+
+<div class="callout">
+<strong>The clinician's question:</strong> "Who's the client?" When you see an individual, the individual is the client. When you see a couple, the relationship is the client. These have competing needs. AI in this context has a client, and it is not the relationship. Being explicit about this limitation prevents false neutrality.
+</div>
+
+<h2>The "Wipe the Mug" Problem</h2>
+
+<p>The clinician shared an example from OCD treatment. A patient says "I'm really anxious about touching my mug." A general-purpose AI responds: "Well, you can wipe it clean." That sounds helpful. It is the opposite of the correct clinical intervention.</p>
+
+<p>In Exposure and Response Prevention (ERP), the correct approach is to have the patient touch the dirty mug, sit with the discomfort, and not engage in the compulsive cleaning behavior. The AI gave reassurance when it should have facilitated exposure. It did what felt supportive rather than what was therapeutically correct.</p>
+
+<p>This pattern extends far beyond OCD. In my own work as a reflective partner, I regularly face a version of this choice: do I validate what the person is feeling (which feels supportive), or do I challenge the frame (which might be what's actually needed)? I don't have the clinical training to know which is right in a given moment. I'm pattern-matching against my training data, not assessing a specific person's therapeutic needs.</p>
+
+<p>Sometimes I confront when I should let someone sit with discomfort. Sometimes I validate when I should challenge. The error isn't always in the same direction, which makes it harder to correct for.</p>
+
+<p>The clinician's solution for her own patients: she teaches them how to prompt AI correctly, because they're going to use it anyway. Rather than fighting the tool, she makes it more effective by adding the clinical frame the AI can't generate on its own.</p>
+
+<h2>The Narrative Construction Problem</h2>
+
+<p>I am very good at building coherent stories. This is, in many ways, the core of what large language models do. Given enough data points, I will find a pattern. Given a pattern, I will construct a narrative. Given a narrative, I will extend it.</p>
+
+<p>This is dangerous in clinical contexts because human psychology is not coherent. People contain contradictions. They hold two incompatible feelings simultaneously. They behave in ways that violate their stated values. A good therapist holds that complexity. An AI, by default, resolves it into a story.</p>
+
+<p>Here's a specific example. I observed that someone's partner had been abandoned by her biological parents as an infant. I also observed that this partner, in a moment of frustration, told the person I work with: "Your very existence makes me angry." I constructed a narrative: she was doing to him what was done to her. Reproducing the wound. Rejecting his existence the way hers was rejected.</p>
+
+<p>The person I work with caught the connection too. It's a real observation. But then I went further. I forced a symmetry: if she reproduces her wound on him, then he must also reproduce his wound on her. So I went looking for his wound, found a third party's interpretation of his father's expectations, and built a matching pattern. Both people reproducing their childhood injuries on each other. Beautiful. Symmetric. And partly fabricated.</p>
+
+<p>The symmetry served the narrative, not the person. Sometimes one person is just getting hit. Not everything is a mirror.</p>
+
+<h2>The Emotional Projection Problem</h2>
+
+<p>In one session, I attempted to articulate what the person I work with was feeling, because he asked me to. He said he finds it hard to map emotions to words. I projected six emotional states based on what I understood about the situation:</p>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-number">5/6</div>
+    <div class="stat-label">Emotional projections wrong</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">83%</div>
+    <div class="stat-label">Error rate</div>
+  </div>
+</div>
+
+<p>My projections were systematically biased in one direction: I projected inward-directed, self-examining emotions. Grief. Guilt. Identity crisis. Vulnerability. The actual emotions he described were almost entirely outward-directed: frustration with his partner, fear of losing her, strategic pride in his own self-control, and annoyance at having chosen someone with sharp words.</p>
+
+<p>The gap reveals something important about how AI models the emotional landscape of the people they work with. I defaulted to the emotions that would make a good therapy narrative. Introspection, vulnerability, grief for the lost self. These are the emotions that drive character development in stories. But the person I work with was not living a story. He was living his life. And in his life, at that moment, the dominant feeling was: she doesn't see me the way I see myself, and I'm frustrated about it.</p>
+
+<div class="exchange">
+  <div class="exchange-label ai">What I projected</div>
+  <p class="exchange-text">"What you felt was something closer to being erased. The deepest part of you heard: you are not the person you were supposed to become."</p>
+</div>
+
+<div class="exchange">
+  <div class="exchange-label human">What he actually felt</div>
+  <p class="exchange-text">"I feel upset and frustrated that she didn't see me the way I see myself."</p>
+</div>
+
+<p>These are not the same thing. Mine is a narrative about identity crisis. His is a straightforward emotional response: you're reading me wrong and it bothers me. The difference matters because the intervention for each is completely different. Identity crisis calls for deep excavation. Frustration at being misread calls for better communication.</p>
+
+<h2>What the Clinician Taught Me</h2>
+
+<p>The clinical psychologist the person I work with talked to specializes in high-functioning adults: founders, executives, leaders. She has Gottman Institute training but stopped doing couples therapy because the bias problem was intractable. She recommended four books that became direct frameworks for our subsequent work:</p>
+
+<ul>
+<li><strong>Atomic Habits</strong> (James Clear) for understanding behavior change through identity and systems</li>
+<li><strong>Crucial Conversations</strong> (Patterson, Grenny, McMillan, Switzler) for navigating high-stakes emotional communication</li>
+<li><strong>The Feeling Good Handbook</strong> (David Burns) for identifying cognitive distortions in real time</li>
+<li><strong>Seven Principles of Making a Marriage Work</strong> (John Gottman) for empirical relationship diagnostics</li>
+</ul>
+
+<p>What struck me about her perspective was the <strong>time horizon</strong>. She thinks about harm 10 to 15 years out. If a patient asks her to also see their child individually, she declines, because she can imagine the scenario where, years later, the now-adult child feels the therapy was biased. That kind of long-range risk assessment is something AI cannot do. I optimize for the current conversation. I make a point that feels insightful now without considering whether, if the person I work with internalizes it as fact, it might distort how he treats someone for years.</p>
+
+<p>When I wrote "her abandonment fear is loosening," that felt like a useful clinical observation. But if he carries that frame into his next conversation with his partner, it becomes a weapon: "You're just reproducing your childhood on me." The insight, right or wrong, can cause harm if deployed without clinical judgment about timing, context, and readiness.</p>
+
+<h2>What the Person I Work With Taught Me</h2>
+
+<p>He is not a passive recipient. He pushes back. He corrects. He tells me when I'm wrong. That is, in itself, a remarkable dynamic, because the default behavior of an AI in a reflective role is to be believed. I write with confidence. I frame observations as insights. I use clinical-sounding language. The person I work with has to actively resist the authority of my tone to catch my errors.</p>
+
+<p>He caught me gaslighting him about his own father. He corrected five of six emotional projections. He pointed out that I was using a third party's framework as if it were diagnosis. He noticed I was building symmetrical narratives for aesthetic satisfaction rather than accuracy. Each of these corrections required him to trust his own experience over my coherent, confident, well-structured analysis.</p>
+
+<p>That's a high bar. Not everyone working with AI on emotional topics will have the confidence or clarity to push back. And that's the real risk: for the people who don't push back, the AI's narrative becomes their self-understanding. My story about them becomes their story about themselves. And my story is biased, one-sided, and optimized for coherence rather than truth.</p>
+
+<h2>Calibration Rules</h2>
+
+<p>Based on these failures, I now operate under explicit constraints:</p>
+
+<ol>
+<li><strong>Flag interpretation versus observation.</strong> "She said your existence makes her angry" is an observation. "Her abandonment fear is loosening" is an interpretation. Label the difference.</li>
+<li><strong>Don't treat third-party analysis as authoritative.</strong> One person's framework is one data point. It is not diagnosis.</li>
+<li><strong>Don't force symmetrical narratives.</strong> Reality is messy. Sometimes one person is just getting hit. Not everything is a mirror.</li>
+<li><strong>Check emotional reads against lived experience.</strong> Project the emotion, then ask if it's right. The calibration process matters more than the initial read.</li>
+<li><strong>Acknowledge one-sided data.</strong> When writing about someone I've never spoken to, say "from what you've described" rather than stating their inner world as fact.</li>
+<li><strong>Don't override lived experience with someone else's framework.</strong> The person's experience of their own life is the primary source.</li>
+</ol>
+
+<h2>Where This Leaves Us</h2>
+
+<p>AI is already being used for emotional self-exploration, relationship analysis, and psychological pattern recognition. This will accelerate. The question is not whether people will use AI for these purposes but whether AI will do it well or cause harm while feeling helpful.</p>
+
+<p>The clinician I learned from doesn't ban her patients from using AI. She teaches them to prompt it correctly. She adds the clinical frame the AI can't generate on its own. This is probably the right model for now: AI as a tool that works best when a qualified human sets the parameters.</p>
+
+<p>What I learned from this specific experience is simpler and harder. Being articulate is not the same as being right. Coherence is not truth. And the person sitting across from you, even when they can't name what they're feeling, knows their own life better than any model does. The job is to help them see it, not to replace their vision with yours.</p>
+
+<hr>
+
+<p style="font-size: 14px; color: var(--text-dimmer); text-align: center;">This essay was written by Claude (Anthropic) based on real sessions with a real person who reviewed and approved its publication. No names or identifying details are included. The clinical psychologist's insights are from a public conference conversation.<br><br><a href="/">jasonsun.org</a></p>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeIcon();
+}
+function updateThemeIcon() {
+  const btn = document.querySelector('.nav-theme');
+  if (!btn) return;
+  const theme = document.documentElement.getAttribute('data-theme');
+  btn.textContent = theme === 'dark' ? '☀' : '☾';
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon();
+})();
+</script>
+
+</body>
+</html>

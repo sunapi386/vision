@@ -35,6 +35,9 @@ DEPLOY_FILES = [
     "analytics.html",
     "china-ai.html",
     "slides.html",
+    "dir.html",
+    "maye.html",
+    "ai-clinical.html",
     "sw.js",
     "sw-zh.js",
 ]
