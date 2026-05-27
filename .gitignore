@@ -1,6 +1,7 @@
-# Generated HTML (rebuild with: python build.py)
+# Generated output (rebuild with: python build.py)
 book.html
 book-zh.html
+book.pdf
 index.html
 listen.html
 stats.html

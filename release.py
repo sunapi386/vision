@@ -8,6 +8,7 @@ Usage:
     python3 release.py tts          # regenerate audio + build + verify + deploy
     python3 release.py verify       # check paragraph IDs, timestamps, audio sync
     python3 release.py stats        # fetch and summarize analytics
+    python3 release.py print        # build + generate print-ready PDF for KDP
     python3 release.py setup        # install dependencies with uv
     python3 release.py clean        # convert stale WAVs to OGG, remove temp files
 """
@@ -30,7 +31,9 @@ DEPLOY_FILES = [
     "index.html",
     "book-zh.html",
     "vault.html",
+    "book.pdf",
     "analytics.html",
+    "china-ai.html",
     "slides.html",
     "sw.js",
     "sw-zh.js",
@@ -377,6 +380,139 @@ def stats():
             print(f"    {ch}: {count} plays")
 
 
+PRINT_CSS = """
+@page {
+    size: 6in 9in;
+    margin: 0.75in 0.625in 0.75in 0.875in;  /* top right bottom left (left = gutter) */
+    @bottom-center {
+        content: counter(page);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 9pt;
+        color: #888;
+    }
+}
+@page :first { @bottom-center { content: none; } }
+@page :blank { @bottom-center { content: none; } }
+
+body {
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+}
+
+/* strip web-only elements */
+.site-nav, .progress-bar, .scroll-cue, .audio-player, .audio-player-toggle,
+.toc, #audioToggle, .hero-reading-time, .ap-follow,
+.resume-toast, .reading-time { display: none !important; }
+
+/* fix dark-theme bold text (shared.css sets [data-theme="dark"] strong to #fff) */
+strong { color: #1a1a1a !important; }
+
+/* hero as title page */
+.hero {
+    min-height: auto; padding: 200pt 0 100pt; text-align: center;
+    page-break-after: always; background: none;
+}
+.hero::before { display: none; }
+.hero a, .hero div[style] { display: none !important; }
+.hero-eyebrow { color: #666; }
+.hero-title { color: #1a1a1a; font-size: 32pt; }
+.hero-subtitle { color: #444; font-size: 13pt; }
+.hero-author { color: #666; }
+
+/* override dark theme colors for print */
+:root, [data-theme="dark"], [data-theme="light"] {
+    --bg: #fff; --bg-surface: #f6f6f6; --bg-elevated: #eee;
+    --text: #1a1a1a; --text-dim: #444; --text-dimmer: #888;
+    --accent: #2563eb; --accent-dim: rgba(37,99,235,0.08);
+    --green: #1a7f37; --green-dim: rgba(26,127,55,0.08);
+    --orange: #9a6700; --orange-dim: rgba(154,103,0,0.08);
+    --red: #cf222e; --red-dim: rgba(207,34,46,0.08);
+    --purple: #8250df; --cyan: #0969da;
+    --border: #ddd; --border-strong: #ccc;
+    --shadow: none;
+}
+
+/* page breaks */
+.chapter-break { page-break-before: always; padding-top: 80pt; margin-top: 0; }
+.chapter-break:first-child { page-break-before: auto; }
+.visual-break, .pullquote { page-break-inside: avoid; }
+.back-matter { page-break-before: always; }
+.back-matter-section + .back-matter-section { page-break-before: always; }
+.colophon { page-break-before: always; }
+.dedication { page-break-after: always; }
+.preface { page-break-after: always; }
+.abstract { page-break-after: always; }
+
+/* make animated elements visible */
+.fade-in { opacity: 1 !important; transform: none !important; }
+.layer-animate { opacity: 1 !important; }
+.flywheel-node { opacity: 1 !important; }
+
+/* paragraph click styling off */
+p[id^="ab-"] { cursor: default; border-left: none; padding-left: 0; margin-left: 0; }
+p[id^="ab-"]:hover { background: none; }
+
+/* article width */
+.article { max-width: 100%; padding: 0; }
+
+/* diagram sizing for print */
+.arch-diagram, .flywheel-diagram, .envelope-diagram { max-width: 100%; }
+.force-grid { grid-template-columns: repeat(3, 1fr); }
+.stat-row { flex-direction: row; }
+
+/* links: no underlines, no URL expansion */
+a { color: var(--accent); text-decoration: none; }
+a[href]::after { content: none; }
+
+/* colophon */
+.colophon { font-size: 9pt; }
+"""
+
+
+def print_pdf():
+    """Generate a print-ready PDF for KDP (6x9 trim)."""
+    import weasyprint
+
+    print("\n--- Print PDF ---")
+    book = VISION_DIR / "book.html"
+    if not book.exists():
+        print("  book.html not found, building first...")
+        build()
+
+    html = book.read_text()
+
+    # bake animated counter values: data-count="400">0< → >400<
+    html = re.sub(
+        r'data-count="(\d+)">\s*0\s*<',
+        lambda m: f'data-count="{m.group(1)}">{m.group(1)}<',
+        html,
+    )
+
+    # bake bar-fill widths
+    html = re.sub(
+        r'class="bar-fill"\s+data-width="(\d+)"\s+style="([^"]*)"',
+        lambda m: f'class="bar-fill" data-width="{m.group(1)}" style="{m.group(2)}; width: {m.group(1)}%"',
+        html,
+    )
+
+    # strip web-only text
+    html = re.sub(r'<p[^>]*>~7 hours.*?</p>', '', html, flags=re.DOTALL)
+
+    # strip <script> blocks
+    html = re.sub(r'<script\b[^>]*>.*?</script>', '', html, flags=re.DOTALL)
+    # strip <audio> tag
+    html = re.sub(r'<audio\b[^>]*>.*?</audio>', '', html, flags=re.DOTALL)
+
+    out = VISION_DIR / "book.pdf"
+    print("  Rendering PDF with WeasyPrint (this may take 30-60s)...")
+    doc = weasyprint.HTML(string=html, base_url=str(VISION_DIR))
+    doc.write_pdf(str(out), stylesheets=[weasyprint.CSS(string=PRINT_CSS)])
+    size_mb = out.stat().st_size / 1024 / 1024
+    print(f"  Written to {out} ({size_mb:.1f} MB)")
+
+
 def deploy():
     print("\n--- Deploy ---")
     host = resolve_host()
@@ -416,12 +552,16 @@ def main():
         verify()
     elif mode == "stats":
         stats()
+    elif mode == "print":
+        build()
+        print_pdf()
     elif mode == "setup":
         setup()
     elif mode == "clean":
         clean()
     elif mode in ("default", "release"):
         build()
+        print_pdf()
         verify()
         deploy()
     else:

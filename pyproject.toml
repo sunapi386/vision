@@ -21,6 +21,9 @@ tts = [
 tts-zh = [
     "misaki[zh]>=0.9",
 ]
+print = [
+    "weasyprint>=68",
+]
 
 [project.scripts]
 vision-build = "build:main"

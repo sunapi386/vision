@@ -211,9 +211,12 @@ pre code { background: none; padding: 0; color: var(--text); }
 .reading-time.visible { opacity: 1; }
 
 @media (max-width: 640px) {
-  .site-nav-inner { padding: 0 16px; }
-  .nav-link { font-size: 12px; padding: 6px 8px; }
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
   .nav-brand { font-size: 13px; }
+  .nav-about { display: none; }
+  .nav-theme { width: 28px; height: 28px; font-size: 13px; margin-left: 4px; }
   .reading-time { right: 12px; }
 }
 
