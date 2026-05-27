@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Index — Jason Sun</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.container {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 700; letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: var(--text-dim); font-size: 15px; margin-bottom: 48px;
+}
+
+.section-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-dimmer); text-transform: uppercase;
+  letter-spacing: 0.1em; margin: 40px 0 16px;
+}
+.section-label:first-of-type { margin-top: 0; }
+
+.page-list { list-style: none; }
+
+.page-item {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 14px 20px; margin: 6px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s, border-color 0.2s;
+  text-decoration: none; color: inherit;
+}
+.page-item:hover {
+  background: var(--bg-elevated); border-color: var(--border-strong);
+}
+
+.page-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.page-desc {
+  font-size: 13px; color: var(--text-dim);
+  flex: 1; min-width: 0;
+}
+
+.page-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  padding: 2px 7px; border-radius: 4px;
+  flex-shrink: 0; white-space: nowrap;
+}
+.tag-public { color: var(--green); background: var(--green-dim); }
+.tag-unlisted { color: var(--orange); background: var(--orange-dim); }
+.tag-internal { color: var(--purple); background: rgba(188,140,255,0.1); }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .container { padding: 70px 16px 80px; }
+  .page-item { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+  .page-desc { width: 100%; order: 3; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<h1>Site Index</h1>
+<p class="subtitle">All pages on jasonsun.org, including unlisted.</p>
+
+<div class="section-label">Public</div>
+<ul class="page-list">
+  <li><a class="page-item" href="/">
+    <span class="page-title">Essay</span>
+    <span class="page-desc">Trust at Scale — the landing page essay on agent accountability</span>
+    <span class="page-tag tag-public">public</span>
+  </a></li>
+  <li><a class="page-item" href="/book.html">
+    <span class="page-title">Book</span>
+    <span class="page-desc">Trust at Scale — full book with inline audio</span>
+    <span class="page-tag tag-public">public</span>
+  </a></li>
+  <li><a class="page-item" href="/book-zh.html">
+    <span class="page-title">Book (&#20013;&#25991;)</span>
+    <span class="page-desc">&#24895;&#26223;&#65306;&#35268;&#27169;&#21270;&#20449;&#20219; — Chinese translation of the book</span>
+    <span class="page-tag tag-public">public</span>
+  </a></li>
+  <li><a class="page-item" href="/listen.html">
+    <span class="page-title">Audiobook</span>
+    <span class="page-desc">Trust at Scale — audio player</span>
+    <span class="page-tag tag-public">public</span>
+  </a></li>
+  <li><a class="page-item" href="/slides.html">
+    <span class="page-title">Slides</span>
+    <span class="page-desc">Accountable Agents — Upper Bound 2026 conference talk</span>
+    <span class="page-tag tag-public">public</span>
+  </a></li>
+  <li><a class="page-item" href="/china-ai.html">
+    <span class="page-title">&#20013;&#22269;AI&#31616;&#25253;</span>
+    <span class="page-desc">China AI industry brief — policy, funding, Tangshan pilot opportunities</span>
+    <span class="page-tag tag-public">public</span>
+  </a></li>
+</ul>
+
+<div class="section-label">Unlisted</div>
+<ul class="page-list">
+  <li><a class="page-item" href="/vault.html">
+    <span class="page-title">Vault</span>
+    <span class="page-desc">Unstoppable post-quantum time capsules — working draft</span>
+    <span class="page-tag tag-unlisted">unlisted</span>
+  </a></li>
+  <li><a class="page-item" href="/maye.html">
+    <span class="page-title">&#39532;&#29239;&#29239;&#31508;&#35760;</span>
+    <span class="page-desc">Ma Ye Ye conversation notes — follow-up questions and work explainer</span>
+    <span class="page-tag tag-unlisted">unlisted</span>
+  </a></li>
+</ul>
+
+<div class="section-label">Internal</div>
+<ul class="page-list">
+  <li><a class="page-item" href="/analytics.html">
+    <span class="page-title">Analytics</span>
+    <span class="page-desc">Site analytics dashboard</span>
+    <span class="page-tag tag-internal">internal</span>
+  </a></li>
+  <li><a class="page-item" href="/stats.html">
+    <span class="page-title">Stats</span>
+    <span class="page-desc">Analytics data view</span>
+    <span class="page-tag tag-internal">internal</span>
+  </a></li>
+</ul>
+
+</div>
+
+<div class="colophon">
+  <p>This page is not indexed. <a href="/" style="color: var(--text-dimmer);">jasonsun.org</a></p>
+</div>
+
+<script>
+(function() {
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes — Ma Ye Ye</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', 'Noto Serif SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.90;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.hero {
+  min-height: 40vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 40px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin-bottom: 16px;
+}
+.hero-subtitle {
+  font-size: clamp(14px, 1.8vw, 17px);
+  color: var(--text-dim); max-width: 480px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(20px, 2.8vw, 26px);
+  font-weight: 700; line-height: 1.3;
+  margin: 64px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', 'Noto Serif SC', sans-serif;
+  font-size: clamp(15px, 1.8vw, 18px);
+  font-weight: 600; color: var(--accent);
+  margin: 32px 0 10px;
+}
+
+.article p { margin: 14px 0; }
+.article p + p { margin-top: 10px; }
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; color: var(--text-dim); }
+
+.question-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.question-card h4 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px; font-weight: 600; margin-bottom: 8px;
+}
+.question-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.7;
+}
+.question-card .zh {
+  font-size: 15px; color: var(--text); line-height: 1.8;
+}
+.question-card .why {
+  font-size: 13px; color: var(--text-dimmer); margin-top: 10px;
+  border-top: 1px solid var(--border); padding-top: 10px;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.callout-orange {
+  border-left: 3px solid var(--orange);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--orange-dim); border-radius: 0 8px 8px 0;
+}
+.callout-orange p { margin: 0; font-size: 15px; }
+
+.callout-green {
+  border-left: 3px solid var(--green);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--green-dim); border-radius: 0 8px 8px 0;
+}
+.callout-green p { margin: 0; font-size: 15px; }
+
+.session-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  color: var(--cyan); background: rgba(57,210,192,0.1);
+  padding: 2px 8px; border-radius: 4px; margin-bottom: 8px;
+}
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+
+@media (max-width: 640px) {
+  .article { padding: 30px 16px 80px; }
+  .question-card { padding: 16px; }
+  .hero { padding: 60px 16px 30px; min-height: 30vh; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Private notes</div>
+  <h1 class="hero-title">马爷爷对话笔记</h1>
+  <p class="hero-subtitle">唐山 · 2026年5月</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>第一次对话摘要</h2>
+
+<div class="session-tag">2026-05-26 · 奶奶家</div>
+
+<p>第一次正式长谈。给他看了jasonsun.org，解释了AI安全和SafeClaw的工作。以下是他提出的关键观点。</p>
+
+<h3>关于领导力</h3>
+
+<p>核心建议：面对领导少说话。不是因为你说的不对，而是因为领导不一定爱听。你说的话不合他口味，他就会记住你，但不是好的记住。</p>
+
+<p>但他随即给了更深一层的框架：<strong>真正好的领导会提拔曾经反对过自己的人。</strong>因为这些人一旦被争取过来，忠诚度和工作热情反而比一直顺从的人更高。这是反作用力——曾经的对手变成盟友后，能量是最大的。</p>
+
+<div class="callout">
+<p>我提出了诸葛亮七擒孟获的典故来回应这个观点。打了七次，赢了七次，每次都放了。最后孟获心服口服，真正归顺。不是靠武力征服，是靠反复证明实力之后的尊重。他接住了这个框架，认为这就是"以史为镜"的意义所在。</p>
+</div>
+
+<h3>关于历史</h3>
+
+<p>他反复提到<strong>"以史为镜"</strong>。历史的典故不是故事，是工具——用来验证当下判断是否正确。"人家过去咋办的，是真是假，最后都一目了然。"</p>
+
+<p>他还提到了论据和论点的结构——用事实证明判断，不是空谈。这跟做研究写论文是一个逻辑。</p>
+
+<h3>关于AI</h3>
+
+<p>他对AI的反应分两层：</p>
+
+<p><strong>理解层：</strong>他听懂了前台类比（AI需要规矩和监督）和置信度光谱（不是非黑即白）。他说这个研究"新颖、奥妙"。</p>
+
+<p><strong>忧虑层：</strong>他很快跳到了AI的军事化——机器狗、机器狼、无人机。乌克兰用无人机打俄罗斯，伤亡比1:20。他的结论是：AI如果有了"思想"，不高兴了不伺候你，"人是打不过他的"。这不是恐惧，是一个经历过权力更迭的老人对失控力量的本能警觉。</p>
+
+<h3>他提到的"三步"</h3>
+
+<div class="callout-orange">
+<p>他提到了一个三步框架但没有展开。下次需要追问：这三步具体是什么？是他自己总结的还是从别处学的？每一步有没有具体的例子？</p>
+</div>
+
+<h2>下次要问的问题</h2>
+
+<div class="callout-green">
+<p><strong>原则：</strong>每次带不超过三个问题。让他说，不要急着解释自己。最好的内容来自他主动展开的时候，不是你提问的时候。</p>
+</div>
+
+<div class="question-card">
+<h4>一、您的经历</h4>
+<p class="zh">马爷爷，您年轻的时候是做什么工作的？在哪个单位，做了多少年？您说您在上面做过也在下面做过，能不能跟我讲讲？</p>
+<p class="why"><strong>为什么问这个：</strong>不了解他的职业背景，就无法判断他建议的适用范围。一个退休的厂长、一个退休的干部、一个退休的军人给出的领导力建议，含金量和适用场景完全不同。</p>
+</div>
+
+<div class="question-card">
+<h4>二、三步走</h4>
+<p class="zh">您上次提到了三步，我印象很深，但当时没来得及细问。能不能给我讲讲每一步具体是什么？最好拿您自己的经历举个例子——您走这三步的时候，哪一步最难？</p>
+<p class="why"><strong>为什么问这个：</strong>抽象框架不如具体故事有用。他走过的路比他总结的道理更有价值。</p>
+</div>
+
+<div class="question-card">
+<h4>三、失败的时候</h4>
+<p class="zh">您这一辈子，有没有哪次是做对了所有该做的事，结果还是没成？不是做错了，是做对了但还是输了。那次您是怎么想的？</p>
+<p class="why"><strong>为什么问这个：</strong>成功的故事谁都会讲。失败的故事才是真正的经验。知道什么情况下"正确的做法"也会失败，比知道正确的做法本身更有用。</p>
+</div>
+
+<h2>备选问题</h2>
+
+<p><em>如果以上三个问题聊完了还有时间，或者下一次再用。</em></p>
+
+<div class="question-card">
+<h4>对我的判断</h4>
+<p class="zh">您看了我的网站，也听了我做的事。以您的经验看，您觉得我最大的风险是什么？不是技术上的，是做事、做人上的。</p>
+<p class="why"><strong>为什么问这个：</strong>他从一个完全不同的角度观察你。你专业圈子里的人看到的是技术和市场。他看到的是你这个人怎么做事。那个视角可能更准。</p>
+</div>
+
+<div class="question-card">
+<h4>信任在中国</h4>
+<p class="zh">在中国，一个领导或者一个单位，要真正信任一个外面来的人或者公司，需要什么？不是签合同那种信任，是真正放心交给你去做的那种。</p>
+<p class="why"><strong>为什么问这个：</strong>AceTeam做的是信任基础设施。你理解西方语境下的信任机制，但中国组织文化中的信任运作方式不同。他在这个系统里活了六十多年。</p>
+</div>
+
+<div class="question-card">
+<h4>两代人的路</h4>
+<p class="zh">您那一代人是在体制里往上走。我这一代很多人选择自己出来做。您觉得哪个更难？自己做的人，最容易犯什么错？</p>
+<p class="why"><strong>为什么问这个：</strong>他告诉你要在领导面前少说话，你回答说你自己开公司。这是两代人之间的根本路径分歧。值得让他正面评价。</p>
+</div>
+
+<h2>我的工作（参考稿）</h2>
+
+<p><em>如果需要重新解释，或者他想给别人介绍，以下是整理好的版本。</em></p>
+
+<h3>背景</h3>
+
+<p>AI正在从工具变成劳动力。合同审查、发票处理、病历分析、代码编写——这些工作已经在生产环境中每天发生。这不是渐进式改进，而是结构性的转变。</p>
+
+<p>但是，当一家咨询公司完成项目，每一步都有据可查——合同、分包协议、发票、交付物。如果客户质疑结论，可以逐级追溯。AI智能体之间的协作没有这些。一个智能体调用另一个，再调用下一个。花了多少钱？不知道。数据从哪来？不知道。谁接触了数据？不知道。</p>
+
+<p><strong>智能体经济在没有账本的情况下运转。</strong></p>
+
+<h3>四个空白</h3>
+
+<p><strong>成本归因：</strong>AI处理完工作，月底来一个总数。哪些调用服务了哪个客户，哪些环节最费钱，无从得知。</p>
+
+<p><strong>数据溯源：</strong>AI的输出来自哪里？是真实数据还是编造的？2023年美国有律师用AI写辩护材料，AI编了六个不存在的判例，格式完美，内容全假。</p>
+
+<p><strong>治理边界：</strong>人和人之间共享数据有合同、有保密协议。AI智能体之间传递数据，什么约束都没有。</p>
+
+<p><strong>校准置信度：</strong>人类专业人士会说"这部分我有把握，那部分建议再核实"。AI每句话看起来都一样自信，不管是真懂还是在猜。研究表明AI系统性地过度自信——声称95%确定的事情，实际只对了50%。</p>
+
+<h3>我们做的事</h3>
+
+<p>我的公司叫AceTeam，核心产品叫SafeClaw。解决的是治理边界和校准置信度这两个问题。</p>
+
+<p>可以理解成给AI装监察体系。AI做了一个决定，我们的系统判断两件事：这个决定是否符合规定？系统对这个判断有多大把握？</p>
+
+<p>难点在于合规与否往往不是非黑即白的。我们把判断从"是或否"转化为0%到100%的置信度光谱。90%确定合规的，放行；50%的，交给人审查。这条线画在哪里，不是拍脑袋定的，是从历史数据中学习得来的。用您的话说——<strong>以史为镜</strong>。</p>
+
+<h3>为什么这件事重要</h3>
+
+<p>AI让人从执行者变成治理者——从亲自干活变成审查AI干的活。但治理者不可能审查一切。一万张发票处理完了，人不可能一张一张看。校准置信度就是告诉你该看哪张、该信哪张。没有这个信号，"人在回路中"只是空话。</p>
+
+<p>每一次技术变革都会催生问责体系。复式记账法用了五百年。SWIFT用了五十年。TLS用了三十年。智能体经济已经到来，它的账本还没有。这就是我在做的事。</p>
+
+</article>
+
+<div class="colophon">
+  <p>Private notes &middot; Not indexed</p>
+</div>
+
+<script>
+(function() {
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+})();
+</script>
+</body>
+</html>
