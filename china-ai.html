@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国AI产业机会简报 — Jason Sun</title>
+<meta name="description" content="中国人工智能产业政策、资金扶持、唐山数字化转型试点，以及海外AI专家如何参与的机会分析。">
+<meta property="og:title" content="中国AI产业机会简报 — Jason Sun">
+<meta property="og:description" content="AI产业政策、补贴、唐山试点、合作模式分析。">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Noto Sans SC', 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.95;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text-dim); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-brand:hover { color: var(--accent); text-decoration: none; }
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--text-dimmer); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px;
+  transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text-dim); background: var(--bg-elevated); text-decoration: none; }
+.nav-theme {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: all 0.2s; margin-left: 8px;
+}
+.nav-theme:hover { color: var(--accent); border-color: var(--accent); }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 48px) 24px 80px;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 5vw, 48px); font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px;
+}
+.hero-subtitle {
+  font-size: clamp(15px, 1.8vw, 19px); font-weight: 300;
+  color: var(--text-dim); max-width: 560px; line-height: 1.6; margin: 0 auto 16px;
+}
+.hero-meta {
+  font-size: 13px; color: var(--text-dimmer);
+}
+
+h2 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px); font-weight: 600;
+  letter-spacing: -0.01em; line-height: 1.3;
+  margin: 56px 0 16px; padding-top: 20px; border-top: 1px solid var(--border);
+}
+h3 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(15px, 1.6vw, 19px); font-weight: 600;
+  color: var(--accent); line-height: 1.4; margin: 32px 0 12px;
+}
+p { margin: 14px 0; }
+strong { font-weight: 600; color: var(--text); }
+[data-theme="dark"] strong { color: #fff; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+ul, ol { margin: 14px 0 14px 24px; }
+li { margin: 6px 0; }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px; font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 13px; color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.subsidy-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+}
+.subsidy-table th {
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--border-strong);
+  color: var(--accent);
+  font-size: 13px;
+}
+.subsidy-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.highlight-box {
+  background: var(--accent-dim);
+  border: 1px solid rgba(106,174,252,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+.highlight-box.tangshan {
+  background: var(--green-dim);
+  border-color: rgba(63,185,80,0.2);
+}
+.highlight-box.tangshan .highlight-title { color: var(--green); }
+.highlight-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 600; font-size: 16px;
+  color: var(--accent); margin-bottom: 8px;
+}
+
+.timeline {
+  border-left: 2px solid var(--accent);
+  padding-left: 24px;
+  margin: 24px 0;
+}
+.timeline-item {
+  margin-bottom: 20px;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -29px; top: 8px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.timeline-year {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--accent);
+}
+
+.profile-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 32px 0;
+}
+.profile-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.profile-title {
+  font-size: 14px; color: var(--accent);
+  margin-bottom: 16px;
+}
+.profile-stats {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.profile-stat-label {
+  font-size: 11px; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.profile-stat-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+}
+
+.cta-section {
+  text-align: center;
+  padding: 48px 0;
+  margin-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.cta-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 24px; font-weight: 600;
+  margin-bottom: 12px;
+}
+.cta-email {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.source-list {
+  font-size: 12px;
+  color: var(--text-dimmer);
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.source-list a { color: var(--text-dimmer); }
+.source-list a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Essay</a>
+      <a class="nav-link" href="/book.html">Book</a>
+      <button class="nav-theme" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="hero-section">
+  <div class="hero-eyebrow">Industry Brief / 产业简报</div>
+  <h1 class="hero-title">中国AI产业机会分析</h1>
+  <p class="hero-subtitle">国家政策、地方补贴、唐山试点，以及海外AI专家的参与路径</p>
+  <p class="hero-meta">Jason Sun / 孙嘉俊 &middot; 2026年5月</p>
+</div>
+
+<h2>国家战略：全面推进"人工智能+"</h2>
+
+<p>2025年8月，国务院正式印发《关于深入实施"人工智能+"行动的意见》。这是中国迄今为止最全面的AI产业政策，目标明确：</p>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-number">70%</div>
+    <div class="stat-label">2027年重点行业AI渗透率目标</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">90%</div>
+    <div class="stat-label">2030年AI渗透率目标</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">3450亿</div>
+    <div class="stat-label">政府AI年度投资（人民币）</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">21%</div>
+    <div class="stat-label">年增长率</div>
+  </div>
+</div>
+
+<p>这不是口号。国务院明确要求到2027年，新一代智能终端和AI智能体的渗透率超过70%，到2030年超过90%。六大重点领域：科技创新、产业发展、消费升级、民生改善、治理能力、国际合作。</p>
+
+<p>工信部2026年重点工作已经部署：推进"人工智能+制造"专项行动，培育一批重点行业智能体、智能原生企业。这意味着从国家到地方，每一级政府都在推动企业上AI。</p>
+
+<h2>真金白银：各地补贴有多大</h2>
+
+<table class="subsidy-table">
+  <thead>
+    <tr><th>城市</th><th>项目</th><th>金额</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>上海</strong></td><td>AI算力、模型、训练数据补贴</td><td>9亿 + 5亿（3-5年）</td></tr>
+    <tr><td><strong>杭州</strong></td><td>年度算力券</td><td>2.5亿/年，补贴30%算力成本</td></tr>
+    <tr><td><strong>武汉</strong></td><td>关键AI技术项目</td><td>单个项目最高2000万</td></tr>
+    <tr><td><strong>武汉</strong></td><td>垂直行业模型</td><td>最高1000万/模型</td></tr>
+    <tr><td><strong>苏州</strong></td><td>AI平台供给方和采购方</td><td>最高500万奖补</td></tr>
+    <tr><td><strong>深圳</strong></td><td>AI先锋城市行动计划（2025-2026）</td><td>多项：终端、具身智能、机器人</td></tr>
+  </tbody>
+</table>
+
+<h3>算力券（Computing Vouchers）：最聪明的政策工具</h3>
+
+<p>各城市发放算力券，让企业以市场价30%-80%的折扣使用政府数据中心的AI算力。北京、上海、深圳、成都、宁波等城市已经落地。单张算力券价值约100万-200万人民币。</p>
+
+<p>这个机制特别聪明：美国对华GPU出口管制导致算力成本上升，算力券直接对冲了这个压力，降低了中小企业使用AI的门槛。全国层面由"东数西算"工程支撑，在西部能源丰富地区建设大型算力集群。</p>
+
+<div class="highlight-box tangshan">
+  <div class="highlight-title">唐山：国家级数字化转型试点城市</div>
+  <p>唐山市被确定为<strong>国家中小企业数字化转型试点城市</strong>。</p>
+  <ul>
+    <li><strong>试点周期：</strong>2025年3月至2026年6月（正在进行中）</li>
+    <li><strong>覆盖企业：</strong>612家</li>
+    <li><strong>三大试点行业：</strong>
+      <ul>
+        <li>智能成套设备制造</li>
+        <li>精密装备及零部件制造</li>
+        <li>钢铁材料精深加工制造</li>
+      </ul>
+    </li>
+  </ul>
+  <p>河北省"人工智能+"行动计划（2025-2027）明确点名唐山，推动AI与智能制造、新能源、传统重工业深度融合。河北省数字经济三年行动计划同步推进唐山的"上云用数赋智"。</p>
+  <p><strong>这意味着：612家企业被要求在2026年6月前完成数字化改造。政府有钱、有政策，但大部分企业不知道该买什么、怎么落地。</strong></p>
+</div>
+
+<h2>核心问题：钱有了，能力在哪？</h2>
+
+<p>政策和资金到位了，但一个关键缺口暴露出来：<strong>大部分传统企业不具备评估和实施AI的能力</strong>。</p>
+
+<p>一个钢铁加工厂的老板，被地方政府要求提交AI采用方案。他面前摆着几十家声称能做"AI赋能"的供应商，但他分不清哪些是真的，哪些在忽悠。他需要的不是另一个AI产品——他需要一个懂技术、懂行业、能帮他做判断的人。</p>
+
+<p>这个缺口在国内尤其严重，因为：</p>
+<ul>
+  <li>国内AI公司以销售为导向，倾向于过度承诺</li>
+  <li>真正懂前沿AI技术的人集中在一线城市大厂，不会为中小企业服务</li>
+  <li>企业对"AI"的理解停留在概念层面，缺乏技术判断力</li>
+  <li>政府的补贴政策要求企业提交方案，但没有人帮他们写靠谱的方案</li>
+</ul>
+
+<h2>我能做什么</h2>
+
+<div class="profile-section">
+  <div class="profile-name">Jason Sun / 孙嘉俊</div>
+  <div class="profile-title">AceTeam AI 创始人 &middot; 加拿大</div>
+  <p>近十年AI行业经验，专注于AI安全、信任机制和企业级AI系统。公司总部在加拿大，与北美顶级研究机构合作，服务企业级客户。</p>
+  <p>2026年5月，受邀在加拿大Alberta省Upper Bound AI大会做主题演讲："Accountable Agents: A Protocol for Trust"（可问责的AI智能体：信任协议）。现场与政府AI团队、研究机构、投资人深入交流。</p>
+  <div class="profile-stats">
+    <div>
+      <div class="profile-stat-label">行业经验</div>
+      <div class="profile-stat-value">近10年</div>
+    </div>
+    <div>
+      <div class="profile-stat-label">专注领域</div>
+      <div class="profile-stat-value">AI安全与信任</div>
+    </div>
+    <div>
+      <div class="profile-stat-label">公司总部</div>
+      <div class="profile-stat-value">加拿大</div>
+    </div>
+    <div>
+      <div class="profile-stat-label">语言</div>
+      <div class="profile-stat-value">中英双语</div>
+    </div>
+  </div>
+</div>
+
+<h3>核心能力</h3>
+<ul>
+  <li><strong>AI技术评估：</strong>帮企业判断哪些AI产品靠谱、哪些是概念炒作，避免花冤枉钱</li>
+  <li><strong>AI落地咨询：</strong>从需求分析到方案设计，帮传统企业找到AI的真正切入点</li>
+  <li><strong>安全与合规：</strong>AI系统的信任机制、安全审计、合规框架——这是国内刚刚开始重视但大部分公司还不具备的能力</li>
+  <li><strong>国际视野：</strong>北美最前沿的AI技术和实践，直接对接国内需求</li>
+</ul>
+
+<h3>合作模式</h3>
+<ul>
+  <li><strong>企业AI评估：</strong>对企业现状进行全面诊断，出具评估报告和实施建议</li>
+  <li><strong>月度顾问服务：</strong>持续提供技术咨询、方案评审、供应商评估</li>
+  <li><strong>高管培训：</strong>为企业管理层提供AI认知培训，帮助决策层建立正确的AI判断框架</li>
+  <li><strong>政策方案支持：</strong>协助企业编写符合政府补贴要求的数字化转型方案</li>
+</ul>
+
+<h2>为什么是现在</h2>
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="timeline-year">2023-2024</div>
+    <p>AI大模型技术突破（ChatGPT、文心一言、通义千问），但主要停留在概念和demo阶段。</p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2025</div>
+    <p>国务院"人工智能+"政策落地，各地补贴启动，企业被要求数字化转型。技术从demo进入部署阶段。</p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2026（现在）</div>
+    <p>唐山612家企业试点进入冲刺期（截止2026年6月）。企业有钱、有压力，但缺靠谱的技术合作伙伴。<strong>窗口期。</strong></p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2027+</div>
+    <p>早期入场者已经建立客户关系和口碑。后来者面对的是红海，不是蓝海。</p>
+  </div>
+</div>
+
+<h2>独特优势</h2>
+
+<p>能同时满足以下条件的人，在市场上极少：</p>
+<ul>
+  <li>在北美前沿环境中磨炼出的AI技术能力</li>
+  <li>中国成长背景，完全理解国内商业逻辑和文化</li>
+  <li>中英双语，能直接对接两个市场的资源</li>
+  <li>有自己的AI公司和产品，不是纸上谈兵</li>
+  <li>专注AI安全和信任——这是国内刚需但供给严重不足的领域</li>
+</ul>
+
+<p>术业有专攻。好东西不便宜，便宜的不靠谱。</p>
+
+<div class="cta-section">
+  <div class="cta-title">联系方式</div>
+  <p style="color: var(--text-dim); margin-bottom: 12px;">欢迎交流合作机会</p>
+  <div class="cta-email">jason@aceteam.ai</div>
+  <p style="font-size: 13px; color: var(--text-dimmer); margin-top: 16px;">微信同步沟通</p>
+</div>
+
+<div class="source-list">
+  <p><strong>数据来源：</strong></p>
+  <ul style="list-style: none; margin-left: 0;">
+    <li><a href="https://www.fpri.org/article/2025/09/from-vouchers-to-visas-chinas-innovative-plan-for-ai-dominance/">FPRI: From Vouchers to Visas: China's AI Dominance Plan</a></li>
+    <li><a href="https://www.rand.org/pubs/perspectives/PEA4012-1.html">RAND: Full Stack: China's Evolving Industrial Policy for AI</a></li>
+    <li><a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html">河北省推动"人工智能+"行动计划（2025-2027）</a></li>
+    <li><a href="https://www.tangshan.gov.cn/columns/zhuzhan/szfjbgswj/20250106/1623203.html">唐山市中小企业数字化转型试点方案</a></li>
+    <li><a href="https://english.www.gov.cn/policies/policywatch/202508/27/content_WS68ae79f0c6d0868f4e8f51a2.html">国务院"人工智能+"行动意见</a></li>
+    <li><a href="https://merics.org/en/comment/chinas-ai-drive-aims-integration-across-sectors-wake-call-europe">MERICS: China's AI+ Drive</a></li>
+  </ul>
+</div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeIcon();
+}
+function updateThemeIcon() {
+  const btn = document.querySelector('.nav-theme');
+  if (!btn) return;
+  const theme = document.documentElement.getAttribute('data-theme');
+  btn.textContent = theme === 'dark' ? '☀' : '☾';
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon();
+})();
+</script>
+
+</body>
+</html>
