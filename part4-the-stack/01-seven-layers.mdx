@@ -138,9 +138,13 @@ The enforcement layer operates on a three-phase cycle:
 
 The naive approach -- asking a single model "is this safe?" -- fails in practice because models are systematically overconfident. They express 95% certainty on outputs that are correct only 50% of the time. The calibration gap between stated confidence and actual accuracy is not a minor imprecision. It is a structural deficiency that makes threshold-based decisions meaningless: if "95% confident" does not actually mean "correct 95% of the time," then any threshold set against that score is arbitrary.
 
+The numbers are worse than the intuition suggests. In entity extraction tasks, 86% of entities receive maximum confidence scores from single models, yet only 40% of those entities are actually correct. The model is not uncertain and wrong -- it is certain and wrong, which is far more dangerous. Published guard models designed specifically for safety -- Llama Guard, Shield Guard, Wild Guard -- exhibit Expected Calibration Error between 14% and 28%. These are not general-purpose models being misused. They are purpose-built safety tools that cannot reliably distinguish their own accuracy from their own confidence.
+
+The architecture that addresses this separates prediction from scoring. A large model performs the primary task -- generation, extraction, analysis. A smaller, cheaper model independently estimates the probability that each output is correct. The scoring model has no access to the primary model's internal confidence. It evaluates the output cold, the way a human reviewer would. This separation prevents the systematic overconfidence of the primary model from contaminating the confidence estimate.
+
 The solution is an ensemble of diverse judge models -- diverse in model family, model size, and prompting strategy -- that produces a calibrated confidence score through aggregation. Diversity is the key variable. A panel of ten identical models, asked the same question ten times, will make correlated errors: they will all get the same things wrong, in the same way, and agree with each other's mistakes. But a panel that includes models with different training data, different architectures, and different prompting approaches will disagree productively. When a diverse ensemble agrees unanimously, that agreement is meaningful. When it disagrees, the disagreement is a genuine signal of uncertainty.
 
-Early research in this direction demonstrates that even small ensembles of open-weight models -- each under a billion parameters, running locally on commodity hardware -- can achieve discrimination scores that distinguish correct from incorrect outputs significantly better than any single large model. The ensemble's value comes not from scale but from perspective: each model brings a different lens, and the points where those lenses disagree are precisely the points that need human attention.
+Early research in this direction demonstrates that even small ensembles of open-weight models -- each under a billion parameters, running locally on commodity hardware -- can match frontier model recall on safety benchmarks like R-Judge, while achieving calibration error below 10%. AUC scores improved from 58% to 68% through ensemble diversity alone -- not by adding larger models, but by adding different ones. The ensemble's value comes not from scale but from perspective: each model brings a different lens, and the points where those lenses disagree are precisely the points that need human attention.
 
 Beyond static ensembles, there is a deeper approach: treating confidence estimation as a learning problem. Rather than aggregating binary yes/no votes from judge models, a Bayesian calibrator can be trained on the internal representations of the model itself -- the hidden state activations that encode, in a compressed form, what the model "knows" and what it is uncertain about. This gray-box approach reads the model's internal state to produce a confidence distribution, not just a point estimate. The distribution captures two distinct types of uncertainty: inherent randomness in the task (some inputs are genuinely ambiguous) and lack of knowledge (the model has not seen enough similar cases to form a reliable opinion). Distinguishing between these two types is critical because they demand different responses: inherent ambiguity requires policy decisions ("what do we do when the answer is genuinely unclear?") while knowledge gaps require data ("show me more examples like this one").
 
@@ -191,6 +195,20 @@ Every step of this flow depends on the lower layers:
 - **Settlement** depends on the exchange layer — payment is transferred from consumer to provider based on the verified cost records.
 
 Without these layers, an agent marketplace is just a directory. A directory says "this agent exists and claims to do X." A marketplace with full stack support says "this agent exists, has a verified identity, a quantified track record, standardized pricing, governed data handling, auditable execution, and automated settlement." The difference is the difference between Craigslist and Amazon — the trust infrastructure that makes large-scale commerce possible.
+
+## What This Looks Like in Practice
+
+The enforcement layer becomes tangible the moment you see it operate.
+
+Consider an organization that has configured three safety policies: financial advice is prohibited in customer-facing channels, personally identifiable information must be redacted before output reaches external systems, and deployment actions require human approval above a cost threshold.
+
+An agent receives a customer query and drafts a response that includes investment guidance. The enforcement layer intercepts the output before it reaches the customer. The interface displays which policy was triggered -- financial advice prohibition -- and the calibrated confidence score of the detection. The response is routed for human review. The reviewer can approve, modify, or reject.
+
+Now toggle the financial advice policy off. The same query, the same agent, the same response -- but this time it passes through. The previously blocked output flows to the customer. Toggle it back on, and the block resumes.
+
+This is not a demo trick. It is the enforcement layer making its value visible. The toggle demonstrates that the system is not a black box producing mysterious rejections. It is a configurable policy engine where every intervention is attributable to a specific rule, scored with a specific confidence, and reversible by a specific decision. Organizations can see exactly what the enforcement layer is doing, why, and what would happen without it.
+
+The same visibility applies across all policy types. A PII detection fires on an output containing a Social Security number -- the interface shows which field triggered it, what confidence the detector assigned, and what redaction was applied. A cost anomaly detector flags a workflow that has exceeded its budget threshold -- the interface shows the historical baseline, the current cost, and the deviation. Every enforcement action is transparent, auditable, and configurable.
 
 ## How the Layers Compose
 
