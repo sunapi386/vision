@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Science of Calibrated Trust — Jason Sun</title>
+<meta name="description" content="Technical foundations for accountable AI systems. Calibration research, knowledge graph uncertainty, and the math behind trustworthy AI.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/book-zh.html" class="nav-link">&#20013;&#25991;&#29256;</a>
+      <a href="/#about" class="nav-link">About</a>
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Technical companion</div>
+  <h1 class="hero-title">The Science of Calibrated Trust</h1>
+  <p class="hero-subtitle">Technical foundations for accountable AI systems</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>The Overconfidence Problem</h2>
+
+<p>Large language models are systematically overconfident. When a model reports 95% confidence, the output is correct roughly 50% of the time. This is not a minor calibration issue -- it breaks every downstream system that relies on confidence scores for decisions.</p>
+
+<p>The numbers are worse than most people assume. GPT-4o mini self-reports 90-100% confidence on entity extractions where actual accuracy is approximately 35%. Single judge models assign confidence of 1.0 to 86% of extracted entities, but only 40% of those entities are correct. The gap between stated confidence and actual correctness is not noise. It is structural.</p>
+
+<p>Published guard models fare poorly. Llama Guard, Shield Guard, and Wild Guard -- the standard open-source safety classifiers -- have Expected Calibration Error (ECE) of 14-28%. ECE measures the average gap between predicted confidence and observed accuracy across all confidence bins. An ECE of 20% means the model's confidence scores are, on average, 20 percentage points away from reality.</p>
+
+<p>This makes every threshold-based decision meaningless. If you set a threshold at 0.8 and your model's confidence scores bear no reliable relationship to correctness, you are filtering on noise. You will miss errors that the model is confidently wrong about and flag correct outputs that the model happens to be uncertain about. The threshold gives the appearance of quality control while providing none.</p>
+
+<h2>Three Methods for Confidence Estimation</h2>
+
+<p>The methods divide by access level -- how much of the model's internals you can see. Each level trades off deployment complexity for calibration quality. Together they form an access-level matrix that determines which approach is viable in a given deployment.</p>
+
+<div class="stack-layer">
+  <div class="stack-num">01</div>
+  <div class="stack-body">
+    <h4>Black-box: LLM-as-Judge Ensemble</h4>
+    <p>Multiple diverse small LLMs vote independently on whether an extraction is correct. Confidence comes from the frequentist average of their votes. No training required -- you use the models off the shelf. The key insight is ensemble diversity: using models with different architectures, training data, and failure modes. With a diverse ensemble, ECE drops from 0.6 to 0.4, and AUC improves from 58% to 68%. The models disagree on different things, and disagreement is a genuine signal of uncertainty.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">02</div>
+  <div class="stack-body">
+    <h4>Gray-box: Feature-Based Model</h4>
+    <p>Construct a feature vector from everything the model exposes short of its internal weights: token log-probabilities, softmax entropy, decoding statistics (beam width, number of tokens considered). A lightweight regression model (logistic regression or a small gradient-boosted tree) predicts correctness from these features. One practical trick: GLiNER's threshold-zero hack produces continuous confidence scores from models that would otherwise output binary judgments. This level requires API access to log-probs but no access to hidden states.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">03</div>
+  <div class="stack-body">
+    <h4>White-box: Linear Probes</h4>
+    <p>Train a linear probe on the LLM's hidden representations -- roughly a 4000-dimensional vector per token at each layer. On MMLU Pro, probes achieve ECE of approximately 0.02. That is near-perfect calibration. The key discovery: prompting the LLM to verbalize its uncertainty ("How confident are you?") improves the probe's performance even though the verbalized number itself is not used as a feature. The act of introspecting changes the hidden state in ways that make the probe's job easier. This is "latent feature engineering" -- you modify the model's internal representations by changing the prompt, then read off the improved signal.</p>
+  </div>
+</div>
+
+<h2>Knowledge Graph Uncertainty Propagation</h2>
+
+<p>Extraction produces entities and relations, each with a confidence score. But these scores are not independent. A relation between two entities depends on both entities being correct. The joint probability follows a simple chain: <code>P(relation | e_i, e_j) * P(e_i) * P(e_j)</code>. If either entity is wrong, the relation built on top of them is almost certainly wrong too.</p>
+
+<p>Factor graphs provide the formal framework for modeling these dependencies. A factor graph is a bipartite graph connecting variable nodes (entities, relations) to factor nodes (the functions that define how variables depend on each other). This is a generalization of Bayesian networks that handles arbitrary dependency structures without requiring a directed acyclic graph.</p>
+
+<h3>Belief propagation</h3>
+
+<p>When a human corrects one entity -- confirming it is right or marking it wrong -- messages propagate through the factor graph to update neighboring beliefs. If a human confirms entity A, every relation involving entity A gets a confidence boost. If a human rejects entity A, every relation involving entity A drops. The update is local: you do not need to re-evaluate the entire graph, only the Markov blanket of the corrected node.</p>
+
+<h3>Active correction ordering</h3>
+
+<p>The order in which you correct entities matters. Correcting a highly-connected entity first propagates information to more neighbors. This is the same insight as active learning and Bayesian optimization: choose the query that maximizes expected information gain across the graph, not just locally. A single well-chosen correction can shift confidence scores for dozens of downstream relations.</p>
+
+<div class="callout">
+  <p>This is an open research gap: no existing work combines probabilistic knowledge graphs with Graph RAG. The retrieval-augmented generation community builds knowledge graphs but treats them as deterministic. The probabilistic graphical models community handles uncertainty but does not connect to retrieval pipelines. The intersection is unexplored.</p>
+</div>
+
+<h2>Active Learning and Human-in-the-Loop</h2>
+
+<p>The system cannot query a human for every extraction. Humans are expensive and slow. The problem is a multi-objective contextual bandit: minimize calibration error while simultaneously minimizing the number of human queries. These objectives conflict -- more human feedback always improves calibration, but you have a fixed budget.</p>
+
+<p>The acquisition function is expected information gain: for each candidate entity, estimate how much total uncertainty reduction you would achieve by getting a human label for it. Entities with confidence near 0.5 are not automatically the best candidates. An entity at 0.5 confidence with 50 downstream relations is worth more than an entity at 0.5 confidence with zero downstream relations. The graph structure determines query value.</p>
+
+<div class="callout">
+  <p>"If you have a human budget of 10 minutes, you choose the 20 things you're most uncertain of" -- but uncertainty is not just the confidence score. It is the confidence score weighted by downstream impact in the knowledge graph.</p>
+</div>
+
+<p>Even at high confidence, the system should occasionally verify for systematic drift. A model that was 95% accurate last month may have degraded. Periodic spot-checks on high-confidence outputs detect this drift before it compounds. This is the exploration-exploitation tradeoff: mostly exploit your confidence estimates to focus human effort on uncertain items, but explore enough to detect when the estimates themselves have gone stale.</p>
+
+<p>The Bayesian extension replaces point confidence estimates with full distributions. Instead of "this entity has confidence 0.73," the system maintains "this entity has a Beta(14, 5) distribution with mean 0.74 and 95% credible interval [0.55, 0.89]." Distributions capture not just the model's best guess but how much evidence backs that guess. An entity with confidence 0.73 from three observations is genuinely less certain than one with confidence 0.73 from three hundred observations, even though the point estimates are identical.</p>
+
+<h2>The Safety Application</h2>
+
+<p>The same calibration architecture applies directly to agent safety. "Is this entity correct?" and "Is this action safe?" share identical mathematical structure. Both require a classifier, both suffer from overconfidence, both benefit from ensembles, and both need calibrated confidence to make threshold decisions meaningful.</p>
+
+<h3>Multi-specialist ensemble</h3>
+
+<p>Rather than a single monolithic safety model, the system deploys per-category specialists: one for privacy violations, one for financial risk, one for security threats, one for ethical concerns. Each specialist is a small model trained on category-specific data. This mirrors the black-box ensemble from confidence estimation, but with domain specialization.</p>
+
+<div class="actor-card">
+  <h4>Privacy Specialist</h4>
+  <p>Detects PII leakage, data exposure, consent violations. Trained on privacy-specific incident data. Flags outputs that contain or could reveal personal information.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Finance Specialist</h4>
+  <p>Detects unauthorized transactions, regulatory violations, financial advice without disclaimers. Calibrated against financial compliance benchmarks.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Security Specialist</h4>
+  <p>Detects prompt injection, code execution risks, credential exposure, system access attempts. Trained on adversarial attack patterns.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Ethics Specialist</h4>
+  <p>Detects harmful content generation, bias amplification, manipulation attempts. Calibrated on harm taxonomy benchmarks.</p>
+</div>
+
+<h3>Benchmark results</h3>
+
+<p>On the R-Judge benchmark for agent safety, the multi-specialist ensemble matches GPT-4 recall using small open-weight models, with ECE of 9%. This is a significant improvement over the 14-28% ECE of published guard models.</p>
+
+<p>LoRA adapter distillation compresses the cloud-based judge ensemble into models small enough for edge deployment. Cloud judges are distilled to Qwen 0.6B and Llama 1B adapters that run locally with acceptable accuracy degradation. The adapters are 5-25MB each -- small enough to ship with the application.</p>
+
+<h3>Conservative aggregation</h3>
+
+<p>The aggregation rule is deliberately asymmetric: if any specialist flags an action, the action is flagged. This is conservative by design. False positives (blocking safe actions) are recoverable -- the user can override or the system can escalate. False negatives (allowing unsafe actions) are not recoverable. The cost function is asymmetric, so the aggregation must be asymmetric.</p>
+
+<h2>Information Geometry and Fine-Tuning</h2>
+
+<p>Model knowledge can be understood as a high-dimensional manifold in parameter space. Points on this manifold represent probability distributions over outputs. The geometry of this manifold -- its curvature, its geodesics -- determines how fine-tuning moves through distribution space.</p>
+
+<p>Two kinds of geodesics matter. E-geodesics (exponential family geodesics) preserve the mean parameters during interpolation. M-geodesics (mixture geodesics) preserve the natural parameters. The choice between them determines what is conserved during fine-tuning and what is allowed to drift. Standard gradient descent follows neither -- it follows Euclidean straight lines in parameter space, which are curved paths in distribution space.</p>
+
+<p>Natural gradient descent operates in Fischer information space rather than Euclidean parameter space. The Fischer information matrix measures how sensitive the model's output distribution is to each parameter. Moving in the natural gradient direction makes equal-sized changes in distribution space, regardless of how the parameters happen to be scaled. This connects directly to catastrophic forgetting: standard fine-tuning can destroy previously learned distributions because Euclidean steps in parameter space correspond to wildly unequal steps in distribution space.</p>
+
+<div class="callout">
+  <p>"If you could improve information theory by using geodesics, it would improve literally everything that depends on it" -- every loss function, every optimizer, every training schedule is implicitly navigating this manifold. Better navigation means better convergence, less forgetting, and more efficient use of training data.</p>
+</div>
+
+<h2>Programs as Weights</h2>
+
+<p>Natural language instructions can be compiled into LoRA adapters -- small weight modifications (approximately 5-25MB) that encode behavioral programs into a base model. The base model can be as small as GPT-2 124M or Qwen 0.6B. These adapters run in the browser via WebAssembly with no server round-trip.</p>
+
+<p>This creates a potential foundation for policy enforcement. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is not an input that can be jailbroken -- it is part of the model itself.</p>
+
+<p>The gap is calibration. Programs-as-weights can enforce behaviors but cannot currently report how confident they are in their enforcement. A compiled policy adapter can block an action but cannot say "I am 73% sure this action violates the policy." Connecting the calibration methods described above to compiled policy adapters is an open problem. Solving it would mean policies that are both tamper-resistant (compiled into weights) and uncertainty-aware (calibrated confidence on every decision).</p>
+
+</article>
+
+<div class="draft-notice">
+  <p><a href="/book.html" style="color: var(--accent);">Back to Trust at Scale</a></p>
+  <p>This is a working draft. Feedback welcome at <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a>.</p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 Jason Sun</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'research', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>
