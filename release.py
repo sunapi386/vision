@@ -31,6 +31,7 @@ DEPLOY_FILES = [
     "index.html",
     "book-zh.html",
     "vault.html",
+    "research.html",
     "book.pdf",
     "analytics.html",
     "china-ai.html",
