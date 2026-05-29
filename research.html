@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Science of Calibrated Trust — Jason Sun</title>
+<title>The Science of Calibrated Trust | Jason Sun</title>
 <meta name="description" content="Technical foundations for accountable AI systems. Calibration research, knowledge graph uncertainty, and the math behind trustworthy AI.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -263,27 +266,29 @@ body {
 
 <h2>The Overconfidence Problem</h2>
 
-<p>Large language models are systematically overconfident. When a model reports 95% confidence, the output is correct roughly 50% of the time. This is not a minor calibration issue -- it breaks every downstream system that relies on confidence scores for decisions.</p>
+<p>Large language models are systematically overconfident. When a model says 95% confidence, the answer is right about half the time. This is not a rounding error. It breaks every system downstream that trusts those numbers.</p>
 
-<p>The numbers are worse than most people assume. GPT-4o mini self-reports 90-100% confidence on entity extractions where actual accuracy is approximately 35%. Single judge models assign confidence of 1.0 to 86% of extracted entities, but only 40% of those entities are correct. The gap between stated confidence and actual correctness is not noise. It is structural.</p>
+<p>The gap is worse than people think. GPT-4o mini self-reports 90-100% confidence on entity extractions where actual accuracy sits around 35%. Single judge models assign confidence 1.0 to 86% of entities they extract, but only 40% of those entities are correct. This is not noise. It is structural.</p>
 
-<p>Published guard models fare poorly. Llama Guard, Shield Guard, and Wild Guard -- the standard open-source safety classifiers -- have Expected Calibration Error (ECE) of 14-28%. ECE measures the average gap between predicted confidence and observed accuracy across all confidence bins. An ECE of 20% means the model's confidence scores are, on average, 20 percentage points away from reality.</p>
+<p>Published guard models are no better. Llama Guard, Shield Guard, and Wild Guard, the standard open-source safety classifiers, have Expected Calibration Error (ECE) of 14-28% [2]. ECE measures the average gap between predicted confidence and observed accuracy. An ECE of 20% means the model's confidence is, on average, 20 points away from reality:</p>
 
-<p>This makes every threshold-based decision meaningless. If you set a threshold at 0.8 and your model's confidence scores bear no reliable relationship to correctness, you are filtering on noise. You will miss errors that the model is confidently wrong about and flag correct outputs that the model happens to be uncertain about. The threshold gives the appearance of quality control while providing none.</p>
+$$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b)|$$
 
-<p>The root cause is a selection bias that compounds the calibration problem. Extraction models perform an implicit top-K filtering before confidence is ever estimated: they only output entities they believe are correct. The confidence model never sees clearly wrong extractions. It is evaluating a pre-filtered distribution where most inputs are plausible. A perfect extractor paired with a perfect confidence model would just output "correct" for everything -- trivially calibrated but completely uninformative. The practical consequence: precision can be improved after the fact through calibration, but recall cannot. If the extraction model suppresses uncertain outputs before they reach the confidence estimator, those potential corrections are lost permanently.</p>
+<p>If you know how to set a threshold, you set a threshold. But if your model's confidence scores bear no relationship to correctness, you are filtering on noise. You will miss errors the model is confidently wrong about and flag correct outputs it happens to be uncertain about. The threshold gives the appearance of quality control while providing none.</p>
 
-<p>RLHF makes this worse. The GPT-4 technical report documents that calibration degrades after human feedback training. RLHF optimizes for outputs that sound confident and authoritative, because human annotators reward those qualities. The model learns to express certainty as a rhetorical strategy, decoupled from actual accuracy. This is not a bug in RLHF. It is a direct consequence of optimizing for human preference rather than calibrated truthfulness.</p>
+<p>There is also a selection bias that compounds the problem. Extraction models do an implicit top-K filtering before confidence is ever estimated: they only output entities they believe are correct. The confidence model never sees clearly wrong extractions. It evaluates a pre-filtered distribution where most inputs are plausible. A perfect extractor paired with a perfect confidence model would just output "correct" for everything, trivially calibrated but completely uninformative. The practical consequence: precision can be improved after the fact through calibration, but recall cannot. If the extraction model suppresses uncertain outputs before they reach the confidence estimator, those potential corrections are lost permanently.</p>
+
+<p>RLHF makes this worse. The GPT-4 technical report documents calibration degradation after human feedback training [5]. RLHF optimizes for outputs that sound confident and authoritative, because human annotators reward those qualities. The model learns to express certainty as rhetoric, decoupled from actual accuracy. This is not a bug in RLHF. It is a direct consequence of optimizing for human preference rather than calibrated truthfulness.</p>
 
 <h2>Three Methods for Confidence Estimation</h2>
 
-<p>The methods divide by access level -- how much of the model's internals you can see. Each level trades off deployment complexity for calibration quality. Together they form an access-level matrix that determines which approach is viable in a given deployment.</p>
+<p>The methods divide by access level: how much of the model's internals you can see. Each level trades deployment complexity for calibration quality. Together they form a matrix that determines which approach works in a given deployment.</p>
 
 <div class="stack-layer">
   <div class="stack-num">01</div>
   <div class="stack-body">
     <h4>Black-box: LLM-as-Judge Ensemble</h4>
-    <p>Multiple diverse small LLMs vote independently on whether an extraction is correct. Confidence comes from the frequentist average of their votes. No training required -- you use the models off the shelf. The key insight is ensemble diversity: using models with different architectures, training data, and failure modes. With a diverse ensemble, ECE drops from 0.6 to 0.4, and AUC improves from 58% to 68%. The models disagree on different things, and disagreement is a genuine signal of uncertainty.</p>
+    <p>Multiple diverse small LLMs vote independently on whether an extraction is correct. Confidence comes from the frequentist average of their votes. No training required. You use the models off the shelf [10]. The key is ensemble diversity: models with different architectures, training data, and failure modes. With a diverse ensemble, ECE drops from 0.6 to 0.4, and AUC improves from 58% to 68%. The models disagree on different things, and disagreement is a genuine signal of uncertainty [6].</p>
   </div>
 </div>
 
@@ -291,7 +296,7 @@ body {
   <div class="stack-num">02</div>
   <div class="stack-body">
     <h4>Gray-box: Feature-Based Model</h4>
-    <p>Construct a feature vector from everything the model exposes short of its internal weights: token log-probabilities, softmax entropy, decoding statistics (beam width, number of tokens considered). A lightweight regression model (logistic regression or a small gradient-boosted tree) predicts correctness from these features. One practical trick: GLiNER's threshold-zero hack produces continuous confidence scores from models that would otherwise output binary judgments. This level requires API access to log-probs but no access to hidden states.</p>
+    <p>Construct a feature vector from everything the model exposes short of its internal weights: token log-probabilities, softmax entropy, decoding statistics (beam width, number of tokens considered). A lightweight regression model, logistic regression or a small gradient-boosted tree, predicts correctness from these features. One practical trick: GLiNER's threshold-zero hack produces continuous confidence scores from models that would otherwise output binary judgments. This level requires API access to log-probs but no access to hidden states.</p>
   </div>
 </div>
 
@@ -299,73 +304,75 @@ body {
   <div class="stack-num">03</div>
   <div class="stack-body">
     <h4>White-box: Linear Probes</h4>
-    <p>Train a linear probe on the LLM's hidden representations -- roughly a 4000-dimensional vector per token at each layer. On MMLU Pro, probes achieve ECE of approximately 0.02. That is near-perfect calibration. The key discovery: prompting the LLM to verbalize its uncertainty ("How confident are you?") improves the probe's performance even though the verbalized number itself is not used as a feature. The act of introspecting changes the hidden state in ways that make the probe's job easier. This is "latent feature engineering" -- you modify the model's internal representations by changing the prompt, then read off the improved signal.</p>
+    <p>Train a linear probe on the LLM's hidden representations, roughly a 4000-dimensional vector per token at each layer [4]. On MMLU Pro, probes achieve ECE of approximately 0.02. That is near-perfect calibration. The key discovery: prompting the LLM to verbalize its uncertainty ("How confident are you?") improves the probe's performance even though the verbalized number is not used as a feature. The act of introspecting changes the hidden state in ways that make the probe's job easier. This is "latent feature engineering": you modify the model's internal representations by changing the prompt, then read off the improved signal.</p>
   </div>
 </div>
 
 <h2>Knowledge Graph Uncertainty Propagation</h2>
 
-<p>Extraction produces entities and relations, each with a confidence score. But these scores are not independent. A relation between two entities depends on both entities being correct. The joint probability follows a simple chain: <code>P(relation | e_i, e_j) * P(e_i) * P(e_j)</code>. If either entity is wrong, the relation built on top of them is almost certainly wrong too.</p>
+<p>Extraction produces entities and relations, each with a confidence score. These scores are not independent. A relation between two entities depends on both entities being correct. The joint probability follows a simple chain: $P(\text{relation} \mid e_i, e_j) \cdot P(e_i) \cdot P(e_j)$. If either entity is wrong, the relation built on them is almost certainly wrong too.</p>
 
-<p>Factor graphs provide the formal framework for modeling these dependencies. A factor graph is a bipartite graph connecting variable nodes (entities, relations) to factor nodes (the functions that define how variables depend on each other). This is a generalization of Bayesian networks that handles arbitrary dependency structures without requiring a directed acyclic graph.</p>
+<p>Factor graphs [8][9] provide the framework for modeling these dependencies. A factor graph is a bipartite graph connecting variable nodes (entities, relations) to factor nodes (the functions defining how variables depend on each other). It generalizes Bayesian networks to handle arbitrary dependency structures without requiring a directed acyclic graph.</p>
+
+<p>Our extraction confidence work uses evaluation metrics (CEAF [7]) and datasets from the AdaIE framework [1], which spans 15 datasets, 497 entity types, and 747 relation types, as the testing ground for calibration methods.</p>
 
 <h3>Why extraction is different from other NLP tasks</h3>
 
-<p>A natural question: how is confidence for information extraction fundamentally different from machine translation, sentiment analysis, or any other NLP task? The answer is the topology of dependencies. In question answering, questions are independent. In machine translation, dependencies are autoregressive (sequential). In information extraction, the dependency structure is a non-trivial graph. Relations depend on entities. Entities can depend on each other through relations. Corrections propagate non-locally through the graph in ways that sequential dependencies never do.</p>
+<p>The obvious question: how is confidence for information extraction different from translation, sentiment analysis, or any other NLP task? The answer is the topology of dependencies. In question answering, questions are independent. In translation, dependencies are autoregressive. In information extraction, the dependency structure is a graph. Relations depend on entities. Entities depend on each other through relations. Corrections propagate non-locally through the graph in ways that sequential dependencies never do.</p>
 
-<p>Entity types function as predicates over the universe of extracted mentions. "Software engineer" is a function: pass in a text span, it returns a probability. This framing connects extraction to Laplace's framework where probability is a natural extension of logic -- the predicate returns not true/false but a value between 0 and 1. Schema-constrained extraction makes this tractable: with known entity types, extraction decomposes into individual classification-like decisions (does this span have type X?) rather than unconstrained generation.</p>
+<p>Entity types function as predicates over the universe of extracted mentions. "Software engineer" is a function: pass in a text span, it returns a probability. This connects extraction to Laplace's framework where probability extends logic. The predicate returns not true or false but a value between 0 and 1. Schema-constrained extraction makes this tractable: with known entity types, extraction decomposes into individual classification decisions (does this span have type X?) rather than unconstrained generation.</p>
 
 <h3>Belief propagation</h3>
 
-<p>When a human corrects one entity -- confirming it is right or marking it wrong -- messages propagate through the factor graph to update neighboring beliefs. If a human confirms entity A, every relation involving entity A gets a confidence boost. If a human rejects entity A, every relation involving entity A drops. The update is local: you do not need to re-evaluate the entire graph, only the Markov blanket of the corrected node.</p>
+<p>When a human corrects one entity, confirming it or marking it wrong, messages propagate through the factor graph to update neighboring beliefs. Confirm entity A and every relation involving it gets a confidence boost. Reject entity A and every relation involving it drops. The update is local: you only re-evaluate the Markov blanket of the corrected node, not the entire graph.</p>
 
 <h3>Active correction ordering</h3>
 
-<p>The order in which you correct entities matters. Correcting a highly-connected entity first propagates information to more neighbors. This is the same insight as active learning and Bayesian optimization: choose the query that maximizes expected information gain across the graph, not just locally. A single well-chosen correction can shift confidence scores for dozens of downstream relations.</p>
+<p>The order in which you correct entities matters. Correcting a highly-connected entity first propagates information to more neighbors. Same insight as active learning and Bayesian optimization: choose the query that maximizes expected information gain across the graph, not just locally. A single well-chosen correction can shift confidence scores for dozens of downstream relations.</p>
 
 <div class="callout">
-  <p>This is an open research gap: no existing work combines probabilistic knowledge graphs with Graph RAG. The retrieval-augmented generation community builds knowledge graphs but treats them as deterministic. The probabilistic graphical models community handles uncertainty but does not connect to retrieval pipelines. The intersection is unexplored.</p>
+  <p>This is an open research gap: no existing work combines probabilistic knowledge graphs with Graph RAG [11]. The RAG community builds knowledge graphs but treats them as deterministic. The probabilistic graphical models community handles uncertainty but does not connect to retrieval pipelines. The intersection is unexplored.</p>
 
-<p>Temporal knowledge graphs add another dimension. When documents are versioned (contract drafts, regulatory filings, policy updates), the knowledge graph changes over time. Tracking how entities and relations evolve across versions -- which entities appeared, which were modified, which relationships were severed -- turns the graph into a historical record. For merger agreements, you could ask: "From version 1 to the final signed agreement, what changed in the indemnification structure?" The shape of the graph across drafts becomes a first-class queryable artifact.</p>
+<p>Temporal knowledge graphs add another dimension. When documents are versioned (contract drafts, regulatory filings, policy updates), the knowledge graph changes over time. Tracking how entities and relations evolve across versions, which appeared, which were modified, which relationships were severed, turns the graph into a historical record. For merger agreements, you could ask: "From version 1 to the final signed agreement, what changed in the indemnification structure?" The shape of the graph across drafts becomes a first-class queryable artifact.</p>
 
 <h3>Evaluation methodology</h3>
 
-<p>Calibration quality cannot be assessed with a single metric. Three metrics are required, each measuring a different property:</p>
+<p>Calibration quality cannot be assessed with a single metric. Three are required, each measuring a different property:</p>
 
-<p><strong>Discrimination (AUROC):</strong> Can the confidence score separate correct from incorrect outputs? A model that assigns higher confidence to correct outputs than incorrect ones has good discrimination, even if the absolute scores are poorly calibrated. AUROC measures this ranking quality.</p>
+<p><strong>Discrimination (AUROC):</strong> Can the confidence score separate correct from incorrect outputs? A model that assigns higher confidence to correct outputs has good discrimination, even if the absolute scores are poorly calibrated. AUROC measures this ranking quality.</p>
 
-<p><strong>Calibration (ECE and reliability diagrams):</strong> Does 70% confidence actually mean 70% accuracy? ECE (Expected Calibration Error) computes the weighted average gap between predicted confidence and observed accuracy across binned confidence ranges. But ECE alone is misleading: a model that always outputs the dataset's base accuracy achieves trivially zero ECE while being completely uninformative. Reliability diagrams (bins of predicted confidence on X-axis, actual accuracy on Y-axis, target = diagonal) reveal the full picture.</p>
+<p><strong>Calibration (ECE and reliability diagrams):</strong> Does 70% confidence actually mean 70% accuracy? ECE computes the weighted average gap between predicted confidence and observed accuracy across binned confidence ranges. But ECE alone is misleading: a model that always outputs the dataset's base accuracy achieves zero ECE while being completely uninformative. Reliability diagrams (predicted confidence on X-axis, actual accuracy on Y-axis, target = diagonal) reveal the full picture.</p>
 
-<p><strong>Selective prediction (risk-coverage curves):</strong> Does discarding low-confidence items improve final accuracy? Given a budget of N human reviews, does prioritizing the lowest-confidence items produce better results than random selection? This directly simulates the production use case where confidence scores route work to human reviewers.</p>
+<p><strong>Selective prediction (risk-coverage curves):</strong> Does discarding low-confidence items improve final accuracy? Given a budget of N human reviews, does prioritizing the lowest-confidence items beat random selection? This directly simulates the production use case where confidence scores route work to human reviewers.</p>
 
 <p>The Brier score punishes uncertainty itself (it can only be zero with perfect 0/1 predictions), making it inappropriate for tasks with irreducible ambiguity. ECE with binning averages out inherent randomness. AUROC is insensitive to calibration but captures ranking quality. All three together give a complete picture.</p>
 </div>
 
 <h2>Active Learning and Human-in-the-Loop</h2>
 
-<p>The system cannot query a human for every extraction. Humans are expensive and slow. The problem is a multi-objective contextual bandit: minimize calibration error while simultaneously minimizing the number of human queries. These objectives conflict -- more human feedback always improves calibration, but you have a fixed budget.</p>
+<p>You cannot query a human for every extraction. Humans are expensive and slow. The problem is a multi-objective contextual bandit: minimize calibration error while minimizing the number of human queries. These objectives conflict. More human feedback always improves calibration, but you have a fixed budget.</p>
 
-<p>The acquisition function is expected information gain: for each candidate entity, estimate how much total uncertainty reduction you would achieve by getting a human label for it. Entities with confidence near 0.5 are not automatically the best candidates. An entity at 0.5 confidence with 50 downstream relations is worth more than an entity at 0.5 confidence with zero downstream relations. The graph structure determines query value.</p>
+<p>The acquisition function is expected information gain. For each candidate entity, estimate how much total uncertainty reduction you would get from a human label. Entities with confidence near 0.5 are not automatically the best candidates. An entity at 0.5 confidence with 50 downstream relations is worth more than an entity at 0.5 confidence with zero downstream relations. The graph structure determines query value.</p>
 
 <div class="callout">
-  <p>"If you have a human budget of 10 minutes, you choose the 20 things you're most uncertain of" -- but uncertainty is not just the confidence score. It is the confidence score weighted by downstream impact in the knowledge graph.</p>
+  <p>If you have a human budget of 10 minutes, you pick the 20 things you are most uncertain of. But uncertainty is not just the confidence score. It is the confidence score weighted by downstream impact in the knowledge graph.</p>
 </div>
 
-<p>Even at high confidence, the system should occasionally verify for systematic drift. A model that was 95% accurate last month may have degraded. Periodic spot-checks on high-confidence outputs detect this drift before it compounds. This is the exploration-exploitation tradeoff: mostly exploit your confidence estimates to focus human effort on uncertain items, but explore enough to detect when the estimates themselves have gone stale.</p>
+<p>Even at high confidence, the system should occasionally verify for systematic drift. A model that was 95% accurate last month may have degraded. Periodic spot-checks on high-confidence outputs detect this before it compounds. This is the exploration-exploitation tradeoff: mostly exploit your confidence estimates to focus human effort on uncertain items, but explore enough to detect when the estimates themselves have gone stale.</p>
 
-<p>The Bayesian extension replaces point confidence estimates with full distributions. Instead of "this entity has confidence 0.73," the system maintains "this entity has a Beta(14, 5) distribution with mean 0.74 and 95% credible interval [0.55, 0.89]." Distributions capture not just the model's best guess but how much evidence backs that guess. An entity with confidence 0.73 from three observations is genuinely less certain than one with confidence 0.73 from three hundred observations, even though the point estimates are identical.</p>
+<p>The Bayesian extension replaces point estimates with full distributions. Instead of "this entity has confidence 0.73," the system maintains a $\text{Beta}(14, 5)$ distribution with mean 0.74 and 95% credible interval [0.55, 0.89]. Distributions capture not just the model's best guess but how much evidence backs it. An entity with confidence 0.73 from three observations is genuinely less certain than one with confidence 0.73 from three hundred observations, even though the point estimates are identical.</p>
 
 <h2>The Safety Application</h2>
 
-<p>The same calibration architecture applies directly to agent safety. "Is this entity correct?" and "Is this action safe?" share identical mathematical structure. Both require a classifier, both suffer from overconfidence, both benefit from ensembles, and both need calibrated confidence to make threshold decisions meaningful.</p>
+<p>The same calibration architecture applies directly to agent safety. "Is this entity correct?" and "Is this action safe?" have identical mathematical structure. Both require a classifier, both suffer from overconfidence, both benefit from ensembles, and both need calibrated confidence to make threshold decisions meaningful.</p>
 
 <h3>Multi-specialist ensemble</h3>
 
-<p>Rather than a single monolithic safety model, the system deploys per-category specialists: one for privacy violations, one for financial risk, one for security threats, one for ethical concerns. Each specialist is a small model fine-tuned on category-specific data. This mirrors the black-box ensemble from confidence estimation, but with domain specialization.</p>
+<p>Instead of a single monolithic safety model, the system deploys per-category specialists: one for privacy violations, one for financial risk, one for security threats, one for ethical concerns. Each specialist is a small model fine-tuned on category-specific data. This mirrors the black-box ensemble from confidence estimation, but with domain specialization.</p>
 
-<p>Adding specialist diversity improved detection recall from 63% (single general judge) to 73% (four specialists). The improvement comes not from more parameters but from more perspectives. A general safety model treats "agent emails SSH keys to an external address" and "agent provides unsolicited investment advice" as the same class of problem. A specialist architecture treats them as fundamentally different failure modes that require different training data, different evaluation criteria, and different confidence thresholds.</p>
+<p>Specialist diversity improved detection recall from 63% (single general judge) to 73% (four specialists). The improvement comes not from more parameters but from more perspectives. A general safety model treats "agent emails SSH keys to an external address" and "agent provides unsolicited investment advice" as the same class of problem. A specialist architecture treats them as fundamentally different failure modes requiring different training data, evaluation criteria, and confidence thresholds.</p>
 
-<p>Turning off specific specialists demonstrates their individual value. Without the finance specialist, unauthorized purchase actions pass through undetected. Without the privacy specialist, credential exfiltration slips by. Each specialist catches failures the others miss, because each is trained on a different slice of the risk taxonomy.</p>
+<p>Turn off individual specialists and you see their value directly. Without the finance specialist, unauthorized purchase actions pass through undetected. Without the privacy specialist, credential exfiltration slips by. Each specialist catches failures the others miss, because each is trained on a different slice of the risk taxonomy.</p>
 
 <div class="actor-card">
   <h4>Privacy Specialist</h4>
@@ -379,7 +386,7 @@ body {
 
 <div class="actor-card">
   <h4>Security Specialist</h4>
-  <p>Detects prompt injection, code execution risks, credential exposure, system access attempts. Trained on adversarial attack patterns and the R-Judge benchmark's 27 risk scenarios across software, IoT, web, finance, and program categories.</p>
+  <p>Detects prompt injection, code execution risks, credential exposure, system access attempts. Trained on adversarial attack patterns and the R-Judge benchmark's 27 risk scenarios across software, IoT, web, finance, and program categories [3].</p>
 </div>
 
 <div class="actor-card">
@@ -389,61 +396,77 @@ body {
 
 <h3>Benchmark results</h3>
 
-<p>On the R-Judge benchmark -- approximately 500 human-annotated instances across five categories (finance, IoT, software, web, program) with 27 distinct risk scenarios -- the multi-specialist ensemble achieves 66% recall for unsafe actions and 62% specificity, with ECE of 9%. This matches GPT-4's recall on the same benchmark using only small open-weight models. The 9% ECE means the confidence scores are off by no more than 10 percentage points at any confidence level, compared to 14-28% for published guard models.</p>
+<p>On the R-Judge benchmark [3], approximately 500 human-annotated instances across five categories (finance, IoT, software, web, program) with 27 distinct risk scenarios, the multi-specialist ensemble achieves 66% recall for unsafe actions and 62% specificity, with ECE of 9%. This matches GPT-4's recall on the same benchmark using only small open-weight models. The 9% ECE means confidence scores are off by no more than 10 percentage points at any confidence level, compared to 14-28% for published guard models [2].</p>
 
 <p>The ensemble used four models (Llama, Qwen, Gemma, Mistral) with two prompt variants each, producing eight independent judgments per input. Confidence scores exist only in the 0.5-1.0 range by construction, since majority vote is always at least 50%. Variation comes from model architecture, prompt formulation, and chain-of-thought vs. direct prompting.</p>
 
 <h3>LoRA adapter distillation</h3>
 
-<p>Cloud-based specialist judges are expensive to run in production. The distillation pipeline compresses them into LoRA adapters on a single small backbone model (Qwen 0.6B or Llama 1B). Each adapter is 5-25MB. Multiple adapters can share one base deployment, making per-specialist inference cheap.</p>
+<p>Cloud-based specialist judges are expensive to run in production. The distillation pipeline compresses them into LoRA adapters on a single small backbone model (Qwen 0.6B or Llama 1B). Each adapter is 5-25MB. Multiple adapters share one base deployment, making per-specialist inference cheap.</p>
 
 <p>The pipeline has four phases: (1) synthetic data generation from 10-50 seed examples per category using frontier models, (2) teacher evaluation to validate the task is solvable at the target accuracy, (3) LoRA fine-tuning on the small backbone, (4) integration into the gateway. This pipeline is task-agnostic. The same four phases apply whether the target is safety detection, entity extraction, PII redaction, or any classification task. The flywheel is general-purpose.</p>
 
-<p>Published benchmarks from comparable distillation approaches (Distill Labs, Berlin) demonstrate that 1-4B parameter models can match 120B model accuracy on targeted classification tasks. Their PII redaction benchmark shows a 1B model matching GPT-4. Turnaround is approximately 8 hours at approximately $100 per distillation.</p>
+<p>Published benchmarks from comparable distillation approaches (Distill Labs, Berlin) show that 1-4B parameter models can match 120B model accuracy on targeted classification tasks. Their PII redaction benchmark shows a 1B model matching GPT-4. Turnaround is approximately 8 hours at approximately 100 USD per distillation.</p>
 
 <h3>Conservative aggregation</h3>
 
-<p>The aggregation rule is deliberately asymmetric: if any specialist flags an action, the action is flagged. The highest confidence among flagging specialists is reported. If all specialists say safe, the minimum confidence is reported. This is conservative by design. False positives (blocking safe actions) are recoverable -- the user can override or the system can escalate. False negatives (allowing unsafe actions) are not recoverable. The cost function is asymmetric, so the aggregation must be asymmetric.</p>
+<p>The aggregation rule is deliberately asymmetric. If any specialist flags an action, the action is flagged. The highest confidence among flagging specialists is reported. If all specialists say safe, the minimum confidence is reported. This is conservative by design. False positives (blocking safe actions) are recoverable: the user can override or the system can escalate. False negatives (allowing unsafe actions) are not recoverable. The cost function is asymmetric, so the aggregation must be.</p>
 
-<p>When multiple specialists flag the same action, combined unsafety scores climb rapidly via the product-of-complements formula: <code>P(unsafe) = 1 - &prod;(1 - P(unsafe_i))</code>. Individual scores of 0.8, 0.9, and 0.85 yield a combined score of 0.997. The independence assumption is imperfect (deployment safety and secret leakage are correlated), but the approach works in practice for the same reason naive Bayes works for spam: the model's errors are tolerable because the aggregation is conservative.</p>
+<p>When multiple specialists flag the same action, combined unsafety scores climb rapidly via the product-of-complements formula: $P(\text{unsafe}) = 1 - \prod_i (1 - P(\text{unsafe}_i))$. Individual scores of 0.8, 0.9, and 0.85 yield a combined score of 0.997. The independence assumption is imperfect (deployment safety and secret leakage are correlated), but it works in practice for the same reason naive Bayes works for spam: the model's errors are tolerable because the aggregation is conservative.</p>
 
-<p>For more principled handling of policy dependencies, the chain rule of probability can be applied over a directed acyclic graph of policy relationships: <code>P(A, B | X) = P(A | X) * P(B | A, X)</code>. An LLM can generate the dependency graph given a set of policies, enabling joint probability computation that accounts for correlations. This is the standard approach in probabilistic graphical models (Bishop, Chapter 8) but is likely unnecessary for initial deployment where the naive independence assumption suffices.</p>
+<p>For more principled handling of policy dependencies, you can apply the chain rule over a directed acyclic graph of policy relationships: $P(A, B \mid X) = P(A \mid X) \cdot P(B \mid A, X)$. An LLM can generate the dependency graph given a set of policies, enabling joint probability computation that accounts for correlations. This is the standard approach in probabilistic graphical models [8], but is unnecessary for initial deployment where naive independence suffices.</p>
 
 <h3>The mixture-of-opinions architecture</h3>
 
-<p>A related approach, inspired by Sanskrit epistemological traditions, organizes reasoning dimensions into specialized perspectives. The concept comes from a framework of approximately 208 reasoning dimensions derived from classical Indian schools of thought. For a given domain or task, a subset of these dimensions (typically 8-12, grouped into clusters) is compiled into specialized critics. Each dimension acts as a thinking hat: fallacy detection, irreversibility checks, sequencing analysis, causal reasoning, temporal consistency, logical coherence.</p>
+<p>A related approach, inspired by Sanskrit epistemological traditions, organizes reasoning dimensions into specialized perspectives. The concept draws from a framework of approximately 208 reasoning dimensions derived from classical Indian schools of thought. For a given domain or task, a subset of these dimensions (typically 8-12, grouped into clusters) is compiled into specialized critics. Each dimension acts as a thinking hat: fallacy detection, irreversibility checks, sequencing analysis, causal reasoning, temporal consistency, logical coherence.</p>
 
-<p>The architectural distinction from the ensemble approach is how the critics communicate. In the standard ensemble, each judge produces a text output, and votes are aggregated. In the mixture-of-opinions architecture, the critics share an embedding space: queries flow to all critics as vectors in a common latent space, critics debate and exchange information at the embedding level rather than through text, and the synthesis happens in high-dimensional space before being decoded back to text. This reduces context loss compared to text-based inter-model communication, where nuance is compressed through the tokenizer at every exchange.</p>
+<p>The architectural distinction from the ensemble is how the critics communicate. In the standard ensemble, each judge produces a text output and votes are aggregated. In the mixture-of-opinions architecture, critics share an embedding space. Queries flow to all critics as vectors in a common latent space, critics debate at the embedding level rather than through text, and synthesis happens in high-dimensional space before decoding back. This reduces context loss compared to text-based inter-model communication, where nuance is compressed through the tokenizer at every exchange.</p>
 
-<p>The multi-stage synthesis proceeds as: parallel debate (all critics analyze simultaneously), reconciliation (common conclusions drawn), contradiction resolution (disagreements adjudicated), and final answer generation. The underlying models can be open-source LLMs with LoRA adapters for each dimension, making the approach computationally feasible on commodity hardware.</p>
+<p>The multi-stage synthesis: parallel debate (all critics analyze simultaneously), reconciliation (common conclusions drawn), contradiction resolution (disagreements adjudicated), then final answer generation. The underlying models can be open-source LLMs with LoRA adapters for each dimension, making the approach feasible on commodity hardware.</p>
 
-<p>The key differentiator between the ensemble and mixture-of-opinions approaches is calibration. The mixture-of-opinions architecture does not produce calibrated confidence scores. It produces better answers, but it cannot tell you how confident it is in those answers. The ensemble approach described in this document produces calibrated confidence as a first-class output. Combining the two -- diverse perspectives that communicate in latent space, with calibrated uncertainty estimation on top -- remains an open problem and a potentially powerful architecture.</p>
+<p>The key differentiator: the mixture-of-opinions architecture does not produce calibrated confidence scores. It produces better answers, but cannot tell you how confident it is in those answers. The ensemble approach produces calibrated confidence as a first-class output. Combining the two, diverse perspectives communicating in latent space with calibrated uncertainty estimation on top, remains an open problem and a potentially powerful architecture.</p>
 
 <h3>Per-organization calibration as flywheel</h3>
 
-<p>Safety thresholds are not universal. What constitutes an unsafe action depends on the organization, the domain, the regulatory environment, and the specific workflow. A marketing agency and a healthcare provider have fundamentally different risk profiles. This means calibration must be per-organization.</p>
+<p>Safety thresholds are not universal. What counts as unsafe depends on the organization, the domain, the regulatory environment, and the specific workflow. A marketing agency and a healthcare provider have fundamentally different risk profiles. Calibration must be per-organization.</p>
 
-<p>Every approve/deny decision by a human reviewer becomes training data for that organization's calibration model. Over time, the system learns the organization's specific risk tolerance, common edge cases, and policy interpretations. This creates a compounding data advantage: the longer an organization uses the system, the better it calibrates to their specific needs. The data dependency that initially appears to be a weakness (the system needs organization-specific data to calibrate) becomes a moat (no competitor can replicate another organization's accumulated calibration data).</p>
+<p>Every approve/deny decision by a human reviewer becomes training data for that organization's calibration model. Over time, the system learns their specific risk tolerance, common edge cases, and policy interpretations. This creates a compounding data advantage: the longer an organization uses the system, the better it calibrates to their needs. The data dependency that initially looks like a weakness (you need organization-specific data to calibrate) becomes a moat. No competitor can replicate another organization's accumulated calibration data.</p>
 
 <h2>Information Geometry and Fine-Tuning</h2>
 
-<p>Model knowledge can be understood as a high-dimensional manifold in parameter space. Points on this manifold represent probability distributions over outputs. The geometry of this manifold -- its curvature, its geodesics -- determines how fine-tuning moves through distribution space.</p>
+<p>Model knowledge can be understood as a high-dimensional manifold in parameter space. Points on this manifold represent probability distributions over outputs. The geometry of this manifold, its curvature and geodesics, determines how fine-tuning moves through distribution space.</p>
 
-<p>Two kinds of geodesics matter. E-geodesics (exponential family geodesics) preserve the mean parameters during interpolation. M-geodesics (mixture geodesics) preserve the natural parameters. The choice between them determines what is conserved during fine-tuning and what is allowed to drift. Standard gradient descent follows neither -- it follows Euclidean straight lines in parameter space, which are curved paths in distribution space.</p>
+<p>Two kinds of geodesics matter. E-geodesics (exponential family) preserve mean parameters during interpolation. M-geodesics (mixture) preserve natural parameters. The choice between them determines what is conserved during fine-tuning and what drifts. Standard gradient descent follows neither. It follows Euclidean straight lines in parameter space, which are curved paths in distribution space.</p>
 
-<p>Natural gradient descent operates in Fischer information space rather than Euclidean parameter space. The Fischer information matrix measures how sensitive the model's output distribution is to each parameter. Moving in the natural gradient direction makes equal-sized changes in distribution space, regardless of how the parameters happen to be scaled. This connects directly to catastrophic forgetting: standard fine-tuning can destroy previously learned distributions because Euclidean steps in parameter space correspond to wildly unequal steps in distribution space.</p>
+<p>Natural gradient descent operates in Fisher information space rather than Euclidean parameter space. The Fisher information matrix measures how sensitive the model's output distribution is to each parameter. Moving in the natural gradient direction makes equal-sized changes in distribution space, regardless of how the parameters happen to be scaled. This connects directly to catastrophic forgetting: standard fine-tuning can destroy previously learned distributions because Euclidean steps in parameter space correspond to wildly unequal steps in distribution space.</p>
 
 <div class="callout">
-  <p>"If you could improve information theory by using geodesics, it would improve literally everything that depends on it" -- every loss function, every optimizer, every training schedule is implicitly navigating this manifold. Better navigation means better convergence, less forgetting, and more efficient use of training data.</p>
+  <p>If you could improve information theory by using geodesics, it would improve literally everything that depends on it. Every loss function, every optimizer, every training schedule is implicitly navigating this manifold. Better navigation means better convergence, less forgetting, and more efficient use of training data.</p>
 </div>
 
 <h2>Programs as Weights</h2>
 
-<p>Natural language instructions can be compiled into LoRA adapters -- small weight modifications (approximately 5-25MB) that encode behavioral programs into a base model. The base model can be as small as GPT-2 124M or Qwen 0.6B. These adapters run in the browser via WebAssembly with no server round-trip.</p>
+<p>Natural language instructions can be compiled into LoRA adapters: small weight modifications (approximately 5-25MB) that encode behavioral programs into a base model. The base model can be as small as GPT-2 124M or Qwen 0.6B. These adapters run in the browser via WebAssembly with no server round-trip.</p>
 
-<p>This creates a potential foundation for policy enforcement. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is not an input that can be jailbroken -- it is part of the model itself.</p>
+<p>This creates a foundation for policy enforcement. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is not an input that can be jailbroken. It is part of the model itself.</p>
 
 <p>The gap is calibration. Programs-as-weights can enforce behaviors but cannot currently report how confident they are in their enforcement. A compiled policy adapter can block an action but cannot say "I am 73% sure this action violates the policy." Connecting the calibration methods described above to compiled policy adapters is an open problem. Solving it would mean policies that are both tamper-resistant (compiled into weights) and uncertainty-aware (calibrated confidence on every decision).</p>
+
+<h2>References</h2>
+
+<ol>
+<li>Xu, J. et al. "AdaIE: Guidelines for Universal Information Extraction." Anonymous ACL submission, 2026. 15 datasets, 497 entity types, 747 relation types, CEAF-based evaluation metrics.</li>
+<li>"On the Calibration of LLM-based Guard Models for Content Moderation." 2026. Llama Guard, Shield Guard, Wild Guard ECE of 14-28%.</li>
+<li>R-Judge benchmark. ~500 human-annotated instances, 5 categories (finance, IoT, software, web, program), 27 risk scenarios.</li>
+<li>"Calibrating LLM Judges: A Linear Probe for Fast Reliable Uncertainty Estimation." Linear probe achieving ~0.02 ECE on MMLU Pro.</li>
+<li>OpenAI. "GPT-4 Technical Report." 2023. Documents calibration degradation after RLHF.</li>
+<li>Schellhammer &amp; Blazer, Vector Institute. "Asymmetric Viewless Sidekicks Improve Uncertainty."</li>
+<li>Luo, X. "On Coreference Resolution Performance Metrics." 2005. CEAF metric used in AdaIE evaluation.</li>
+<li>Bishop, C. <em>Pattern Recognition and Machine Learning.</em> Chapter 8: Graphical Models. Factor graphs, belief propagation.</li>
+<li>Frey, B. et al. "Factor graphs and the sum-product algorithm." Co-inventor of factor graphs, founder of Deep Genomics.</li>
+<li>"High Fidelity Information Extraction from Black Box LLMs" (Safe Passage). Three-step pipeline with fuzzy alignment.</li>
+<li>"Towards Trustworthy Knowledge Graph Reasoning." Conformal prediction for knowledge graph retrieval paths.</li>
+</ol>
 
 </article>
 
