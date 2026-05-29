@@ -10,7 +10,13 @@ The difference between the chatbot version and the complete version is the diffe
 
 These things are very cool demo-wise. But in terms of actually using them in a production system, you have to be very, very careful. You cannot have a transparency gap where nobody can answer: what did it do? Where did it get that information? How did that decision get made? Where is the human approval when the agent needs it? A system that runs around doing whatever it wants will not survive contact with regulated industry. Healthcare cannot have that. Finance cannot have that. Government cannot have that.
 
-Here's what changes when they can.
+The pattern that keeps emerging in conversations with government CIOs, procurement officers, and compliance teams is that institutional AI adoption rests on three legs: people, policy, and architecture. People means training and certifications so staff know what they are governing. Policy means compliance checklists (SOC 2, FedRAMP, PIPEDA) so the legal framework is satisfied. Architecture means sovereign software that enforces trust by design, not by promise. Most vendors offer one or two legs. Almost nobody offers all three.
+
+The architecture leg is the one that changes everything, because it moves trust from a contractual obligation to a structural guarantee. If the platform is designed so that data cannot leave the organization's infrastructure, you do not need to trust a vendor's privacy policy. If every agent action produces an auditable receipt, you do not need to trust that someone is watching. If governance boundaries are enforced at the protocol level, violations are not just detectable. They are impossible. The system does not rely on good behavior. It makes bad behavior structurally unachievable.
+
+This is also why the best way to sell AI infrastructure is to never lead with "AI." The organizations that need this most (police departments, procurement offices, school districts) do not think of themselves as AI buyers. They think of themselves as organizations with paperwork problems, compliance burdens, and capacity constraints. The technology is the mechanism. The outcome is what matters: recovered capacity, stronger audit trails, faster turnaround, lower risk. Lead with the outcome. Let the technology be the boring part.
+
+Here is what changes when the full stack exists.
 
 ## The Law Firm
 
@@ -144,7 +150,11 @@ And in every case, the infrastructure stack was the enabling condition. Remove a
 
 The question of whether AI replaces jobs is the wrong question. AI replaces tasks. Tasks that are high-volume, pattern-matching, structurally repetitive. The jobs that consisted primarily of those tasks will shrink. The jobs that consisted primarily of judgment, calibration, and governance will grow. The transition between the two is the hard part -- and it's a transition that requires infrastructure, not just technology.
 
-The technology exists today. Frontier language models can already do most of the extraction, analysis, and generation described in these examples. What doesn't exist today is the infrastructure that makes the technology deployable: the accountability envelopes, the citation chains, the cost trees, the governance boundaries, the confidence calibration, the local compute, the marketplace distribution.
+The technology exists today. Frontier language models can already do most of the extraction, analysis, and generation described in these examples. What does not exist today is the infrastructure that makes the technology deployable: the accountability envelopes, the citation chains, the cost trees, the governance boundaries, the confidence calibration, the local compute, the marketplace distribution.
+
+The clearest validation of this gap comes from consultants who live in it daily. One brand strategist was spending $890 per month in API fees and four and a half hours per run doing manual entity extraction from client interviews. When the same workflow ran through a governed pipeline with structured extraction, confidence scoring, and citation chains, the time dropped to minutes. The cost dropped to pennies. The quality was different in kind, not just degree: every extracted insight carried a source citation and a confidence score, so the consultant could focus review time on the low-confidence extractions instead of re-reading entire transcripts.
+
+That consultant's reaction was instructive. He did not say "the AI is amazing." He said "this is a huge leap forward. It does the job." Not awe. Relief. The technology was good enough. What mattered was that it worked inside a system he could trust, with outputs he could trace, on infrastructure he could explain to his clients. The consultants who need this do not need better models. They need better plumbing.
 
 Building that infrastructure is the work that remains.
 
