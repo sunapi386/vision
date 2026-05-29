@@ -31,7 +31,7 @@ def load_nav(active_page="book", extra=""):
     nav = (TEMPLATES_DIR / "nav.html").read_text()
     nav = nav.replace("{nav_active_essay}", "active" if active_page == "essay" else "")
     nav = nav.replace("{nav_active_book}", "active" if active_page == "book" else "")
-    nav = nav.replace("{nav_active_zh}", "active" if active_page == "zh" else "")
+    nav = nav.replace("{nav_active_zh}", "")
     nav = nav.replace("{nav_extra}", extra)
     return nav
 
@@ -1695,7 +1695,6 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
   <p class="hero-author">May 2026</p>
   <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
     <a href="/book.html" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">Read the book</a>
-    <a href="/book-zh.html" style="display: inline-block; padding: 12px 28px; background: var(--bg-elevated); color: var(--text); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; border: 1px solid var(--border-strong); transition: opacity 0.2s;">&#20013;&#25991;&#29256;</a>
   </div>
   <div class="hero-reading-time" id="heroReadTime" style="margin-top: 12px;"></div>
   <div class="scroll-cue">or read the essay below</div>
