@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间胶囊 — 孙派</title>
+<meta name="description" content="如果真相能在你之后存续呢？一种不可阻挡的后量子时间胶囊设计。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans+SC:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Noto Sans SC', 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">孙派</a>
+    <div class="nav-links">
+      <a href="/book-zh.html" class="nav-link">书</a>
+      <a href="/" class="nav-link">文章</a>
+      <a href="/#about" class="nav-link">关于</a>
+      <a href="/vault.html" class="nav-link">EN</a>
+      <button class="nav-theme" id="themeToggle" title="切换主题">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">工作草稿</div>
+  <h1 class="hero-title">时间胶囊</h1>
+  <p class="hero-subtitle">如果真相能在你之后存续,而存续的时长完全由你决定呢？</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>问题</h2>
+
+<p>你知道一些重要的事情。也许是欺诈的证据,也许是一段个人历史,当事人还在世,公开会伤害他们。也许是一个你还不能发布的想法。你希望它被保存下来,最终被披露,但不是现在,也不由别人说了算。</p>
+
+<p>现有的每一种方案都做不到这一点。保险箱需要一家能长期运营的银行。律师需要一家存续足够久的事务所。鞋盒里的 U 盘需要有人记得鞋盒在哪里。Google 的"闲置账号管理工具"需要 Google 持续关注一个零收入的功能。每种方案都依赖于某个机构比你的时间线更长寿,而机构并不擅长这一点。</p>
+
+<p>问题不在于我们能否加密数据,而在于我们能否构建这样一个系统：每个参与者都可以单独背叛,胶囊仍然按时开启。</p>
+
+<h2>设计</h2>
+
+<p>一个时间胶囊由五个组件构成。每个组件都可以独立失效,而不会摧毁整个系统。</p>
+
+<div class="stack-layer">
+  <div class="stack-num">01</div>
+  <div class="stack-body">
+    <h4>永久存储</h4>
+    <p>加密后的数据存储在 Arweave 上。Arweave 是一条专为永久数据设计的区块链。你只需支付一次。其捐赠模型按成本递减曲线预付约 200 年的复制费用。没有订阅,没有续费,没有可被用来勒索的杠杆点。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">02</div>
+  <div class="stack-body">
+    <h4>后量子加密</h4>
+    <p>数据使用 AES-256-GCM（抗量子对称加密）加密。AES 密钥通过混合方案封装：X25519（经典算法）加上 ML-KEM-1024（NIST 后量子标准）。攻击者必须同时破解两者。这与 Signal 和 Chrome 目前使用的混合方案相同。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">03</div>
+  <div class="stack-body">
+    <h4>分布式密钥托管</h4>
+    <p>封装后的密钥通过 Shamir 秘密共享方案拆分为 n 份,分发给互不相识的独立托管人。任意 k-of-n 即可重建密钥。没有任何一个托管人能单独打开胶囊,也没有任何一个托管人能通过背叛来阻止释放。Shamir 方案具有信息论意义上的安全性,量子计算机对此无能为力。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">04</div>
+  <div class="stack-body">
+    <h4>自主触发器</h4>
+    <p>一个智能合约通过去中心化预言机网络（Chainlink 等）监控公共死亡登记,以验证死亡事件。确认后,倒计时开始,持续时间可自行配置。计时器到期后,合约发出密钥重建信号。整个过程没有人为决策环节。一个 AI 代理负责处理"死人开关"：定期签到、错过信号时升级警报、释放时发现受益人。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">05</div>
+  <div class="stack-body">
+    <h4>零知识证明层</h4>
+    <p>在加密之前,存储者对明文生成 ZK 证明（Groth16 或 Plonk）。这些证明与密文一起存储在 Arweave 上,任何人可随时公开验证。它们证明内容的属性,例如"此胶囊包含 2025 年的财务记录""此胶囊涉及实体 X",但不泄露内容本身。存储者可以可信地声称"我有证据",而不需要打开封印。</p>
+  </div>
+</div>
+
+<h2>博弈论</h2>
+
+<p>任何系统的强度都取决于最弱参与者背叛的动机。以下是时间胶囊博弈中每个角色受到的约束。</p>
+
+<div class="actor-card">
+  <h4>存储者</h4>
+  <p><strong>需求：</strong>确信内容最终会被释放,在此之前保持隐私,任何人都无法篡改或压制。</p>
+  <p><strong>恐惧：</strong>自己死后秘密随之消亡,或者胶囊提前泄露。</p>
+  <p><strong>约束：</strong>存储者确实无法提前打开胶囊。他手中没有足够的份额。智能合约是公开的,任何人都可以验证时间锁尚未到期。这种"无能为力"是可验证的,也在胁迫下保护了存储者。</p>
+</div>
+
+<div class="actor-card">
+  <h4>托管人</h4>
+  <p><strong>需求：</strong>最小化法律责任,最小化工作量。</p>
+  <p><strong>恐惧：</strong>因内容而面临法律风险,或被强势方施压销毁自己的份额。</p>
+  <p><strong>约束：</strong>他们不知道其他托管人是谁,也不知道胶囊包含什么内容。他们甚至可能不知道自己持有的是一个时间胶囊的份额,对他们来说这只是一个加密数据块。行贿需要找到全部 k 个托管人,而这要求知道从未在链上关联过的 n 个身份。</p>
+</div>
+
+<div class="actor-card">
+  <h4>被指向者</h4>
+  <p><strong>需求：</strong>永久压制信息。</p>
+  <p><strong>恐惧：</strong>胶囊的存在本身。</p>
+  <p><strong>约束：</strong>密文存储在 Arweave 上,无法删除。密钥分布在他们无法识别的匿名托管人手中。唯一剩余的攻击手段是破解加密,而后量子加密层在所有可预见的计算范式中都封堵了这条路。</p>
+</div>
+
+<div class="actor-card">
+  <h4>基础设施</h4>
+  <p><strong>需求：</strong>继续存在。</p>
+  <p><strong>恐惧：</strong>变得无关紧要或崩溃。</p>
+  <p><strong>约束：</strong>冗余。如果 Arweave 消亡,Filecoin 和冷存储上的镜像副本仍然存在。如果智能合约所在的链消亡,Shamir 份额可以手动重建。没有任何单一基础设施故障能摧毁时间胶囊。律师事务所拥有跨越数个世纪的声誉激励。区块链没有主观意志,它要么运行,要么停止。创业公司有一切动力去转向,不去经营一个回报周期长达 20 年的产品。这个设计信赖的是数学和冗余,而非商业模式。</p>
+</div>
+
+<h2>合理否认性</h2>
+
+<p>一个人人都知道存在的时间胶囊本身就是一种负担。合理否认性不是一个功能,而是一种生存属性。</p>
+
+<h3>诱饵胶囊</h3>
+
+<p>每次存储都会创建多个大小相同的加密数据块。其中一个包含真实内容,其余包含程序生成的逼真诱饵内容。不同的密码打开不同的数据块。在胁迫下,存储者可以交出诱饵密码。没有真实密码,对手无法区分真假。这是一种隐藏卷方案,与 VeraCrypt 的原理相同,只是应用于去中心化存储。</p>
+
+<h3>不可关联的存储</h3>
+
+<p>每次存储使用一个全新的假名钱包,与存储者的身份之间没有任何链上关联。钱包通过隐私保护的转账方式获得资金。没有任何交易记录能将一个人与一个胶囊关联起来。</p>
+
+<h3>隐写模式</h3>
+
+<p>为了实现最大程度的否认性：将加密胶囊嵌入无害文件（图片、文档、音频）中,然后上传到 Arweave。隐藏的不只是内容,还有胶囊的存在本身。你无法压制你找不到的东西。</p>
+
+<h2>抗挟持设计</h2>
+
+<p>所有挟持场景都源于瓶颈：单一方、单一密钥、单一支付渠道。这个设计消除了所有瓶颈。</p>
+
+<ul>
+  <li><strong>托管人勒索</strong>（"付钱,否则我销毁我的份额"）：Shamir 的 k-of-n 方案意味着任何一个份额都是可丢弃的。如果 n 足够大,销毁自己份额的托管人毫无杠杆。</li>
+  <li><strong>存储勒索</strong>（"持续付费,否则我们删除"）：Arweave 的捐赠模型没有续费、没有账单、没有杠杆。一旦存储,任何方都无法挟持数据。</li>
+  <li><strong>链上勒索</strong>（"Gas 费飙升了,付钱"）：触发合约已按当前 Gas 费的 100 倍预先注入资金,或者部署在执行成本固定的链上。</li>
+  <li><strong>强制提前开启</strong>（"现在就解密"）：存储者确实做不到。份额不够,时间锁未到期,链上可验证。无能为力本身就是防御。</li>
+  <li><strong>系统被武器化</strong>（"我存储了关于你的伪造证据"）：这是唯一没有干净工程解法的场景。一个不可阻止的披露机制同时也是一个不可阻止的勒索工具。保护举报人的属性同样赋能伪造者。部分缓解措施：存储时生成的 ZK 证明对内容属性作出承诺,使事后伪造可被检测。但事前伪造仍然可能。</li>
+</ul>
+
+<h2>与信任的关系</h2>
+
+<div class="callout">
+  <p>管理 AI 代理执行回执的密码学原语,与管理亡者最后证词的密码学原语完全相同。数学不在乎时间尺度。</p>
+</div>
+
+<p>在<a href="/book-zh.html" style="color: var(--accent);">《规模化信任》</a>中,核心论点是：信任在规模化时会崩溃,因为你无法亲自验证每一个参与者。解决方案是密码学承诺：回执、审计轨迹、可验证证明。代理执行协议用密码学回执链证明"这个代理在时间 T 执行了操作 X"。</p>
+
+<p>时间胶囊是同一个原语,只是跨越数十年而非毫秒。</p>
+
+<ul>
+  <li><strong>回执链</strong>：代理回执证明"这个代理在时间 T 执行了操作 X"。时间胶囊证明"这个人在时间 T 存储了内容 X,将在 T+N 时公开"。同样的承诺模式。</li>
+  <li><strong>无需信任参与者的信任</strong>：书中论证,你要设计这样的系统,即使个别参与者背叛,系统仍然成立。时间胶囊正是如此,任何托管人、任何链、任何存储提供商都可以失效,胶囊仍然会打开。</li>
+  <li><strong>ZK 证明</strong>：代理回执在不暴露专有逻辑的情况下证明合规性。时间胶囊在不打开封印的情况下证明内容属性。同样的技术,不同的领域。</li>
+  <li><strong>问责作为基础设施</strong>：这是书的核心论点。时间胶囊将问责变成人类信息披露的基础设施,而不仅仅是机器执行的基础设施。</li>
+</ul>
+
+<p>如果问责层对在毫秒内发出 API 调用的 AI 代理有效,那它对确保真相在自己身后存续二十年的举报人同样有效。一套原语,覆盖每一个时间尺度。这就是"规模化"的含义。</p>
+
+<h2>成本</h2>
+
+<p>数学对存储者有利。</p>
+
+<ul>
+  <li><strong>Arweave 存储</strong>：文本文档仅需几美分。大量媒体档案不超过 10 美元。一次性付费。</li>
+  <li><strong>智能合约部署</strong>：在 L2 上不到 5 美元。在 Ethereum 主网上不到 500 美元。</li>
+  <li><strong>密钥分发</strong>：如果托管人是个人联系人,实际上免费。如果使用机构托管人,则有边际成本。</li>
+  <li><strong>ZK 证明生成</strong>：存储时几秒钟的计算。没有持续成本。</li>
+  <li><strong>全栈总成本</strong>：不到 500 美元,即可获得一个抗后量子攻击、经 ZK 验证、博弈论上稳健的时间胶囊,时间跨度可达 20 年。没有订阅费,无需续期。</li>
+</ul>
+
+<p>与之相比,一个法律信托需要 3 万至 5 万美元才能跨越数十年自我维持。这种成本结构颠覆了安全性与可及性之间的传统关系。最稳健的版本同时也是最便宜的。</p>
+
+<h2>优先构建什么</h2>
+
+<p>时间胶囊不是一个产品,而是一个协议。这个区别很重要,因为产品可以被关停,协议不能。</p>
+
+<p>最小可行协议包括：Arweave 存储、Shamir 密钥拆分、L2 上的计时器合约、基本存储界面。v1 不需要 AI 代理,不需要 ZK 证明,不需要否认性层。这些是协议升级,不是上线要求。</p>
+
+<p>收入来自按载荷大小和存储时长计算的一次性存储费。可选高级功能包括：更大的载荷、更多的托管人、ZK 证明生成、面向律师事务所和遗产规划师的机构 API。</p>
+
+<p>20 年承诺的市场规模小,且需要耐心。这不是一个 SaaS 生意。相比风险投资支持的创业公司,它可能更适合作为赠款资助的基础设施（Ethereum Foundation、Filecoin Foundation、新闻自由组织）。一个回报周期长达 20 年且没有经常性收入的产品,很难向 VC 推销。但对基金会来说,这是一个天然契合的方向。</p>
+
+</article>
+
+<div class="draft-notice">
+  <p>本文为工作草稿,欢迎发送反馈至 <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a>。</p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 孙派</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'vault', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>
