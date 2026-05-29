@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>经验教训 | 孙派</title>
+<meta name="description" content="两年AI基础设施建设中的商业经验。哪些有效,哪些失败,我学到了什么。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Noto Sans SC', 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 60vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Noto Sans SC', 'Inter Tight', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Noto Sans SC', 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.lesson-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  margin: 32px 0;
+  transition: border-color 0.2s;
+}
+.lesson-card:hover {
+  border-color: var(--border-strong);
+}
+.lesson-card h3 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 0 0 12px;
+}
+.lesson-card p {
+  margin: 8px 0 0;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+.lesson-card p:first-of-type {
+  color: var(--text);
+}
+
+.lesson-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dimmer);
+  margin-bottom: 8px;
+  display: block;
+}
+
+footer {
+  text-align: center; padding: 40px 24px;
+  color: var(--text-dimmer); font-size: 14px;
+  border-top: 1px solid var(--border);
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">孙派</a>
+    <div class="nav-links">
+      <a href="/book-zh.html" class="nav-link">书</a>
+      <a href="/" class="nav-link">文章</a>
+      <a href="/#about" class="nav-link">关于</a>
+      <a href="/lessons.html" class="nav-link">EN</a>
+      <button class="nav-theme" id="themeToggle" title="切换主题">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="hero">
+  <p class="hero-eyebrow">源自108次对话, 2024-2026</p>
+  <h1 class="hero-title">经验教训</h1>
+  <p class="hero-subtitle">两年AI基础设施建设教会我的关于销售、交付和生存的一切。</p>
+</header>
+
+<main class="article">
+
+<p>这些不是理论,而是我回顾两年来录制的会议、合作洽谈、政府采购对话、大学研讨会和深夜战略讨论后总结出的规律。与合作伙伴、教授、客户、投资人和自己团队的一百多次对话。那些反复出现的教训,才最终列入了这份清单。</p>
+
+<h2>产品</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">01</span>
+  <h3>产品市场契合不在于模型,在于管道。</h3>
+  <p>一位顾问每月花费890美元的 API 费用,每次运行要花四个半小时从客户访谈中手动提取实体。当同样的流程通过一个治理化的管道(包含结构化提取、置信度评分和引用链)运行时,时间缩短到几分钟,成本降到几分钱。</p>
+  <p>他的反应不是"这个AI太厉害了",而是"这能用"。客户不想要更好的模型,他们想要能信任、能追溯、能向客户解释的系统。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">02</span>
+  <h3>永远不要以AI为卖点。</h3>
+  <p>最需要这项技术的组织(警察局、学区、采购办公室)不认为自己是AI的买家。他们认为自己是有文书问题、合规负担和人力不足的组织。</p>
+  <p>技术是手段,成果才是关键:释放产能、加强审计轨迹、缩短周转时间、降低风险。以成果为先,让技术退居幕后。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">03</span>
+  <h3>65%的准确率就够了。</h3>
+  <p>一位品牌策略师过去手动扫描长篇访谈记录,提取含义单元(品牌理念、使命、标语)。这项工作耗时数天且无法规模化,因为专业知识全在他的脑子里。他告诉我,即使65%的提取准确率也将是变革性的,因为当AI筛选出候选项并过滤掉无关内容时,剩余的人工审核会快得多。</p>
+  <p>完美是采用的大敌。带有置信度评分的"够用"胜过没有评分的"完美"。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">04</span>
+  <h3>顾问也需要顾问。</h3>
+  <p>那些向企业出售专业知识的人,自己也在AI落地上挣扎。他们有领域知识、客户关系,也有手工流程的痛点。他们是理想的早期客户,因为他们清楚需要自动化什么,但自己无法构建。</p>
+  <p>有效的模式是:与负责签单的咨询合作伙伴五五分成。他们带来领域,我们提供管道。</p>
+</div>
+
+<h2>销售</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">05</span>
+  <h3>谁教会了评估框架,谁就塑造了采购标准。</h3>
+  <p>政府买家缺乏评估AI供应商的词汇。他们出于恐惧而非偏好默认选择老供应商。他们从认识的名字那里采购,因为不知道该问什么问题。</p>
+  <p>谁培训他们如何评估,谁就在标书撰写之前赢得了这个项目。结构化认证(AI操作员、AI架构师)不仅仅是培训个人,它创造了一种共同语言,供采购官员和评审委员会用来比较方案。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">06</span>
+  <h3>先试点,后招标。</h3>
+  <p>风投想看到的是真实的合作,而不是失败的招标。三个30天的政府机构试点,然后60天的生产化,再然后签合同。即使是免费试点,只要需要对方投入人力,就算是真正的承诺信号。</p>
+  <p>堪萨斯城一家机构的CTO证实了这一点:如果试点需要分配员工时间,那就是真正的承诺,不是白送的东西。这一点对投资人很重要。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">07</span>
+  <h3>"数据主权"要在对的时机讲。</h3>
+  <p>数据主权是核心差异化。完整的可追溯性、数据未离开边界的认证、在你自己硬件上运行的计算。但一位合伙人提醒我:不要把它当作唯一的信息反复强调。不是每次对话都需要主权论。在合适的时机和场合,你需要它。不合适的时候,你听起来像在贩卖恐惧。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">08</span>
+  <h3>没有NDA就分享架构,等于白送。</h3>
+  <p>我们花了一周时间为一次政府AI采购准备详细的架构图和技术方案。没有签NDA。那个机构把材料转给了老供应商,对方据此自行构建。我们没有任何追索权。</p>
+  <p>分享之前先保护知识产权,要不就接受风险然后跑得比抄袭者快。</p>
+</div>
+
+<h2>信任</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">09</span>
+  <h3>三条腿:人、政策、架构。</h3>
+  <p>机构AI落地靠三条腿。"人"意味着培训和认证,让员工知道自己在治理什么。"政策"意味着合规清单(SOC 2、FedRAMP、PIPEDA),满足法律框架。"架构"意味着主权软件,通过设计而非承诺来保障信任。</p>
+  <p>大多数供应商只提供一两条腿。几乎没人提供三条。架构这条腿改变了一切,因为它将信任从合同义务变成了结构性保障。如果平台的设计使数据不可能离开组织的基础设施,你就不需要信任供应商的隐私政策。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">10</span>
+  <h3>由协议执行,而非由承诺保证。</h3>
+  <p>如果治理边界在协议层面被强制执行,违规不仅是可检测的,而且是不可能的。系统不依赖良好的行为,它使不良行为在结构上无法实现。</p>
+  <p>这就是"我们有隐私政策"和"我们的架构使数据在物理上不可能离开你的基础设施"之间的区别。一个是文件,另一个是工程。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">11</span>
+  <h3>安全靠隐藏是创业公司的默认姿态。</h3>
+  <p>API 密钥放在前端,没有凭证管理。团队知道这不够,但在赶产品的同时缺乏资源去修复。你为客户构建的东西与你内部运行的东西之间的差距,是衡量成熟度最诚实的标准。</p>
+  <p>承认它。不要假装没事。一有能力就去修复。</p>
+</div>
+
+<h2>教育</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">12</span>
+  <h3>60%的商科毕业生无法定义什么是业务流程。</h3>
+  <p>一位教了十多年书的教授给出了这个估计。系统把他们当作一笔交易来培养:学习、记忆、拿分、继续。学生没有失败,是课程体系辜负了他们。</p>
+  <p>教授无法偏离文件化的学习目标,否则会危及终身教职评审,即使这些目标明显过时了。机构以牺牲使命为代价保护自身的结构。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">13</span>
+  <h3>"等我们搞明白的时候,学校可能已经不在了。"</h3>
+  <p>一位教授在谈到大学AI落地时这样说。机构变革按委员会审批和认证周期的节奏推进。市场按学生入学率的节奏推进。当学生因为课程无关紧要而不再报名时,委员会还在讨论提案。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">14</span>
+  <h3>VPAT 是不可谈判的。</h3>
+  <p>一位大型公立大学的教职人员直接告诉我:在高等教育采购中,没有 VPAT(自愿产品无障碍模板)连门都进不了。你的演示有多好都没用,没有 VPAT 就没有对话。</p>
+  <p>大学里成功的落地模式需要4到5年:先向小团队演示,然后由教职人员口碑传播。初始演示要简洁,控制在30分钟内,为教职人员和学生分别准备不同的使用场景。</p>
+</div>
+
+<h2>团队</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">15</span>
+  <h3>股权不可再生,收入可以再生。</h3>
+  <p>一位商业伙伴在谈判中这样说。在有选择的情况下,优先选择利润分成而非股权稀释。收入可以再赚,股权一旦给出就不可收回。</p>
+  <p>他还警告不要过早接受风投:"我们浪费了很多时间。在融资方面我们真的很天真。"花在融资上的时间就是不花在产品上的时间。来自真实客户的合作意向书比一个热心介绍的引荐更有价值。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">16</span>
+  <h3>专注是一种奢侈。</h3>
+  <p>同时运行三个产品导致了倦怠。CTO说自己"对焦虑已经麻木了"。教训不是"专注于一件事"(在收入不确定的情况下这说起来容易)。教训是,多线并行是一种隐性成本,它会无声地累积,直到有人崩溃。</p>
+  <p>我们花在讨论产品的会议上的时间比花在构建产品上的还多。这说明范围有问题。</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">17</span>
+  <h3>好产品不是隔着墙造出来的。</h3>
+  <p>当一位合伙人试图将工程团队与客户隔离(为了"保护他们的专注力")时,我强烈反对。不接触客户的工程师会变成工具。工具没有智慧。最好的产品来自身处其中的团队,而非隔着一堵墙。</p>
+  <p>妥协方案:合伙人保留设计权威和最终决策权,但工程团队获得客户会议的旁听权限以及会后的简报。有上下文但不混乱。</p>
+</div>
+
+<h2>元教训</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">18</span>
+  <h3>答案永远是"行"。</h3>
+  <p>一位合伙人在谈到融资和销售对话时教了我这一点。答案永远是"行",即使它不是真的"行"。因为重要的是那个问题背后的东西。每一个"不行"都包含着信息:真正的异议是什么,买家真正关心的是什么,你需要改变什么。</p>
+  <p>唯一死掉的对话是你不再提问的那个。</p>
+</div>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 孙派。源自撰写<a href="/book-zh.html">《规模化信任》</a>的同一批对话。</p>
+</footer>
+
+<script>
+(function() {
+  const nav = document.getElementById('siteNav');
+  const bar = document.getElementById('progressBar');
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  toggle.addEventListener('click', function() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0';
+  });
+})();
+</script>
+
+</body>
+</html>

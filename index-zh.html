@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>孙派 - 规模化信任</title>
+<meta name="description" content="AI 智能体正在从事真正的工作。让这些工作可信赖的基础设施尚不存在。孙派关于智能体问责的论述。">
+<meta property="og:title" content="规模化信任 - 孙派">
+<meta property="og:description" content="AI 智能体正在从事真正的工作。让这些工作可信赖的基础设施尚不存在。阅读书籍或文章。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jasonsun.org">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* shared.css — canonical source for styles used by both index and book pages */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Noto Sans SC', 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* --- Site navigation --- */
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text-dim); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-brand:hover { color: var(--accent); text-decoration: none; }
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+}
+.nav-link {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--text-dimmer); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px;
+  transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text-dim); background: var(--bg-elevated); text-decoration: none; }
+.nav-link.active { color: var(--accent); background: var(--accent-dim); }
+.nav-about { font-size: 12px; opacity: 0.6; }
+.nav-about:hover { opacity: 1; }
+.nav-theme {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: all 0.2s; margin-left: 8px;
+}
+.nav-theme:hover { color: var(--accent); border-color: var(--accent); }
+
+/* --- Progress bar --- */
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0;
+  height: 2px; background: var(--accent); z-index: 200; width: 0;
+}
+
+/* --- Hero --- */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center; padding: 40px 24px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 60%);
+  pointer-events: none; animation: heroPulse 6s ease-in-out infinite;
+}
+@keyframes heroPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 20px; position: relative;
+}
+.hero-title {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(36px, 6vw, 72px); font-weight: 700;
+  letter-spacing: -0.04em; line-height: 1.0; margin-bottom: 20px; position: relative;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 22px); font-weight: 300;
+  color: var(--text-dim); max-width: 560px; line-height: 1.5; margin-bottom: 20px;
+}
+.hero-author { font-size: 14px; color: var(--text-dimmer); position: relative; }
+.hero-reading-time {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: var(--text-dimmer); position: relative; margin-top: 8px;
+}
+.scroll-cue {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  color: var(--text-dimmer); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+  animation: bounce 2.1s ease-in-out infinite;
+}
+.scroll-cue::after { content: '  \2193'; }
+@keyframes bounce { 0%,100%{ transform:translateX(-50%) translateY(0); } 50%{ transform:translateX(-50%) translateY(8px); } }
+
+/* --- Typography --- */
+h2 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px); font-weight: 600;
+  letter-spacing: -0.02em; line-height: 1.2;
+  margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--border);
+}
+h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+h3 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: clamp(14px, 1.55vw, 18px); font-weight: 600;
+  color: var(--accent); line-height: 1.3; margin: 28px 0 10px;
+}
+p { margin: 14px 0; }
+strong { font-weight: 600; color: var(--text); }
+[data-theme="dark"] strong { color: #fff; }
+em { font-style: italic; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+blockquote {
+  border-left: 2px solid var(--accent); padding: 4px 0 4px 20px;
+  margin: 20px 0; color: var(--text-dim); font-style: italic;
+}
+hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+ul, ol { margin: 14px 0 14px 24px; }
+li { margin: 5px 0; }
+code {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.88em;
+  background: var(--bg-surface); padding: 2px 6px; border-radius: 4px; color: var(--accent);
+}
+pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 20px; margin: 20px 0; overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; color: var(--text); }
+
+/* --- Closing --- */
+.closing {
+  text-align: center; padding: 40px 0 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim); font-size: 14px;
+}
+.closing a { color: var(--accent); }
+
+/* --- Reading time indicator --- */
+.reading-time {
+  position: fixed; top: calc(var(--nav-height) + 4px); right: 16px; z-index: 200;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--text-dimmer); opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.reading-time.visible { opacity: 1; }
+
+@media (max-width: 640px) {
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
+  .nav-brand { font-size: 13px; }
+  .nav-about { display: none; }
+  .nav-theme { width: 28px; height: 28px; font-size: 13px; margin-left: 4px; }
+  .reading-time { right: 12px; }
+}
+
+@media print {
+  :root, [data-theme="dark"], [data-theme="light"] {
+    --bg: #fff; --bg-surface: #f6f6f6; --text: #1a1a1a;
+    --text-dim: #555; --text-dimmer: #888; --accent: #2563eb;
+    --border: #ddd;
+  }
+  .site-nav, .progress-bar, .scroll-cue, .reading-time { display: none; }
+  .hero { min-height: auto; padding: 40px 0; }
+  .hero::before { display: none; }
+}
+
+
+  /* --- Index-specific --- */
+  .mini-toc { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+  .mini-toc-inner {
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 20px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 10px; justify-content: center;
+  }
+  .mini-toc a {
+    font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500;
+    color: var(--text-dimmer); text-decoration: none;
+    padding: 4px 12px; border-radius: 6px; border: 1px solid transparent;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .mini-toc a:hover { color: var(--text-dim); background: var(--bg-elevated); border-color: var(--border); }
+  .mini-toc a.active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+
+  .article { max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px; }
+
+  .layer-diagram {
+    max-width: 560px; margin: 32px auto; padding: 24px;
+    background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .layer-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 16px; margin: 4px 0; border-radius: 8px; font-size: 14px; transition: background 0.2s;
+  }
+  .layer-item:hover { background: var(--bg-elevated); }
+  .layer-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent); min-width: 20px; }
+  .layer-name { font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; font-weight: 600; min-width: 120px; }
+  .layer-desc { color: var(--text-dim); font-size: 13px; }
+
+  .cta-block {
+    margin: 60px 0 40px; padding: 40px 32px; text-align: center;
+    background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .cta-block p { color: var(--text-dim); font-size: 15px; margin: 8px 0 20px; }
+  .cta-link {
+    display: inline-block; padding: 12px 28px;
+    background: var(--accent); color: var(--bg); text-decoration: none;
+    font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    border-radius: 8px; transition: opacity 0.2s;
+  }
+  .cta-link:hover { opacity: 0.85; text-decoration: none; }
+
+  .resume-toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 500;
+    background: var(--bg-surface); border: 1px solid var(--border-strong);
+    border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow);
+    max-width: 320px; transform: translateY(120%); transition: transform 0.3s ease;
+  }
+  .resume-toast.show { transform: translateY(0); }
+  .resume-toast-text { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }
+  .resume-toast-text strong { color: var(--accent); }
+  .resume-toast-actions { display: flex; gap: 8px; }
+  .resume-toast-actions button {
+    flex: 1; padding: 8px 14px; border-radius: 6px; border: none;
+    font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .resume-toast-actions button:hover { opacity: 0.85; }
+  .resume-btn { background: var(--accent); color: var(--bg); }
+  .dismiss-btn { background: var(--bg-elevated); color: var(--text-dim); border: 1px solid var(--border) !important; }
+
+  .about-section {
+    max-width: var(--max-width); margin: 0 auto; padding: 60px 24px 80px;
+    border-top: 1px solid var(--border);
+  }
+  .about-inner { max-width: 520px; }
+  .about-section h2 {
+    font-family: 'Noto Sans SC', 'Inter Tight', sans-serif;
+    font-size: 14px; font-weight: 600; color: var(--text-dimmer);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 0 0 16px;
+  }
+  .about-section p {
+    color: var(--text-dim); font-size: 15px; line-height: 1.7; margin: 0 0 10px;
+  }
+  .about-section a { color: var(--accent); text-decoration: none; }
+  .about-section a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .article { padding: 40px 16px 80px; }
+    .layer-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .cta-block { padding: 28px 20px; }
+    .mini-toc { padding: 0 16px; }
+    .mini-toc-inner { gap: 4px; padding: 12px 14px; }
+    .mini-toc a { font-size: 11px; padding: 4px 8px; }
+    .resume-toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
+    .about-section { padding: 40px 16px 60px; }
+  }
+
+  @media print {
+    .article { max-width: 100%; padding: 0; }
+    .mini-toc, .resume-toast { display: none; }
+    .cta-block { border: 2px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">孙派</a>
+    <div class="nav-links">
+      <a href="/book-zh.html" class="nav-link">书</a>
+      <a href="/index-zh.html" class="nav-link active">文章</a>
+      <a href="/index-zh.html#about" class="nav-link nav-about">关于</a>
+      <a href="/" class="nav-link">EN</a>
+      <button class="nav-theme" id="themeToggle" title="切换主题">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-bar" id="progress"></div>
+<div class="reading-time" id="readingTime"></div>
+
+<div class="resume-toast" id="resumeToast">
+  <div class="resume-toast-text">从 <strong id="resumeSection"></strong> 继续阅读？</div>
+  <div class="resume-toast-actions">
+    <button class="resume-btn" id="resumeBtn">继续</button>
+    <button class="dismiss-btn" id="dismissBtn">关闭</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">孙派</div>
+  <h1 class="hero-title">规模化信任</h1>
+  <p class="hero-subtitle">AI 智能体正在从事真正的工作。让这些工作可信赖的基础设施尚不存在。</p>
+  <p class="hero-author">2026年5月</p>
+  <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
+    <a href="/book-zh.html" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">阅读全书</a>
+  </div>
+  <div class="hero-reading-time" id="heroReadTime" style="margin-top: 12px;"></div>
+  <div class="scroll-cue">或向下阅读文章</div>
+</div>
+
+<nav class="mini-toc" id="miniToc">
+  <div class="mini-toc-inner">
+    <a href="#the-argument">核心论点</a>
+    <a href="#the-four-voids">四大空白</a>
+    <a href="#the-stack">技术栈</a>
+    <a href="#the-human-shift">人的转变</a>
+    <a href="#the-convergence">力量汇聚</a>
+    <a href="#the-architecture-question">架构问题</a>
+  </div>
+</nav>
+
+<article class="article" id="article">
+<h2 id="the-argument">核心论点</h2>
+
+<p>AI 智能体正在从事真正的工作。不是演示，是生产环境。合同正在被审阅，病历正在被分诊，事故报告正在被起草，发票正在被处理，代码正在被编写，研究正在被综合分析。从"AI 作为工具"到"AI 作为劳动者"的转变不是渐进式的，而是结构性的。而且它的发展速度已经超过了基础设施的承载能力。</p>
+
+<p>当一家人类咨询公司参与项目时，每笔交易都有文书记录。聘用函、分包合同、保密协议、发票、交付物说明书。如果客户质疑分析结论，公司可以追溯整个链条：结论来自专家报告，专家报告基于分包商的研究，分包商使用了数据分析师的发现，而数据分析师的发现来源于一个授权数据集。每一步都有记录。每一笔费用都可归属。每一个参与者都可识别。</p>
+
+<p>现在，用 AI 智能体来做同样的事情。</p>
+
+<p>一个编排智能体调用文档处理智能体。文档处理智能体调用提取模型。提取模型调用分类服务。分类服务查询嵌入数据库。这花了多少钱？没人知道。数据从哪里来的？没人知道。谁看到了数据？没人知道。</p>
+
+<p><strong>智能体经济在没有任何记账凭证的情况下运行着。</strong></p>
+
+<p>这不是市场会自行解决的临时性缺口。这是基础设施中的结构性缺失，和历史上复式记账法规范商业之前、SWIFT 标准化国际银行业务之前、TLS 使互联网能够安全交易之前、容器标准使软件部署可重复之前的那种缺失如出一辙。</p>
+
+<p>每一次重大技术革命都会催生一个问责层。问责层总是第二个到来。而问责层总是比催生它的那场革命存续得更久。复式记账法在 Pacioli 之后已经使用了五个世纪。SWIFT 在成立五十年后每天处理 4600 万条消息。TLS 在 Netscape 创建 SSL 三十年后仍保护着互联网上的每一笔金融交易。</p>
+
+<p>智能体经济已经有了它的革命。它正在等待它的账本。</p>
+
+<hr>
+
+<h2 id="the-four-voids">四大空白</h2>
+
+<p>问责缺口由四个部分组成。只解决其中一个而忽略其余，系统仍然处于无治理状态。</p>
+
+<h3>成本归属</h3>
+
+<p>当 AI 系统处理一个工作流时，成本要么是月度账单上的一个数字（聚合了数百万次 API 调用），要么完全不可见，被埋在没有人归属到具体工作的基础设施开支中。哪些 API 调用服务了哪个客户？哪些步骤消耗了最多的 token？哪些提示词是低效的？运营 AI 系统的组织无法从现有的原始数据中重建一个复杂工作流的成本树。</p>
+
+<p>后果已经显现：六位数的意外账单，靠猜测来定价，以及在月度账单到达之前无法区分 0.50 美元的分析和 15.00 美元的分析。</p>
+
+<h3>数据溯源</h3>
+
+<p>溯源回答三个问题：这份数据从哪里来的，在传递过程中经历了什么，每一步谁有过访问权限？AI 系统没有内置的溯源机制。模型读取一份文档，处理它，产出输出。这份文档是原件还是修改过的副本？模型在处理过程中是否访问了其他数据？输出是否被缓存、记录或传输给了第三方系统？</p>
+
+<p>Mata 诉 Avianca 案（一名律师的诉状中包含了六条由 ChatGPT 生成的虚构判例引用）表明，AI 生成的引用与现实之间没有内在联系。文本看起来很权威。格式完美无缺。内容却是捏造的。</p>
+
+<h3>治理边界</h3>
+
+<p>当咨询公司向分包商分享客户数据时，会签署保密协议。当医院向专科医生分享患者数据时，会签署业务伙伴协议。当一个 AI 智能体向另一个 AI 智能体传递数据时，什么都没有。没有合同。没有访问控制。没有边界定义。数据从一个智能体流向另一个智能体，可能跨越不同的组织边界，却没有任何控制、追踪或审计数据流向的框架。</p>
+
+<h3>校准置信度</h3>
+
+<p>这是第四个空白，也可能是最隐蔽的一个。</p>
+
+<p>当一位人类专业人士完成工作时，他们会自然地传达不确定性。<em>"我对这份分析相当有信心，但东南亚的数据比较薄弱，在上董事会之前我想核实一下那些数字。"</em>消费者知道该把审查重点放在哪里。</p>
+
+<p>当 AI 系统完成工作时，它以一致的确定性进行表达。每个陈述都带着相同的版面权重、相同的权威语调。从源文档中提取的事实与捏造的统计数据看起来毫无二致。输出是一堵由等权重断言砌成的墙，人类审查者没有任何信号知道该把注意力集中在哪里。</p>
+
+<p>关于集成置信度估计的研究揭示了一个一致的规律：模型<strong>系统性地过度自信</strong>。它们在仅有 50% 正确率的输出上表达 95% 的确定性。朴素的置信度分数（即直接问模型"你有多确定？"所得到的那种）比毫无用处更糟。它们是积极的误导。</p>
+
+<p>真正的校准（即声称 80% 置信度时，输出实际上有 80% 的概率是正确的）需要目前尚不存在的基础设施：多样化的验证集成、历史准确率追踪、领域特定的阈值，以及能够从人类纠正中学习的系统。没有这些基础设施，<strong>人类在环的治理只是一场表演</strong>。人类要么审查一切，要么什么都不审查，因为系统没有提供任何关于注意力最需要集中在哪里的指导。</p>
+
+<p>校准置信度是使人类治理可扩展的路由信号。它告诉会计师在一夜之间处理的 10,000 张发票中先审查哪一张。它告诉医生该在多大程度上信任模型给出的 73% 概率。它告诉律师 AI 在哪个合同条款上是在猜测。没有它，其他三个空白虽然值得填补，但仍然不够。</p>
+
+<h3>在医疗健康中的表现</h3>
+
+<p>四大空白在医疗健康领域最为显眼，也最为致命，因为这里的代价以生命来衡量。</p>
+
+<p>一位开具降压药的医生面临着极其复杂的决策。血压自然波动，有时波动是良性的，有时则预示着真正的病变。医生必须做出判断：用药（冒着不必要副作用的风险）还是观察（冒着心脏事件的风险）。可用的药物种类繁多，它们属于相互重叠的药物类别，而一个对某类药物中的某一种产生不良反应的患者不应被处方同类中的另一种，这个约束可能跨越多年的病历、分散在不同的记录系统中。</p>
+
+<p>AI 可以提供帮助。模型可以识别哪些波动是危险的，交叉比对用药史，呈现相关研究。但一个给出"73% 概率需要干预"的模型只有在这个 73% 是校准过的情况下才有用，也就是医生知道这个数字实际上是否意味着 73%，还是模型在系统性地过度自信。医生还需要知道模型不知道什么：这个概率是基于一个与当前患者相似的群体计算得出的吗？</p>
+
+<p>没有校准置信度，医生要么不加批判地信任这个数字（危险），要么完全忽略它（浪费）。医学中的人为错误不是技术问题，而是系统问题。一位患者来做肾脏手术，却因为标签贴错而接受了心脏手术。一种药物被处方给了患者，但它与患者三年前在另一个系统中记录的一种药物会产生致命的相互作用。这些失败需要的问责基础设施与经济的其他领域需要的完全一致。</p>
+
+<p>数据访问问题使情况更加严峻。持有跨所有医疗提供者人口级数据的卫生系统坐拥极具价值的训练集，但它们默认拒绝共享，因为不存在任何信任协议来管理数据访问。创新者从其他地方获取数据、构建产品，而持有最有价值数据集的辖区什么也得不到。这不是隐私保护的失败，这是信任基础设施的失败：数据足够敏感，需要问责协议来管理访问，但这些协议并不存在。</p>
+
+<hr>
+
+<h2 id="the-stack">技术栈</h2>
+
+<p>问责基础设施不是单一协议。它是由七个层级组成的技术栈，每一层构建在下一层之上，每一层解决一个不同的问题。</p>
+
+<div class="layer-diagram">
+  <div class="layer-item"><span class="layer-num">7</span><span class="layer-name">市场层</span><span class="layer-desc">智能体间商业交易</span></div>
+  <div class="layer-item"><span class="layer-num">6</span><span class="layer-name">代理层</span><span class="layer-desc">身份、授权、同意</span></div>
+  <div class="layer-item"><span class="layer-num">5</span><span class="layer-name">执行层</span><span class="layer-desc">运行时安全裁决</span></div>
+  <div class="layer-item"><span class="layer-num">4</span><span class="layer-name">信任层</span><span class="layer-desc">基于历史交易的声誉</span></div>
+  <div class="layer-item"><span class="layer-num">3</span><span class="layer-name">交换层</span><span class="layer-desc">多方结算</span></div>
+  <div class="layer-item"><span class="layer-num">2</span><span class="layer-name">计算层</span><span class="layer-desc">动态资源分配</span></div>
+  <div class="layer-item"><span class="layer-num">1</span><span class="layer-name">问责层</span><span class="layer-desc">成本、溯源、治理</span></div>
+</div>
+
+<p>基础层（第 1 层，问责层）解决的是凭证问题。每一次智能体操作都会产生一个结构化信封：成本记录形成一棵与执行树镜像的树状结构，溯源链将每一个结论与其源数据关联，治理标签伴随数据穿越每一个组织边界。上下文向下流动，结果向上流动。信封就是记录发生了什么的永久凭证。</p>
+
+<p>第 2 层（计算层）位于问责层之上，因为每一次计算操作都会产生成本和治理事件。动态分配（请求、分配、释放、报告）取代了静态配置，并直接注入成本树。工作节点自注册意味着扩展容量是零配置的：启动一个节点，将它指向代理，它就出现在资源池中。</p>
+
+<p>第 3 层（交换层）是最不成熟的层级之一，却也是最重要的层级之一。当多个组织协作完成一个工作流时，总需要有人来结算费用。如今这通过月度发票、人工估算和耗时数周的争议来完成。交换层利用第 1 层已经生成的精确成本树来自动完成对账。</p>
+
+<p>第 4 层（信任层）是智能体经济的征信机构。不是一个单一分数，而是跨越数千甚至数百万次交易的准确性、可靠性、合规性和安全性的结构化记录。来自 100 次交易的信任分数是边际的。来自 1,000,000 次交易的信任分数则具有权威性。价值随参与度复合增长，形成网络效应。</p>
+
+<p>第 5 层（执行层）超越了"这个输出安全吗？"的范畴，进入到"考虑到成本异常、数据敏感性、置信度分数和历史行为，这个操作应该继续吗？"的层面。关键创新在于校准判断：多样化的评判模型集成产出置信度分数，其中 0.7 真正意味着 70% 的正确率。基于模型内部表征的贝叶斯校准器区分真正的歧义和知识空白。主动学习在信息增益最高的地方选择性地请求人类验证。执行层不是机场的金属探测器，而是一个安全运营中心。</p>
+
+<p>第 6 层（代理层）解决的是身份问题。如今大多数智能体使用共享 API 密钥进行认证。代理层为每个智能体提供唯一的加密身份、明确的授权链（谁授权了这个智能体做这件事）、基于能力的权限，以及在每个组织边界上的同意管理。</p>
+
+<p>第 7 层（市场层）是顶层。发现、信任评估、条款协商、执行、安全监控、结算，每一步都依赖于下面的层级。没有技术栈，市场只是一个目录。有了技术栈，它就是使大规模智能体商业成为可能的基础设施。</p>
+
+<hr>
+
+<h2 id="the-human-shift">人的转变</h2>
+
+<p>安大略省的一名警察结束了一次出警，可能是家庭纠纷、入室盗窃，或是有人受伤的碰撞事故。事件结束了。文书工作开始了。班次的百分之四十是行政事务。一个 AI 系统转录叙述，提取当事人信息，查找犯罪代码，格式化报告。警察审查、纠正、批准。时间：10 分钟而不是 45 分钟。</p>
+
+<p>警察并没有消失。工作变了。<strong>人从执行转向了治理。</strong></p>
+
+<p>这个模式是普遍的。会计师不再处理发票，而是审查 AI 处理过的发票。律师不再起草合同，而是评估 AI 的草稿。放射科医生不再逐一扫描数百张 X 光片，而是审查 AI 标记的影像。在每一种情况下，所需的技能都从程序性知识（如何做这项工作）转变为评估性知识（如何判断 AI 是否正确地完成了工作）。</p>
+
+<p>但"人类在环"倡导者很少提及的是：<strong>人类治理者无法审查一切。</strong>会计师无法检查系统一夜之间处理的全部 10,000 张发票。如果人类必须审查一切，那 AI 就没有节省任何时间。</p>
+
+<p>这就是置信度空白从基础设施问题变成劳动力问题的地方。没有校准置信度（一个告诉你"AI 对这张发票有 95% 的把握，但对那张只有 60% 的把握，先审查那张"的信号），人类治理者要么在橡皮图章式地盖章通过一切（危险），要么在随机抽查（低效），要么在审查一切（毫无意义）。</p>
+
+<p>解读校准不确定性正在成为一项专业技能，对于 AI 增强型专业人士来说，它如同解读财务报表之于传统会计师一样基本。医生需要理解当 AI 对一个用药建议有 70% 置信度时意味着什么，不仅从统计学意义上，还要从临床角度，针对这个患者、这份病史来理解。</p>
+
+<p>教育系统并没有为这一转变做好准备。大学教学生执行 AI 将越来越多承担的工作。法学院教合同起草。会计学专业教交易处理。医学院教影像判读。基础技能仍然是必要的，你无法治理你不理解的东西。但教育止步于执行。它不教治理：评估 AI 输出、设计 AI 工作流、衡量 AI 性能、决定何时介入。</p>
+
+<p>从执行到治理的转型不是降级，而是晋升。治理更难。它需要更深的专业知识、更好的判断力和更大的责任。挑战在于确保有足够多的人有机会完成这一转型。</p>
+
+<hr>
+
+<h2 id="the-convergence">力量汇聚</h2>
+
+<p>七股独立的力量正在汇聚到同一个需求上，而它们之间并无协调。</p>
+
+<p><strong>监管。</strong>欧盟 AI 法案、NIST AI 框架、加拿大 C-27 法案，每个司法管辖区都在制定 AI 透明度、可审计性和治理方面的要求。这些要求之所以尚未被满足，是因为满足它们所需的基础设施还不存在。</p>
+
+<p><strong>经济。</strong>CFO 们发现六位数的 AI 账单却没有成本归属。组织无法为其 AI 辅助服务定价，因为它们无法计算每个工作流的成本。72% 的 AI 项目在试点阶段停滞，因为集成基础设施缺失。</p>
+
+<p><strong>安全。</strong>模型在没有校准置信度的情况下做出关键决策（临床的、法律的、金融的）。法庭文件中出现虚构的引用。个人身份信息在组织边界间泄露。</p>
+
+<p><strong>法律。</strong>多智能体工作流缺乏责任框架。当智能体 A 调用智能体 B，而输出造成了损害，谁负责？现行法律没有答案，因为用于追责的审计追踪并不存在。</p>
+
+<p><strong>环境。</strong>在计算消耗不计量的情况下，碳排放报告要求无法满足。组织被要求报告环境影响，却没有办法将能源使用归属到特定的 AI 操作。</p>
+
+<p><strong>地缘政治。</strong>CLOUD Act、数据主权要求、主权计算战略。各国意识到由外国企业控制的 AI 基础设施是一个战略脆弱性。</p>
+
+<p><strong>企业。</strong>CISO 需要在大规模部署智能体的组织中负责 AI 治理。AI 成熟度同比下降 20%，因为组织购买了工具却没有建设运营基础设施。</p>
+
+<p>这些力量不需要协调。它们都在要求同一件事：一种为 AI 智能体的行为记账的方式。成本归属、数据溯源、治理执行和校准置信度不是某个产品的功能。它们是基础设施，正如 TCP/IP 是基础设施，HTTPS 是基础设施，复式记账法是基础设施。</p>
+
+<p>基础设施终将被建成。总有人会建成它。问题在于，它是会被有意地设计为一个连贯的技术栈，还是由互不兼容的补丁拼凑而成，每个补丁服务于不同厂商的利益，没有一个服务于公共利益。</p>
+
+<p>这个问题不是修辞性的。它是这个十年的设计问题。</p>
+
+<hr>
+
+<h2 id="the-architecture-question">架构问题</h2>
+
+<p>AI 基础设施的发展轨迹正指向一种前所未有的集中化。Stargate 项目：5000 亿美元。Microsoft 的数据中心支出：一年 800 亿美元。这些投资中隐含的假设是，AI 计算必须集中化，规模是通往能力的唯一路径，智能的未来属于建造最大机器的人。</p>
+
+<p>这个假设混淆了训练和推理。训练前沿模型确实需要巨大的集群。但训练只发生一次。推理（运行训练好的模型）发生数十亿次。而推理才是经济价值所在。每一份被审阅的合同，每一份被起草的报告，每一张被处理的发票。全部是推理。</p>
+
+<p>推理不需要 300 亿美元的数据中心。一台 5,000 美元的工作站已经能运行五年前需要数据中心才能运行的模型。GPU 每美元性能大约每年提升 40%。到 2030 年，一套完整的企业 AI 技术栈的硬件成本将低于一台高端笔记本电脑。十年之内，具备推理能力的硬件将像 Wi-Fi 路由器一样无处不在。</p>
+
+<p>一个关键的加速因素：多个独立团队不约而同地汇聚到了同一个架构洞见上，即可以将大模型的能力蒸馏成小型专用程序，在参数量不到十亿的本地模型上运行。自然语言规范被编译成紧凑的权重，无需 API 调用、无需互联网连接、无需按 token 计费即可执行。这些编译后的程序可以像软件库一样被版本化、共享和组合。这种汇聚不是协调的结果，而是结构性的。将每一个请求都发送到云端 API 的经济模式在规模化之后不可持续。</p>
+
+<p>当每个组织都可以在自己的硬件上运行自己的 AI 时，主权问题就迎刃而解了。加拿大的数据留在加拿大的硬件上。患者记录永远不离开医院。国防工作负载在气隙环境中运行。不是因为云服务商的合同承诺，而是因为数据在物理上从未离开过建筑物。分布式架构使主权成为一种物理现实，而非法律上的抽象概念。</p>
+
+<p>分布式架构（主权节点通过加密网格连接，由协议协调）是问责技术栈的部署方式。不是作为集中控制的云服务，而是作为每个组织自有的基础设施。问责层、计算层、执行层，全部在本地运行，通过标准互操作。使互联网具有韧性的同一种架构，也使 AI 基础设施具有韧性。</p>
+
+<p>集中式架构集中了权力：对为整个经济体执行认知工作的机器的控制权。分布式架构则将这种权力分配给使用它的组织和社区。这两种选择并不等价。</p>
+
+<p>这正是 AceTeam 正在构建的基础设施。不是又一个智能体框架，不是又一个模型包装器。而是位于所有这些之下的问责层，分布式、主权化，为一个 AI 智能体从事真正工作并且必须有人为发生的事情负责的世界而设计。上文描述的七层技术栈就是其架构。团队、信任梯度、人类在环检查点、校准置信度，这些才是让它运转的关键。</p>
+
+<div class="cta-block">
+  <h3>完整论述</h3>
+  <p>本文是简要版。全书追溯完整的脉络：结构性转变、问责空白、历史规律、七层技术栈、转型，以及未来的走向。提供内嵌音频。</p>
+  <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+    <a href="/book-zh.html" class="cta-link">阅读全书</a>
+    <a href="/book.html" class="cta-link" style="background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border-strong);">English</a>
+  </div>
+</div>
+
+<div class="closing">
+  <p>孙派 &middot; <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a> &middot; 2026年5月</p>
+</div>
+
+</article>
+
+<div class="about-section" id="about">
+  <div class="about-inner">
+    <h2>关于</h2>
+    <p>我是孙派。我创办了 <a href="https://aceteam.ai">AceTeam</a>，我们为自主 AI 构建问责基础设施：成本归属、溯源追踪、治理执行。这是让组织真正信任智能体输出的那一层。</p>
+    <p><a href="https://github.com/aceteam-ai/aep-quickstart">体验协议</a> &middot; <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a></p>
+  </div>
+</div>
+
+<script>
+(function() {
+// shared.js — theme toggle + nav scroll behavior, used by both index and book
+
+// Theme
+var toggle = document.getElementById('themeToggle');
+var html = document.documentElement;
+var saved = localStorage.getItem('theme');
+if (saved) { html.setAttribute('data-theme', saved); }
+else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+updateIcon();
+toggle.addEventListener('click', function() {
+  var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateIcon();
+});
+
+// Nav scroll effect
+var siteNav = document.getElementById('siteNav');
+var lastScrollY = 0;
+function updateNav() {
+  var sy = window.scrollY;
+  siteNav.classList.toggle('scrolled', sy > 60);
+  lastScrollY = sy;
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+
+// Progress bar
+var progress = document.getElementById('progress');
+function updateProgress() {
+  var sy = window.scrollY;
+  var docH = document.documentElement.scrollHeight - window.innerHeight;
+  if (docH > 0) progress.style.width = (sy / docH * 100) + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+updateProgress();
+
+
+  // --- Reading time ---
+  var article = document.getElementById('article');
+  var words = article.textContent.split(/\s+/).length;
+  var totalMin = Math.ceil(words / 350);
+  document.getElementById('heroReadTime').textContent = '~' + totalMin + ' 分钟阅读';
+  var rtEl = document.getElementById('readingTime');
+  var heroH = window.innerHeight;
+
+  // --- Mini TOC active tracking ---
+  var tocLinks = document.querySelectorAll('.mini-toc a');
+  var sectionEls = [];
+  tocLinks.forEach(function(link) {
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) sectionEls.push({ el: el, link: link });
+  });
+
+  tocLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var el = document.getElementById(link.getAttribute('href').slice(1));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // --- Resume reading ---
+  var STORAGE_KEY = 'vision-essay-zh-pos';
+  var resumeToast = document.getElementById('resumeToast');
+  var resumeSection = document.getElementById('resumeSection');
+  var resumeBtn = document.getElementById('resumeBtn');
+  var dismissBtn = document.getElementById('dismissBtn');
+  var savedPos = null;
+  try { savedPos = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+  if (savedPos && savedPos.pct > 5 && savedPos.pct < 95) {
+    resumeSection.textContent = savedPos.section + ' (' + savedPos.pct + '%)';
+    setTimeout(function() { resumeToast.classList.add('show'); }, 800);
+  }
+  resumeBtn.addEventListener('click', function() {
+    resumeToast.classList.remove('show');
+    if (savedPos) {
+      var target = savedPos.pct / 100 * (document.documentElement.scrollHeight - window.innerHeight);
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    }
+  });
+  dismissBtn.addEventListener('click', function() { resumeToast.classList.remove('show'); });
+
+  var saveTimer = null;
+  function savePosition(section, pct) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ section: section, pct: pct })); } catch(e) {}
+    }, 500);
+  }
+
+  // --- Scroll handler ---
+  var currentSection = '';
+  function onScroll() {
+    var sy = window.scrollY;
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = Math.round(sy / docH * 100);
+
+    var minLeft = Math.max(1, Math.ceil((100 - pct) / 100 * totalMin));
+    if (sy > heroH * 0.5) {
+      rtEl.textContent = '剩余 ' + minLeft + ' 分钟';
+      rtEl.classList.add('visible');
+    } else {
+      rtEl.classList.remove('visible');
+    }
+
+    var active = null;
+    var threshold = window.innerHeight * 0.2;
+    for (var i = sectionEls.length - 1; i >= 0; i--) {
+      if (sectionEls[i].el.getBoundingClientRect().top <= threshold) { active = sectionEls[i]; break; }
+    }
+    tocLinks.forEach(function(l) { l.classList.remove('active'); });
+    if (active) {
+      active.link.classList.add('active');
+      currentSection = active.link.textContent;
+    }
+    if (pct > 5) savePosition(currentSection || '开头', pct);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
