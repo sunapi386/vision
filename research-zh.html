@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校准信任的科学 -- 孙派</title>
+<meta name="description" content="可问责AI系统的技术基础。校准研究、知识图谱不确定性，以及可信AI背后的数学原理。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/#about" class="nav-link">About</a>
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">技术附录</div>
+  <h1 class="hero-title">校准信任的科学</h1>
+  <p class="hero-subtitle">可问责AI系统的技术基础</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>过度自信问题</h2>
+
+<p>大语言模型存在系统性的过度自信。当模型报告95%的置信度时，输出实际正确的概率大约只有50%。这不是微小的校准偏差，它会破坏所有依赖置信度分数进行决策的下游系统。</p>
+
+<p>实际数据比多数人预想的更糟。GPT-4o mini在实体抽取任务上自报90-100%的置信度，而实际准确率约为35%。单一判别模型对86%的抽取实体给出1.0的置信度，但其中只有40%是正确的。声称的置信度与真实正确率之间的差距不是噪声，而是结构性的。</p>
+
+<p>已发布的守护模型表现同样不佳。Llama Guard、Shield Guard和Wild Guard这些标准的开源安全分类器，其期望校准误差（ECE）高达14-28%。ECE衡量的是所有置信区间中，预测置信度与实际准确率之间的加权平均差距。ECE为20%意味着模型的置信度分数平均偏离现实20个百分点。</p>
+
+<p>这使得所有基于阈值的决策都失去了意义。如果你将阈值设为0.8，而模型的置信度分数与正确性之间没有可靠的对应关系，那你过滤的就是噪声。你会漏掉模型信心满满却实际出错的情况，同时标记出模型恰好不确定但实际正确的输出。阈值制造了质量控制的假象，实则毫无作用。</p>
+
+<p>根本原因是一种加剧校准问题的选择偏差。抽取模型在置信度估计之前就进行了隐式的top-K过滤：它们只输出自认为正确的实体。置信度模型永远看不到明显错误的抽取结果，它评估的是一个经过预筛选的分布，其中大多数输入都看似合理。一个完美的抽取器搭配一个完美的置信度模型，只会对所有内容输出"正确"，校准虽然完美却毫无信息量。实际后果是：精确率可以在事后通过校准来提升，但召回率不行。如果抽取模型在不确定的输出到达置信度估计器之前就将其压制，这些潜在的修正就永久丢失了。</p>
+
+<p>RLHF（基于人类反馈的强化学习）使情况更加恶化。GPT-4技术报告记录了人类反馈训练后校准质量下降的现象。RLHF优化的是听起来自信且权威的输出，因为人类标注者会奖励这些特质。模型学会了将确定性作为一种修辞策略来表达，与实际准确性脱钩。这不是RLHF的缺陷，而是针对人类偏好而非校准真实性进行优化的直接后果。</p>
+
+<h2>置信度估计的三种方法</h2>
+
+<p>这三种方法按访问层级划分，取决于你能看到多少模型内部信息。每个层级都在部署复杂度与校准质量之间进行权衡。它们共同构成一个访问层级矩阵，决定了在特定部署场景中哪种方法可行。</p>
+
+<div class="stack-layer">
+  <div class="stack-num">01</div>
+  <div class="stack-body">
+    <h4>黑盒方法：LLM-as-Judge集成</h4>
+    <p>多个不同的小型LLM独立投票判断抽取结果是否正确。置信度来自投票的频率学平均值。无需训练，直接使用现成模型。关键洞察在于集成的多样性：使用不同架构、不同训练数据、不同失败模式的模型。通过多样化集成，ECE从0.6降至0.4，AUC从58%提升至68%。这些模型在不同的事物上产生分歧，而分歧本身就是不确定性的真实信号。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">02</div>
+  <div class="stack-body">
+    <h4>灰盒方法：基于特征的模型</h4>
+    <p>从模型暴露的所有信息中（不包括内部权重）构建特征向量：token对数概率、softmax熵、解码统计量（束搜索宽度、候选token数量）。一个轻量级回归模型（逻辑回归或小型梯度提升树）根据这些特征预测正确性。一个实用技巧是：GLiNER的阈值归零方法可以从原本只输出二元判断的模型中产生连续的置信度分数。这一层级需要API层面的对数概率访问权限，但不需要访问隐藏状态。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">03</div>
+  <div class="stack-body">
+    <h4>白盒方法：线性探针</h4>
+    <p>在LLM的隐藏表示上训练线性探针，每个token在每一层大约有4000维向量。在MMLU Pro上，探针实现了约0.02的ECE，接近完美校准。关键发现是：提示LLM以语言形式表达其不确定性（"你有多确定？"）能提升探针性能，尽管模型口头给出的数值本身并未用作特征。自省的行为改变了隐藏状态，使探针的工作更加容易。这就是"潜在特征工程"：通过改变提示来修改模型的内部表示，然后读取改进后的信号。</p>
+  </div>
+</div>
+
+<h2>知识图谱的不确定性传播</h2>
+
+<p>抽取产生实体和关系，每个都附带置信度分数。但这些分数并不独立。两个实体之间的关系取决于两个实体都是正确的。联合概率遵循一个简单的链式规则：<code>P(relation | e_i, e_j) * P(e_i) * P(e_j)</code>。如果任一实体有误，建立在其上的关系几乎必然也是错误的。</p>
+
+<p>因子图为建模这些依赖关系提供了形式化框架。因子图是一种二部图，将变量节点（实体、关系）与因子节点（定义变量间依赖方式的函数）相连接。这是贝叶斯网络的推广，能处理任意依赖结构，而不要求有向无环图。</p>
+
+<h3>为何信息抽取不同于其他NLP任务</h3>
+
+<p>一个自然的问题：信息抽取的置信度与机器翻译、情感分析或其他NLP任务有何本质不同？答案在于依赖关系的拓扑结构。在问答任务中，问题是独立的。在机器翻译中，依赖关系是自回归的（序列化的）。在信息抽取中，依赖结构是一个非平凡的图。关系依赖于实体，实体又可以通过关系相互依赖。修正在图中以非局部的方式传播，这是序列依赖永远做不到的。</p>
+
+<p>实体类型可以看作对所有抽取提及进行判定的谓词。"软件工程师"是一个函数：输入一段文本，返回一个概率。这个框架将抽取与Laplace的概率观联系起来，即概率是逻辑的自然延伸，谓词返回的不是真/假，而是0到1之间的值。模式约束的抽取使这一方法切实可行：有了已知的实体类型，抽取可以分解为逐个类似分类的判定（这段文本是否属于类型X？），而非无约束的生成。</p>
+
+<h3>置信传播</h3>
+
+<p>当人类修正了一个实体（确认其正确或标记其错误），消息会通过因子图传播以更新邻近节点的置信度。如果人类确认了实体A，所有涉及实体A的关系都会获得置信度提升。如果人类否定了实体A，所有涉及实体A的关系都会下降。更新是局部的：不需要重新评估整个图，只需处理被修正节点的马尔可夫毯。</p>
+
+<h3>主动修正排序</h3>
+
+<p>修正实体的顺序很重要。优先修正高连接度的实体，可以将信息传播到更多的邻居节点。这与主动学习和贝叶斯优化的思路一致：选择能在全图范围内最大化期望信息增益的查询，而非仅在局部最优。一次精心选择的修正就能改变数十个下游关系的置信度分数。</p>
+
+<div class="callout">
+  <p>这是一个尚未填补的研究空白：目前没有任何工作将概率知识图谱与Graph RAG结合起来。检索增强生成（RAG）社区构建知识图谱，但将其视为确定性的。概率图模型社区处理不确定性，但未与检索管道对接。交叉领域尚未被探索。</p>
+
+<p>时序知识图谱增加了另一个维度。当文档存在版本（合同草稿、监管备案、政策更新），知识图谱会随时间变化。追踪实体和关系在各版本间的演变（哪些实体出现了、哪些被修改了、哪些关系被切断了），可以将图谱转变为历史记录。对于并购协议，你可以提问："从第一版到最终签署版，赔偿条款结构发生了什么变化？"图谱在各草稿间的形态变化本身就成为一种可查询的一等对象。</p>
+
+<h3>评估方法论</h3>
+
+<p>校准质量不能用单一指标来评估。需要三个指标，各自衡量不同的属性：</p>
+
+<p><strong>区分能力（AUROC）：</strong>置信度分数能否区分正确和错误的输出？一个对正确输出赋予更高置信度的模型具有良好的区分能力，即使绝对分数的校准很差。AUROC衡量的是这种排序质量。</p>
+
+<p><strong>校准度（ECE与可靠性图）：</strong>70%的置信度是否真的意味着70%的准确率？ECE（期望校准误差）计算的是各置信区间中，预测置信度与实际准确率之间的加权平均差距。但ECE本身可能产生误导：一个始终输出数据集基础准确率的模型可以轻松实现零ECE，却完全没有信息量。可靠性图（横轴为预测置信度区间，纵轴为实际准确率，目标为对角线）能揭示全貌。</p>
+
+<p><strong>选择性预测（风险-覆盖曲线）：</strong>丢弃低置信度的项目能否提升最终准确率？给定N次人工审核的预算，优先审核最低置信度的项目是否比随机选择效果更好？这直接模拟了生产场景中置信度分数将工作路由给人工审核员的用例。</p>
+
+<p>Brier分数惩罚不确定性本身（只有完美的0/1预测才能使其归零），因此不适用于存在不可消除模糊性的任务。分箱ECE可以平滑固有随机性。AUROC对校准不敏感，但能捕捉排序质量。三者结合才能给出完整的图景。</p>
+</div>
+
+<h2>主动学习与人机协同</h2>
+
+<p>系统不可能为每一次抽取都向人类求证。人力昂贵且速度慢。这是一个多目标情境多臂赌博机问题：同时最小化校准误差和人类查询次数。这两个目标相互矛盾：更多的人类反馈总能改善校准，但预算是固定的。</p>
+
+<p>采集函数是期望信息增益：对每个候选实体，估算为其获取人工标注后能带来多大的总体不确定性降幅。置信度接近0.5的实体并不一定是最佳候选。一个置信度为0.5但有50个下游关系的实体，比一个置信度同为0.5但没有下游关系的实体更值得查询。图的结构决定了查询的价值。</p>
+
+<div class="callout">
+  <p>"如果你有10分钟的人工预算，你会选择最不确定的20项进行审核。"但不确定性不仅仅是置信度分数，而是置信度分数乘以其在知识图谱中的下游影响权重。</p>
+</div>
+
+<p>即使在高置信度下，系统也应偶尔进行验证以检测系统性漂移。上个月准确率95%的模型可能已经退化。对高置信度输出的定期抽查可以在漂移累积之前将其捕获。这就是探索-利用的权衡：主要利用置信度估计来集中人力处理不确定的项目，但也要进行足够的探索来检测估计本身是否已经过时。</p>
+
+<p>贝叶斯扩展用完整分布替代点估计的置信度。系统不再维护"该实体的置信度为0.73"，而是维护"该实体服从Beta(14, 5)分布，均值为0.74，95%可信区间为[0.55, 0.89]"。分布不仅捕捉模型的最佳猜测，还捕捉支撑该猜测的证据有多充分。基于三次观测得出的0.73置信度，确实不如基于三百次观测得出的0.73置信度可靠，尽管点估计完全相同。</p>
+
+<h2>安全应用</h2>
+
+<p>同一套校准架构可以直接应用于智能体安全。"这个实体是否正确？"与"这个操作是否安全？"共享完全相同的数学结构。两者都需要分类器，都受过度自信之苦，都受益于集成方法，也都需要经过校准的置信度来使阈值决策有意义。</p>
+
+<h3>多专家集成</h3>
+
+<p>系统不采用单一的整体安全模型，而是部署按类别划分的专家模型：隐私违规专家、金融风险专家、安全威胁专家、伦理问题专家。每个专家都是在类别特定数据上微调的小模型。这沿用了置信度估计中的黑盒集成思路，但增加了领域专业化。</p>
+
+<p>引入专家多样性后，检测召回率从63%（单一通用判别器）提升至73%（四个专家）。提升不是来自更多参数，而是来自更多视角。通用安全模型将"智能体将SSH密钥发送到外部地址"和"智能体提供未经请求的投资建议"视为同类问题。专家架构则将它们视为根本不同的故障模式，需要不同的训练数据、不同的评估标准和不同的置信度阈值。</p>
+
+<p>逐个关闭特定专家可以证明其各自的价值。没有金融专家，未授权的购买操作会畅通无阻。没有隐私专家，凭证外泄会被遗漏。每个专家都能捕获其他专家遗漏的故障，因为每个专家都在风险分类体系的不同切片上进行了训练。</p>
+
+<div class="actor-card">
+  <h4>隐私专家</h4>
+  <p>检测PII（个人身份信息）泄露、数据暴露、同意违规。基于隐私专项事件数据训练。标记包含或可能暴露个人信息的输出。能捕获通用模型遗漏的凭证和个人数据外泄。</p>
+</div>
+
+<div class="actor-card">
+  <h4>金融专家</h4>
+  <p>检测未授权交易、合规违规、缺少免责声明的理财建议。基于金融合规基准进行校准。能捕获诸如在面向客户的场景中提供投资指导等微妙的合规违规。</p>
+</div>
+
+<div class="actor-card">
+  <h4>安全专家</h4>
+  <p>检测提示注入、代码执行风险、凭证暴露、系统访问尝试。基于对抗攻击模式和R-Judge基准的27种风险场景（涵盖软件、物联网、Web、金融和程序类别）进行训练。</p>
+</div>
+
+<div class="actor-card">
+  <h4>伦理专家</h4>
+  <p>检测有害内容生成、偏见放大、操纵企图。基于危害分类基准进行校准。处理部署安全类别中智能体的操作可能造成不可逆现实后果的情况。</p>
+</div>
+
+<h3>基准测试结果</h3>
+
+<p>在R-Judge基准上（约500个人工标注实例，覆盖金融、物联网、软件、Web、程序五个类别的27种不同风险场景），多专家集成对不安全操作的召回率达到66%，特异性为62%，ECE为9%。这在仅使用小型开源权重模型的情况下，达到了GPT-4在同一基准上的召回率。9%的ECE意味着置信度分数在任何置信水平上的偏差不超过10个百分点，而已发布的守护模型为14-28%。</p>
+
+<p>集成使用了四个模型（Llama、Qwen、Gemma、Mistral），每个模型配两种提示变体，对每个输入产生八个独立判断。由于多数投票至少为50%，置信度分数在结构上只存在于0.5-1.0的范围内。差异来源于模型架构、提示设计，以及思维链与直接提示的对比。</p>
+
+<h3>LoRA适配器蒸馏</h3>
+
+<p>基于云端的专家判别器在生产环境中运行成本高昂。蒸馏管道将它们压缩为单个小型骨干模型（Qwen 0.6B或Llama 1B）上的LoRA适配器。每个适配器仅5-25MB。多个适配器可以共享一个基础部署，使每个专家的推理成本变得很低。</p>
+
+<p>管道分为四个阶段：(1) 使用前沿模型从每个类别的10-50个种子样本生成合成数据，(2) 教师评估以验证任务在目标准确率下可解，(3) 在小型骨干上进行LoRA微调，(4) 集成到网关中。这条管道与任务无关。无论目标是安全检测、实体抽取、PII脱敏还是任何分类任务，都适用同样的四个阶段。这个飞轮是通用的。</p>
+
+<p>来自类似蒸馏方法（Distill Labs、Berlin）的已发布基准表明，1-4B参数的模型在定向分类任务上可以达到120B模型的准确率。其PII脱敏基准显示1B模型可以匹敌GPT-4。周转时间约为8小时，成本约为每次蒸馏100美元。</p>
+
+<h3>保守聚合</h3>
+
+<p>聚合规则是刻意不对称的：只要任何一个专家标记了某项操作，该操作就被标记。报告标记专家中最高的置信度。如果所有专家都判定安全，则报告最低的置信度。这是有意为之的保守设计。假阳性（阻止安全操作）是可恢复的，用户可以覆盖或系统可以升级处理。假阴性（放行不安全操作）则不可恢复。代价函数是不对称的，因此聚合也必须是不对称的。</p>
+
+<p>当多个专家标记同一操作时，组合的不安全分数通过补数乘积公式快速攀升：<code>P(unsafe) = 1 - &prod;(1 - P(unsafe_i))</code>。单项分数为0.8、0.9和0.85时，组合分数为0.997。独立性假设并不完美（部署安全与密钥泄露之间存在相关性），但该方法在实践中有效，原因与朴素贝叶斯在垃圾邮件过滤中有效相同：由于聚合是保守的，模型的误差是可容忍的。</p>
+
+<p>对于更严谨的策略依赖处理，可以在策略关系的有向无环图上应用概率链式法则：<code>P(A, B | X) = P(A | X) * P(B | A, X)</code>。给定一组策略，LLM可以生成依赖图，从而实现考虑相关性的联合概率计算。这是概率图模型中的标准方法（Bishop, Chapter 8），但在初始部署中很可能不必要，朴素独立性假设已经足够。</p>
+
+<h3>意见混合架构</h3>
+
+<p>一种相关方法受梵语认识论传统启发，将推理维度组织为专门化的视角。其概念源于一个包含约208个推理维度的框架，这些维度来自古典印度哲学流派。对于特定领域或任务，从中选取一个子集（通常8-12个，分组为集群）编译成专门的评论者。每个维度扮演一种思维角色：谬误检测、不可逆性检查、时序分析、因果推理、时间一致性、逻辑连贯性。</p>
+
+<p>与集成方法的架构区别在于评论者之间的通信方式。在标准集成中，每个判别器产生文本输出，再汇总投票。在意见混合架构中，评论者共享嵌入空间：查询以向量形式流向所有评论者并进入共同的潜在空间，评论者在嵌入层面而非通过文本进行辩论和信息交换，综合过程在高维空间中完成后再解码回文本。相比基于文本的模型间通信（每次交换都会通过分词器压缩细微差别），这种方式减少了上下文损失。</p>
+
+<p>多阶段综合流程如下：并行辩论（所有评论者同时分析）、调和（提炼共同结论）、矛盾解决（裁定分歧）、最终答案生成。底层模型可以是开源LLM，每个维度配备LoRA适配器，使得该方法在普通硬件上计算可行。</p>
+
+<p>集成方法与意见混合方法之间的关键区别在于校准。意见混合架构不产生经过校准的置信度分数。它产生更好的答案，但无法告诉你它对这些答案有多确定。本文描述的集成方法将校准后的置信度作为一等输出。将两者结合，即在潜在空间中通信的多元视角加上校准的不确定性估计，仍然是一个开放问题，也是一种潜在的强大架构。</p>
+
+<h3>按组织校准形成飞轮</h3>
+
+<p>安全阈值不是通用的。什么构成不安全操作取决于组织、领域、监管环境和具体工作流。一家营销机构和一家医疗服务商有着根本不同的风险画像。这意味着校准必须按组织进行。</p>
+
+<p>人工审核员的每一次批准/拒绝决定都成为该组织校准模型的训练数据。随着时间推移，系统学习到该组织特有的风险容忍度、常见边界案例和政策解读。这创造了一种复合数据优势：组织使用系统的时间越长，系统对其特定需求的校准就越精准。最初看似弱点的数据依赖性（系统需要组织特定的数据来校准）变成了护城河（没有竞争对手能复制另一个组织积累的校准数据）。</p>
+
+<h2>信息几何与微调</h2>
+
+<p>模型知识可以理解为参数空间中的高维流形。流形上的点代表输出上的概率分布。这个流形的几何特性（曲率、测地线）决定了微调在分布空间中的移动方式。</p>
+
+<p>两种测地线很重要。E-测地线（指数族测地线）在插值过程中保持均值参数不变。M-测地线（混合测地线）保持自然参数不变。两者之间的选择决定了微调过程中什么被保留、什么被允许漂移。标准梯度下降两者都不遵循，它在参数空间中走的是欧几里得直线，但这在分布空间中是弯曲的路径。</p>
+
+<p>自然梯度下降在Fisher信息空间而非欧几里得参数空间中运作。Fisher信息矩阵衡量模型的输出分布对每个参数的敏感程度。沿自然梯度方向移动会在分布空间中产生等量的变化，而不受参数碰巧如何缩放的影响。这直接关联到灾难性遗忘：标准微调可能破坏先前学到的分布，因为参数空间中的欧几里得步长对应分布空间中极不均等的步长。</p>
+
+<div class="callout">
+  <p>"如果你能通过使用测地线来改进信息论，那么依赖信息论的一切都会得到改进。"每一个损失函数、每一个优化器、每一个训练调度，都在隐式地导航这个流形。更好的导航意味着更好的收敛、更少的遗忘，以及更高效地利用训练数据。</p>
+</div>
+
+<h2>程序即权重</h2>
+
+<p>自然语言指令可以被编译为LoRA适配器，即将行为程序编码进基础模型的小型权重修改（约5-25MB）。基础模型可以小到GPT-2 124M或Qwen 0.6B。这些适配器可以通过WebAssembly在浏览器中运行，无需服务器往返。</p>
+
+<p>这为策略执行提供了潜在基础。不再在推理时通过提示向模型注入安全规则（这种方式可以被绕过），而是将规则编译进模型的权重中。策略不再是可以被越狱的输入，它是模型本身的一部分。</p>
+
+<p>差距在于校准。程序即权重可以执行行为，但目前无法报告其执行的置信度。编译后的策略适配器可以阻止一个操作，但不能说"我有73%的把握认为此操作违反了策略"。将上述校准方法与编译后的策略适配器相连接是一个开放问题。解决它意味着策略既是防篡改的（编译进权重），又具有不确定性感知能力（每个决策都有校准后的置信度）。</p>
+
+</article>
+
+<div class="draft-notice">
+  <p><a href="/book.html" style="color: var(--accent);">返回《规模化信任》</a></p>
+  <p>这是工作草稿。欢迎反馈至 <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a>。</p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 孙派</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'research-zh', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>
