@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lessons | Jason Sun</title>
+<meta name="description" content="Business lessons from two years of building AI infrastructure. What worked, what broke, what I learned.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --orange: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --orange: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 60vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.lesson-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  margin: 32px 0;
+  transition: border-color 0.2s;
+}
+.lesson-card:hover {
+  border-color: var(--border-strong);
+}
+.lesson-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 0 0 12px;
+}
+.lesson-card p {
+  margin: 8px 0 0;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+.lesson-card p:first-of-type {
+  color: var(--text);
+}
+
+.lesson-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dimmer);
+  margin-bottom: 8px;
+  display: block;
+}
+
+footer {
+  text-align: center; padding: 40px 24px;
+  color: var(--text-dimmer); font-size: 14px;
+  border-top: 1px solid var(--border);
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/#about" class="nav-link">About</a>
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="hero">
+  <p class="hero-eyebrow">From 108 conversations, 2024-2026</p>
+  <h1 class="hero-title">Lessons</h1>
+  <p class="hero-subtitle">What two years of building AI infrastructure taught me about selling, shipping, and surviving.</p>
+</header>
+
+<main class="article">
+
+<p>These are not theories. They are patterns I noticed after going back through two years of recorded meetings, partnership calls, government procurement conversations, university workshops, and late-night strategy sessions. Over a hundred conversations with partners, professors, customers, investors, and my own team. The lessons that kept showing up, meeting after meeting, are the ones that made this list.</p>
+
+<h2>Product</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">01</span>
+  <h3>PMF is not about the model. It is about the plumbing.</h3>
+  <p>A consultant was spending $890 per month in API fees and four and a half hours per run doing manual entity extraction from client interviews. When the same workflow ran through a governed pipeline with structured extraction, confidence scoring, and citation chains, the time dropped to minutes. The cost dropped to pennies.</p>
+  <p>His reaction was not "the AI is amazing." It was "this does the job." Customers do not want better models. They want systems they can trust, trace, and explain to their clients.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">02</span>
+  <h3>Never lead with AI.</h3>
+  <p>The organizations that need this most (police departments, school districts, procurement offices) do not think of themselves as AI buyers. They think of themselves as organizations with paperwork problems, compliance burdens, and capacity constraints.</p>
+  <p>The technology is the mechanism. The outcome is what matters: recovered capacity, stronger audit trails, faster turnaround, lower risk. Lead with the outcome. Let the technology be boring.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">03</span>
+  <h3>65% accuracy is good enough.</h3>
+  <p>A brand strategist was manually scanning long interview transcripts to extract units of meaning (brand philosophy, mission, taglines). It took days and was unscalable because the expertise lived in his head alone. He told me that even 65% extraction accuracy would be transformative, because the remaining human review becomes dramatically faster when AI surfaces candidates and leaves behind what is irrelevant.</p>
+  <p>Perfection is the enemy of adoption. Good enough with confidence scores beats perfect without them.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">04</span>
+  <h3>The consultants need a consultant.</h3>
+  <p>The people who sell expertise to enterprises are themselves struggling with AI adoption. They have domain knowledge, client relationships, and the pain of manual processes. They are the ideal early customers because they understand what they need automated but cannot build it themselves.</p>
+  <p>The model that worked: 50/50 revenue splits with consulting partners who close deals. They bring the domain. We bring the plumbing.</p>
+</div>
+
+<h2>Sales</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">05</span>
+  <h3>Whoever teaches the framework shapes the procurement criteria.</h3>
+  <p>Government buyers lack the vocabulary to evaluate AI vendors. They default to incumbent vendors out of fear, not preference. They buy from the name they recognize because they do not know what questions to ask.</p>
+  <p>The vendor who trains them on what to look for wins the RFP before it is written. A structured certification (AI Operator, AI Architect) does not just train individuals. It creates a shared language that procurement officers and evaluation committees use to compare proposals.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">06</span>
+  <h3>Pilot-first beats RFP-first.</h3>
+  <p>VCs want actual engagements, not failed RFPs. Three 30-day pilots with public agencies, then 60-day productionization, then contracts. Even free pilots requiring staff allocation count as real commitment signals.</p>
+  <p>A CTO at a Kansas City agency confirmed it: if a pilot requires allocating staff time, it is a real commitment, not a freebie. That matters to investors.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">07</span>
+  <h3>There is a time and a place for "sovereign."</h3>
+  <p>Data sovereignty is the core differentiator. Full traceability, certification that data has not left the boundary, compute that runs on your hardware. But a partner warned me: do not hammer it as a single-note message. Not every conversation needs the sovereignty pitch. When the time and the place is there, you need it. When it is not, you sound like you are selling fear.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">08</span>
+  <h3>Architecture shared without NDA gets taken.</h3>
+  <p>We spent a week preparing detailed architecture diagrams and technical plans for a government AI procurement. No NDA was signed. The agency passed the material to an incumbent vendor who built it in-house. We had no recourse.</p>
+  <p>Protect IP before sharing it, or accept the risk and move faster than the copycats.</p>
+</div>
+
+<h2>Trust</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">09</span>
+  <h3>The three legs: people, policy, architecture.</h3>
+  <p>Institutional AI adoption rests on three legs. People means training and certifications so staff know what they are governing. Policy means compliance checklists (SOC 2, FedRAMP, PIPEDA) so the legal framework is satisfied. Architecture means sovereign software that enforces trust by design, not by promise.</p>
+  <p>Most vendors offer one or two legs. Almost nobody offers three. The architecture leg changes everything because it moves trust from a contractual obligation to a structural guarantee. If the platform is designed so that data cannot leave the organization's infrastructure, you do not need to trust a vendor's privacy policy.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">10</span>
+  <h3>Enforced by protocol, not by promise.</h3>
+  <p>If governance boundaries are enforced at the protocol level, violations are not just detectable. They are impossible. The system does not rely on good behavior. It makes bad behavior structurally unachievable.</p>
+  <p>This is the difference between "we have a privacy policy" and "our architecture makes it physically impossible for data to leave your infrastructure." One is a document. The other is engineering.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">11</span>
+  <h3>Security by obscurity is the default startup posture.</h3>
+  <p>API keys on the front end. No credential management. The team knows it is inadequate but lacks the resources to fix it while shipping product. The gap between what you are building for customers and what you are running internally is the most honest measure of your maturity.</p>
+  <p>Acknowledge it. Do not pretend it is fine. Fix it as soon as you can afford to.</p>
+</div>
+
+<h2>Education</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">12</span>
+  <h3>60% of graduating business students cannot define a business process.</h3>
+  <p>A professor estimated this after teaching for over a decade. The system has prepared them as a transaction: study, memorize, get the grade, move on. The students are not failing. The curriculum is failing them.</p>
+  <p>Professors cannot deviate from documented learning objectives without risking tenure review, even when the objectives are visibly outdated. The institution protects its structure at the expense of its mission.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">13</span>
+  <h3>"We may be out of business by the time we figure this out."</h3>
+  <p>A professor said this about AI adoption in universities. Institutional change moves at the pace of committee approvals and accreditation cycles. The market moves at the pace of student enrollment. When students stop enrolling because the curriculum is irrelevant, the committee will still be discussing the proposal.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">14</span>
+  <h3>VPAT is non-negotiable.</h3>
+  <p>A faculty member at a large public university told me directly: you do not even get to first base in higher education procurement without a Voluntary Product Accessibility Template. It does not matter how good your demo is. No VPAT, no conversation.</p>
+  <p>The successful adoption model in universities takes 4-5 years: demo to a small team, then faculty advocacy spreads organically. Keep the initial demo crisp, under 30 minutes, with separate use cases for faculty and students.</p>
+</div>
+
+<h2>Team</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">15</span>
+  <h3>Equity is non-renewable. Revenue is renewable.</h3>
+  <p>A business partner framed it this way during negotiation. Take profit-sharing over equity dilution when the option exists. Revenue can be earned again. Equity, once given, is gone.</p>
+  <p>He also warned against VC too early: "We wasted a lot of time. We were really naive when it comes to raising capital." Time spent fundraising is time not spent building. A letter of engagement from a real customer is worth more than a warm intro to a partner.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">16</span>
+  <h3>Focus is a luxury.</h3>
+  <p>Three products running simultaneously caused burnout. The CTO described himself as "numb to anxiety." The lesson is not "focus on one thing" (easy to say when revenue is uncertain). The lesson is that juggling is a cost that compounds silently until someone breaks.</p>
+  <p>We spent more time on meetings about the product than on building it. That is a sign the scope is wrong.</p>
+</div>
+
+<div class="lesson-card">
+  <span class="lesson-number">17</span>
+  <h3>A great product is not built over a fence.</h3>
+  <p>When a partner tried to insulate the engineering team from customer context (to "protect their focus"), I pushed back hard. Engineers who do not hear from customers become tools. Tools do not have wisdom. The best products come from teams that are in the room, not across a fence.</p>
+  <p>The compromise: the partner retains design authority and tiebreaker power, but engineering gets observer access to customer meetings plus post-meeting debriefs. Context without chaos.</p>
+</div>
+
+<h2>The Meta-Lesson</h2>
+
+<div class="lesson-card">
+  <span class="lesson-number">18</span>
+  <h3>The answer is always yes.</h3>
+  <p>A partner taught me this about fundraising and sales conversations. The answer is always yes, even if it is not yes. Because what matters is what is on the other side of that question. Every "no" contains information about what the real objection is, what the buyer actually cares about, and what you need to change.</p>
+  <p>The only dead conversation is the one where you stop asking.</p>
+</div>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 Jason Sun. From the same conversations that became <a href="/book.html">Trust at Scale</a>.</p>
+</footer>
+
+<script>
+(function() {
+  const nav = document.getElementById('siteNav');
+  const bar = document.getElementById('progressBar');
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  toggle.addEventListener('click', function() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0';
+  });
+})();
+</script>
+
+</body>
+</html>
