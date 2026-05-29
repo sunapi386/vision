@@ -40,7 +40,9 @@ The problem compounds in multi-agent systems. When an orchestrator delegates to 
 
 Without cost attribution, organizations can't price their AI-assisted services. A consulting firm that uses AI to accelerate financial analysis has no way to calculate the actual cost of producing a specific deliverable. It can estimate based on monthly averages, but the variance between individual workflows can be enormous — a simple analysis might cost $0.50 in API calls while a complex one costs $15.00. Without per-workflow cost tracking, the firm is pricing blindly.
 
-The consequence of running AI operations without granular cost tracking has already produced documented incidents of six-figure surprise bills. These aren't isolated events — they're the predictable result of systems that consume resources at machine speed without any mechanism for budget enforcement or cost visibility.
+The consequences are not hypothetical. A consultant used an AI platform to do brand identity extraction for a client. Over one weekend, a recursive agent loop ran unchecked. By Monday morning, his Google Cloud bill was $135,000. Not from a security breach. Not from a misconfiguration. From an agent that did exactly what it was told to do, faster than anyone expected, with no mechanism to cap the cost. He is now dealing with legal, with Google's billing team, with fraud investigators. The system worked perfectly. Nobody was watching the meter.
+
+If you know how to set a cap, you set a cap. Most people don't know. They give the agent a credential and it blows up.
 
 ### Data Provenance
 
@@ -118,4 +120,8 @@ The accountability void isn't a temporary inconvenience that the market will nat
 
 The human world has centuries of accumulated infrastructure for accountability: double-entry bookkeeping, contracts, professional licensing, regulatory frameworks, audit standards, insurance, and courts. The agent economy has none of it.
 
-Building that infrastructure — the receipts, the citations, the cost trees, the consent records, the governance enforcement — is not a feature to be added to an existing platform. It's a category that needs to be created.
+And the people being asked to adopt AI see this clearly, even if they can't articulate it in infrastructure terms. A CIO at a Colorado municipality built a zoning permit chatbot on her own time using OpenAI's API. It worked. Her security team killed it. She said publicly: "I really hope some vendor comes here and builds this so that we can do it for real." She wasn't asking for a better model. She was asking for the accountability layer that would let her security team say yes.
+
+A police department in Ontario has three full-time employees whose job is to scan officer notes, manually redact PII with a black marker, re-scan the pages, and send them to the Crown prosecutor. They do this for body camera footage, dash cam video, and internal reports. They know AI could do this in seconds. They also know that one leaked Social Security number ends careers. Without verifiable redaction with an audit trail, the status quo -- three people with markers -- is the rational choice.
+
+Building that infrastructure -- the receipts, the citations, the cost trees, the consent records, the governance enforcement -- is not a feature to be added to an existing platform. It's a category that needs to be created.
