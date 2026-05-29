@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Science of Calibrated Trust — Jason Sun</title>
+<title>The Science of Calibrated Trust | Jason Sun</title>
 <meta name="description" content="Technical foundations for accountable AI systems. Calibration research, knowledge graph uncertainty, and the math behind trustworthy AI.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -406,7 +406,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>The pipeline has four phases: (1) synthetic data generation from 10-50 seed examples per category using frontier models, (2) teacher evaluation to validate the task is solvable at the target accuracy, (3) LoRA fine-tuning on the small backbone, (4) integration into the gateway. This pipeline is task-agnostic. The same four phases apply whether the target is safety detection, entity extraction, PII redaction, or any classification task. The flywheel is general-purpose.</p>
 
-<p>Published benchmarks from comparable distillation approaches (Distill Labs, Berlin) show that 1-4B parameter models can match 120B model accuracy on targeted classification tasks. Their PII redaction benchmark shows a 1B model matching GPT-4. Turnaround is approximately 8 hours at approximately \$100 per distillation.</p>
+<p>Published benchmarks from comparable distillation approaches (Distill Labs, Berlin) show that 1-4B parameter models can match 120B model accuracy on targeted classification tasks. Their PII redaction benchmark shows a 1B model matching GPT-4. Turnaround is approximately 8 hours at approximately 100 USD per distillation.</p>
 
 <h3>Conservative aggregation</h3>
 
