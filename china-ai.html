@@ -107,6 +107,38 @@ body {
   font-size: 15px; transition: all 0.2s; margin-left: 8px;
 }
 .nav-theme:hover { color: var(--accent); border-color: var(--accent); }
+.nav-about { font-size: 12px; opacity: 0.6; }
+.nav-about:hover { opacity: 1; }
+
+.nav-dropdown { position: relative; }
+.nav-dropdown-toggle {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dimmer); padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; background: none; border: none;
+  display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.nav-dropdown-toggle:hover { color: var(--text-dim); background: var(--bg-elevated); }
+.nav-dropdown-toggle::after {
+  content: ''; display: inline-block; width: 0; height: 0;
+  border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor; margin-top: 1px;
+}
+.nav-dropdown-menu {
+  position: absolute; top: 100%; right: 0; min-width: 140px; padding: 6px 0;
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  border-radius: 8px; box-shadow: var(--shadow); z-index: 400;
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.nav-dropdown-menu a {
+  display: block; font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none; padding: 6px 16px; transition: all 0.15s;
+}
+.nav-dropdown-menu a:hover { color: var(--text); background: var(--bg-elevated); text-decoration: none; }
 
 .container {
   max-width: var(--max-width);
@@ -303,7 +335,11 @@ li { margin: 6px 0; }
   .nav-links { gap: 2px; }
   .nav-link { font-size: 12px; padding: 5px 6px; }
   .nav-brand { font-size: 13px; }
+  .nav-about { display: none; }
   .nav-theme { width: 28px; height: 28px; font-size: 13px; margin-left: 4px; }
+  .nav-dropdown-toggle { font-size: 12px; padding: 5px 6px; }
+  .nav-dropdown-menu { min-width: 120px; }
+  .nav-dropdown-menu a { font-size: 12px; padding: 6px 14px; }
   .container { padding-left: 16px; padding-right: 16px; }
   .hero-section { padding: 40px 0 24px; }
   .stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -322,8 +358,19 @@ li { margin: 6px 0; }
   <div class="site-nav-inner">
     <a class="nav-brand" href="/">Jason Sun</a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Essay</a>
       <a class="nav-link" href="/book.html">Book</a>
+      <a class="nav-link" href="/">Essay</a>
+      <a href="/#about" class="nav-link nav-about">About</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">More</button>
+        <div class="nav-dropdown-menu">
+          <a href="/lessons.html">Lessons</a>
+          <a href="/research.html">Research</a>
+          <a href="/vault.html">Vault</a>
+          <a href="/china-ai.html">China AI</a>
+          <a href="/dir.html">Directory</a>
+        </div>
+      </div>
       <button class="nav-theme" onclick="toggleTheme()" aria-label="Toggle theme"></button>
     </div>
   </div>
