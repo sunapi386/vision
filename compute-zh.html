@@ -385,7 +385,7 @@ body {
 <h2>矿机不能跑AI</h2>
 
 <div class="callout-danger">
-  <p><strong>关键事实：</strong>S19矿机是SHA-256专用芯片(ASIC)，没有GPU，没有显存，没有CUDA核心，不能跑AI推理。这是硬件架构的限制，不是软件问题。</p>
+  <p><strong>关键事实：</strong><a href="https://support.bitmain.com/hc/en-us/articles/900000253583-S19-Specifications" style="color: var(--accent);">S19矿机</a>是SHA-256专用芯片(ASIC)，没有GPU，没有显存，没有CUDA核心，不能跑AI推理。这是硬件架构的限制，不是软件问题。</p>
 </div>
 
 <p>问题不是"现有矿机能不能跑AI？"答案是不能。问题是："能不能把GPU服务器放进现有厂房，省掉建设成本？"</p>
@@ -482,8 +482,10 @@ body {
 
 <p><strong>平台费用：</strong>VastAI由卖家定价，平台在买家那边加10-15%。RunPod社区价比安全云低20-30%。按20%平台费估算比较保守合理。</p>
 
+<p style="font-size: 13px; color: var(--text-dim);">来源：<a href="https://vast.ai/pricing" style="color: var(--accent);">VastAI定价</a>，<a href="https://www.runpod.io/pricing" style="color: var(--accent);">RunPod定价</a>，<a href="https://lambda.ai/pricing" style="color: var(--accent);">Lambda定价</a>，<a href="https://www.coreweave.com/pricing" style="color: var(--accent);">CoreWeave定价</a></p>
+
 <div class="callout">
-  <p><strong>认证很重要。</strong>VastAI上未认证的GPU几乎没人租。认证过的H100按~$2.15/时、70%利用率算，每月每GPU可赚~$1,100。认证是市场收入的前提。</p>
+  <p><strong>认证很重要。</strong>VastAI上未认证的GPU几乎没人租。认证过的H100按~$2.15/时、70%利用率算，每月每GPU可赚~$1,100。认证是市场收入的前提。参见<a href="https://vast.ai/hosting" style="color: var(--accent);">VastAI托管指南</a>。</p>
 </div>
 
 <h2>服务器经济账：GPU出租模式</h2>
@@ -680,6 +682,8 @@ body {
 </table>
 </div>
 
+<p style="font-size: 13px; color: var(--text-dim);">来源：<a href="https://www.together.ai/pricing" style="color: var(--accent);">Together.ai定价</a>，<a href="https://deepinfra.com/pricing" style="color: var(--accent);">DeepInfra定价</a></p>
+
 <h3>Token经济账：实际计算</h3>
 
 <p><strong>小模型(8B)，1台H100，自有厂房（只算电费）：</strong></p>
@@ -698,6 +702,7 @@ body {
 
 <div class="callout">
   <p><strong>核心发现：</strong>自己有机器的话，卖Token比卖GPU时间赚得多。因为边际成本就是电费（在中国才1500元/月），而小模型(8B)卖Token月收入可达3-5万元/台。但前提是要会部署推理服务，还要有客户。</p>
+  <p style="font-size: 12px; color: var(--text-dimmer); margin-top: 8px;">吞吐量估算基于 <a href="https://vllm.ai/blog/perf-update" style="color: var(--accent);">vLLM性能基准</a> 和 <a href="https://developer.nvidia.com/blog/achieving-top-inference-performance-with-the-nvidia-h100-tensor-core-gpu-and-nvidia-tensorrt-llm/" style="color: var(--accent);">NVIDIA TensorRT-LLM</a>。</p>
 </div>
 
 <h3>Token销售回本周期</h3>
@@ -882,7 +887,7 @@ body {
 </table>
 </div>
 
-<p>来源：<a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">深圳政策</a>，<a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">石家庄方案</a></p>
+<p>来源：<a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">深圳政策</a>，<a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">石家庄方案</a>，<a href="https://www.beijing.gov.cn/zhengce/zhengcefagui/202503/t20250303_4024044.html" style="color: var(--accent);">北京经开区AI政策</a>，<a href="https://www.chinanews.com.cn/cj/2026/04-13/10603158.shtml" style="color: var(--accent);">成都算力券详情</a></p>
 
 <h3>硬件购买补贴（只有~10%）</h3>
 
@@ -914,7 +919,7 @@ body {
 </div>
 
 <div class="callout-warn">
-  <p><strong>NVIDIA芯片和中国补贴基本互斥。</strong>大多数补贴项目要求或强烈偏向国产芯片。甘肃、贵州、内蒙古的电费补贴（最高50%减免）明确排除使用外国芯片的数据中心。</p>
+  <p><strong>NVIDIA芯片和中国补贴基本互斥。</strong>大多数补贴项目要求或强烈偏向国产芯片。甘肃、贵州、内蒙古的电费补贴（最高50%减免）明确排除使用外国芯片的数据中心。参见<a href="https://www.tomshardware.com/tech-industry/semiconductors/china-certifies-nine-domestic-ai-chips-for-government-procurement" style="color: var(--accent);">中国政府采购认证国产AI芯片</a>。</p>
 </div>
 
 <h3>对回本测算的影响</h3>
@@ -923,18 +928,20 @@ body {
 
 <p>来源：<a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html" style="color: var(--accent);">河北AI+行动方案</a>，<a href="https://www.gov.cn/zhengce/zhengceku/202401/content_6924596.htm" style="color: var(--accent);">国家发改委东数西算</a></p>
 
+<p style="font-size: 13px; color: var(--text-dim);">延伸阅读：<a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/china-subsidizes-ai-computing-for-small-domestic-companies-computing-power-vouchers-spread-across-multiple-chinese-cities" style="color: var(--accent);">Tom's Hardware：算力券概览</a>，<a href="https://www.tomshardware.com/tech-industry/china-and-americas-ai-war-isnt-just-about-compute-its-about-energy-energy-subsidies-promote-homegrown-chip-push-amid-data-center-energy-squeeze" style="color: var(--accent);">Tom's Hardware：能源补贴</a>，<a href="https://www.fpri.org/article/2025/09/from-vouchers-to-visas-chinas-innovative-plan-for-ai-dominance/" style="color: var(--accent);">FPRI：从算力券到签证</a></p>
+
 <h2>选址分析</h2>
 
 <h3>唐山（河北）</h3>
 
-<p>示例城市。优势：已有矿场基础设施、0.59元/度工业电价、距北京90分钟高铁。局限：不是东数西算指定枢纽，没有查到AI专项补贴。可用的政策是一般性高新企业税收优惠（15%企业税率 vs 25%），以及大型投资项目的个案谈判空间。</p>
+<p>示例城市。优势：已有矿场基础设施、0.59元/度工业电价、距北京90分钟高铁。局限：不是东数西算指定枢纽，没有查到AI专项补贴。可用的政策是一般性高新企业税收优惠（15%企业税率 vs 25%），以及大型投资项目的个案谈判空间。参见<a href="https://www.tangshan.gov.cn/zhuzhan/szfjbgswj/20230506/1524086.html" style="color: var(--accent);">唐山大数据规划</a>。</p>
 
 <h3>东数西算枢纽</h3>
 
 <p>国家战略框架，将东部算力需求导向西部廉价电力地区。指定枢纽及其优势：</p>
 
 <ul>
-  <li><strong>贵州：</strong>水电充沛、气候凉爽，苹果/华为数据中心已入驻。10%硬件补贴（国产芯片）。电价低至0.30-0.35元/度。</li>
+  <li><strong>贵州：</strong>水电充沛、气候凉爽，苹果/华为数据中心已入驻。10%硬件补贴（国产芯片）。电价低至0.30-0.35元/度。<a href="https://www.smartcity.team/policies/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%94%BF%E7%AD%96%E5%BA%93/guizhousuanlijili/" style="color: var(--accent);">贵州算力激励政策</a></li>
   <li><strong>内蒙古：</strong>风电+光伏，土地极便宜，与北京光纤连接好。合格设施电价0.26-0.35元/度。</li>
   <li><strong>甘肃：</strong>可再生能源丰富，政府积极招商。电费补贴最高50%，但排除外国芯片。</li>
   <li><strong>宁夏：</strong>与甘肃类似的可再生能源优势，国家指定枢纽。中卫是主要数据中心集群。</li>
@@ -963,7 +970,7 @@ body {
 <h3>法律和监管</h3>
 
 <ul>
-  <li><strong>硬件来源：</strong>H100/B200 GPU受美国出口管制，通过灰色渠道进入中国。在国际平台上公开这些GPU会暴露供应链，运营方可能想避免这种可见性。</li>
+  <li><strong>硬件来源：</strong>H100/B200 GPU受美国出口管制，通过灰色渠道进入中国。在国际平台上公开这些GPU会暴露供应链，运营方可能想避免这种可见性。最新政策：<a href="https://introl.com/blog/bis-export-policy-h200-mi325x-china-case-by-case-2026" style="color: var(--accent);">BIS H200出口政策变化</a>，<a href="https://www.tomshardware.com/tech-industry/semiconductors/nvidia-prepares-h200-shipments-to-china-as-chip-war-lines-blur" style="color: var(--accent);">H200对华出货</a></li>
   <li><strong>数据主权：</strong>中国的数据本地化法律（《个人信息保护法》、《数据安全法》）限制某些类别的数据出境。国际客户将数据发送到中国GPU上可能面临其本国司法管辖的合规问题。</li>
   <li><strong>平台政策：</strong>VastAI和RunPod接受全球卖家，但从中国设施获得认证和信誉分较难，因为网络可靠性是考量因素。</li>
 </ul>
@@ -994,6 +1001,62 @@ body {
 </ol>
 
 </article>
+
+<div class="article" style="padding-top: 0; padding-bottom: 40px;">
+<h2>参考来源</h2>
+
+<h3>GPU算力市场定价</h3>
+<ul>
+  <li><a href="https://vast.ai/pricing" style="color: var(--accent);">VastAI定价</a></li>
+  <li><a href="https://www.runpod.io/pricing" style="color: var(--accent);">RunPod定价</a></li>
+  <li><a href="https://lambda.ai/pricing" style="color: var(--accent);">Lambda定价</a></li>
+  <li><a href="https://www.coreweave.com/pricing" style="color: var(--accent);">CoreWeave定价</a></li>
+  <li><a href="https://vast.ai/hosting" style="color: var(--accent);">VastAI托管指南</a></li>
+</ul>
+
+<h3>Token定价与吞吐量</h3>
+<ul>
+  <li><a href="https://www.together.ai/pricing" style="color: var(--accent);">Together.ai定价</a></li>
+  <li><a href="https://deepinfra.com/pricing" style="color: var(--accent);">DeepInfra定价</a></li>
+  <li><a href="https://vllm.ai/blog/perf-update" style="color: var(--accent);">vLLM性能基准</a></li>
+  <li><a href="https://developer.nvidia.com/blog/achieving-top-inference-performance-with-the-nvidia-h100-tensor-core-gpu-and-nvidia-tensorrt-llm/" style="color: var(--accent);">NVIDIA TensorRT-LLM H100推理</a></li>
+</ul>
+
+<h3>中国补贴政策</h3>
+<ul>
+  <li><a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">深圳算力券政策</a></li>
+  <li><a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">石家庄算力券方案</a></li>
+  <li><a href="https://www.beijing.gov.cn/zhengce/zhengcefagui/202503/t20250303_4024044.html" style="color: var(--accent);">北京经开区AI政策</a></li>
+  <li><a href="https://www.chinanews.com.cn/cj/2026/04-13/10603158.shtml" style="color: var(--accent);">成都算力券详情</a></li>
+  <li><a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html" style="color: var(--accent);">河北AI+行动方案</a></li>
+  <li><a href="https://www.gov.cn/zhengce/zhengceku/202401/content_6924596.htm" style="color: var(--accent);">国家发改委东数西算</a></li>
+  <li><a href="https://www.smartcity.team/policies/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%94%BF%E7%AD%96%E5%BA%93/guizhousuanlijili/" style="color: var(--accent);">贵州算力激励政策</a></li>
+</ul>
+
+<h3>选址与基础设施</h3>
+<ul>
+  <li><a href="https://www.tangshan.gov.cn/zhuzhan/szfjbgswj/20230506/1524086.html" style="color: var(--accent);">唐山大数据规划</a></li>
+</ul>
+
+<h3>出口管制与跨境</h3>
+<ul>
+  <li><a href="https://introl.com/blog/bis-export-policy-h200-mi325x-china-case-by-case-2026" style="color: var(--accent);">BIS H200出口政策变化</a></li>
+  <li><a href="https://www.tomshardware.com/tech-industry/semiconductors/nvidia-prepares-h200-shipments-to-china-as-chip-war-lines-blur" style="color: var(--accent);">NVIDIA H200对华出货</a></li>
+  <li><a href="https://www.tomshardware.com/tech-industry/semiconductors/china-certifies-nine-domestic-ai-chips-for-government-procurement" style="color: var(--accent);">中国政府采购认证国产AI芯片</a></li>
+</ul>
+
+<h3>分析与评论</h3>
+<ul>
+  <li><a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/china-subsidizes-ai-computing-for-small-domestic-companies-computing-power-vouchers-spread-across-multiple-chinese-cities" style="color: var(--accent);">Tom's Hardware：算力券概览</a></li>
+  <li><a href="https://www.tomshardware.com/tech-industry/china-and-americas-ai-war-isnt-just-about-compute-its-about-energy-energy-subsidies-promote-homegrown-chip-push-amid-data-center-energy-squeeze" style="color: var(--accent);">Tom's Hardware：能源补贴</a></li>
+  <li><a href="https://www.fpri.org/article/2025/09/from-vouchers-to-visas-chinas-innovative-plan-for-ai-dominance/" style="color: var(--accent);">FPRI：从算力券到签证</a></li>
+</ul>
+
+<h3>硬件规格</h3>
+<ul>
+  <li><a href="https://support.bitmain.com/hc/en-us/articles/900000253583-S19-Specifications" style="color: var(--accent);">比特大陆Antminer S19规格</a></li>
+</ul>
+</div>
 
 <div class="draft-notice">
   <p>孙派分析。数据截至2026年5月。<a href="mailto:jason@adanomad.com">jason@adanomad.com</a></p>
