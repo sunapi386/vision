@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Mining to AI Compute — Jason Sun</title>
+<meta name="description" content="A data-forward guide to converting crypto mining infrastructure to AI compute in China.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --red-dim: rgba(248,81,73,0.12);
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --red-dim: rgba(207,34,46,0.08);
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.nav-dropdown { position: relative; }
+.nav-dropdown-toggle {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; background: none; border: none;
+  display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.nav-dropdown-toggle:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-dropdown-toggle::after {
+  content: ''; display: inline-block; width: 0; height: 0;
+  border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor; margin-top: 1px;
+}
+.nav-dropdown-menu {
+  position: absolute; top: 100%; right: 0; min-width: 140px; padding: 6px 0;
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  border-radius: 8px; box-shadow: var(--shadow); z-index: 400;
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.nav-dropdown-menu a {
+  display: block; font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none; padding: 6px 16px; transition: all 0.15s;
+}
+.nav-dropdown-menu a:hover { color: var(--text); background: var(--bg-elevated); text-decoration: none; }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(30px, 5vw, 56px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.callout-warn {
+  border-left: 3px solid var(--orange);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--orange-dim); border-radius: 0 8px 8px 0;
+}
+.callout-warn p { margin: 0; font-size: 15px; }
+
+.callout-danger {
+  border-left: 3px solid var(--red);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--red-dim); border-radius: 0 8px 8px 0;
+}
+.callout-danger p { margin: 0; font-size: 15px; }
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto; margin: 24px 0;
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.table-wrap table {
+  width: 100%; border-collapse: collapse;
+  font-size: 14px; line-height: 1.5;
+}
+.table-wrap th {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-elevated); color: var(--text-dim);
+  padding: 10px 14px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--border-strong);
+}
+.table-wrap td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+}
+.table-wrap td:first-child {
+  font-family: 'Inter Tight', sans-serif; font-weight: 500;
+  color: var(--text);
+}
+.table-wrap tr:last-child td { border-bottom: none; }
+.table-wrap tr:hover td { background: var(--bg-surface); }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
+  .nav-brand { font-size: 13px; }
+  .nav-dropdown-toggle { font-size: 12px; padding: 5px 6px; }
+  .nav-dropdown-menu { min-width: 120px; }
+  .nav-dropdown-menu a { font-size: 12px; padding: 6px 14px; }
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+  .table-wrap { font-size: 12px; }
+  .table-wrap th, .table-wrap td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">More</button>
+        <div class="nav-dropdown-menu">
+          <a href="/lessons.html">Lessons</a>
+          <a href="/research.html">Research</a>
+          <a href="/vault.html">Vault</a>
+          <a href="/china-ai.html">China AI</a>
+          <a href="/dir.html">Directory</a>
+        </div>
+      </div>
+      <a href="/compute-zh.html" class="nav-link">中文</a>
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Infrastructure analysis</div>
+  <h1 class="hero-title">From Mining to AI&nbsp;Compute</h1>
+  <p class="hero-subtitle">A China infrastructure guide: what transfers from crypto mining, what doesn't, and what the numbers actually say.</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>The Opportunity</h2>
+
+<p>Crypto mining facilities in China have three assets that matter for AI compute:</p>
+
+<ol>
+  <li><strong>Power capacity</strong> with established utility contracts at competitive rates (e.g. 0.59 CNY/kWh in Hebei)</li>
+  <li><strong>Physical infrastructure:</strong> raised floors, cooling systems, backup generators, security</li>
+  <li><strong>Operator expertise:</strong> people who know how to keep a data center running 24/7</li>
+</ol>
+
+<p>These three assets are worth more than the mining rigs themselves. The facility is the real value, not the chips inside it.</p>
+
+<h2>ASIC vs GPU: Why Miners Cannot Run AI</h2>
+
+<div class="callout-danger">
+  <p><strong>Critical fact:</strong> SHA-256 ASIC miners (e.g. Antminer S19) have no GPU, no VRAM, and no CUDA cores. They cannot run AI inference workloads. This is a hardware architecture limitation, not a software one.</p>
+</div>
+
+<p>The question is not "can the existing miners run AI?" The answer is no. The question is: "can we drop GPU servers into the existing facility and skip the buildout cost?"</p>
+
+<p><strong>What transfers:</strong> the facility, the power, the cooling, the operator's knowledge.</p>
+<p><strong>What does not transfer:</strong> the chips.</p>
+
+<h3>Existing equipment options</h3>
+
+<div class="stack-layer">
+  <div class="stack-num">A</div>
+  <div class="stack-body">
+    <h4>Keep mining (status quo)</h4>
+    <p>Continue mining as long as it covers electricity. Risk: difficulty increases, equipment degrades, 1-2 years max before unprofitable regardless.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">B</div>
+  <div class="stack-body">
+    <h4>Sell miners, buy GPUs</h4>
+    <p>Liquidate the ASIC fleet on secondary market (heavily discounted for 5+ year old hardware). Use proceeds as partial funding for GPU server purchases.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">C</div>
+  <div class="stack-body">
+    <h4>Gradual transition</h4>
+    <p>Use mining cash flow to fund GPU purchases over time. Buy 5-10 GPU servers per quarter. Self-funding, no external capital, but slow ramp.</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">D</div>
+  <div class="stack-body">
+    <h4>Hybrid floor</h4>
+    <p>Keep miners in one section, install GPU servers in another. As miners become unprofitable, swap: retiring ~2 miners (~6kW) frees enough power for 1 GPU server (~5kW).</p>
+  </div>
+</div>
+
+<h2>Marketplace Pricing: What GPUs Rent For</h2>
+
+<p>GPU compute marketplaces work like Airbnb for compute. You list your hardware, the platform finds renters. Data as of May 2026:</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>GPU</th>
+      <th>VastAI</th>
+      <th>RunPod Community</th>
+      <th>RunPod Secure</th>
+      <th>Lambda</th>
+      <th>CoreWeave</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RTX 4090</td>
+      <td>$0.29-0.40/hr</td>
+      <td>$0.34/hr</td>
+      <td>$0.44/hr</td>
+      <td>--</td>
+      <td>--</td>
+    </tr>
+    <tr>
+      <td>A100 80GB</td>
+      <td>$0.67-0.90/hr</td>
+      <td>$0.89/hr</td>
+      <td>$1.89/hr</td>
+      <td>--</td>
+      <td>--</td>
+    </tr>
+    <tr>
+      <td>H100 SXM</td>
+      <td>$1.65-2.40/hr</td>
+      <td>$2.49/hr</td>
+      <td>$3.49/hr</td>
+      <td>$2.99/hr</td>
+      <td>$6.16/hr</td>
+    </tr>
+    <tr>
+      <td>B200 SXM</td>
+      <td>~$5.98/hr</td>
+      <td>$5.98/hr</td>
+      <td>--</td>
+      <td>$6.08/hr</td>
+      <td>$8.60/hr</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Platform fees:</strong> VastAI hosts set their own price; the platform adds 10-15% on the renter side. RunPod Community pricing runs 20-30% below their secure cloud tier. A 20% platform fee is a reasonable conservative estimate.</p>
+
+<div class="callout">
+  <p><strong>Verification matters.</strong> Unverified GPUs on VastAI earn almost nothing. Verified H100 hosts at ~$2.15/hr with 70% utilization earn ~$1,100/month per GPU. Verification is critical for marketplace income.</p>
+</div>
+
+<h2>Server Economics: GPU Rental Model</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Input</th>
+      <th>H100 Server</th>
+      <th>B200 Server</th>
+      <th>Source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Marketplace rate (host receives)</td>
+      <td>$2.15/hr</td>
+      <td>$5.50/hr</td>
+      <td>VastAI verified</td>
+    </tr>
+    <tr>
+      <td>Server power draw</td>
+      <td>3.5 kW</td>
+      <td>5 kW</td>
+      <td>Typical inference</td>
+    </tr>
+    <tr>
+      <td>Electricity cost</td>
+      <td>0.59 CNY/kWh</td>
+      <td>0.59 CNY/kWh</td>
+      <td>Hebei industrial</td>
+    </tr>
+    <tr>
+      <td>Power cost per hour</td>
+      <td>$0.29</td>
+      <td>$0.41</td>
+      <td>At 7.2 CNY/USD</td>
+    </tr>
+    <tr>
+      <td>Net revenue per hour</td>
+      <td>$1.86</td>
+      <td>$5.09</td>
+      <td>Rate minus electricity</td>
+    </tr>
+    <tr>
+      <td>Net revenue per day (100%)</td>
+      <td>$44.64</td>
+      <td>$122.16</td>
+      <td>x 24 hours</td>
+    </tr>
+    <tr>
+      <td>GPU useful life</td>
+      <td>3-5 years</td>
+      <td>3-5 years</td>
+      <td>Before obsolescence</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>ROI Sensitivity: GPU Rental Payback</h2>
+
+<p>Payback period varies by three factors: utilization rate, hardware cost, and subsidy access. No marketplace achieves 100% utilization. Budget for 50-60%. VastAI verified hosts typically see 70-85%.</p>
+
+<h3>H100 Server</h3>
+<p>US price ~$30,000. China gray-market ~$45,000 (324k CNY).</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Utilization</th>
+      <th>US Price ($30k)</th>
+      <th>China ($45k)</th>
+      <th>China + 50% Subsidy ($22.5k)</th>
+      <th>China + 70% Subsidy ($13.5k)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>40%</td>
+      <td>4.6 yr</td>
+      <td>6.9 yr</td>
+      <td>3.5 yr</td>
+      <td>2.1 yr</td>
+    </tr>
+    <tr>
+      <td>60%</td>
+      <td>3.1 yr</td>
+      <td>4.6 yr</td>
+      <td>2.3 yr</td>
+      <td>1.4 yr</td>
+    </tr>
+    <tr>
+      <td>80%</td>
+      <td>2.3 yr</td>
+      <td>3.5 yr</td>
+      <td>1.7 yr</td>
+      <td>1.0 yr</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>B200 Server</h3>
+<p>US price ~$50,000. China gray-market ~$97,000 (700k CNY).</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Utilization</th>
+      <th>US Price ($50k)</th>
+      <th>China ($97k)</th>
+      <th>China + 50% Subsidy ($49k)</th>
+      <th>China + 70% Subsidy ($29k)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>40%</td>
+      <td>2.8 yr</td>
+      <td>5.5 yr</td>
+      <td>2.8 yr</td>
+      <td>1.6 yr</td>
+    </tr>
+    <tr>
+      <td>60%</td>
+      <td>1.9 yr</td>
+      <td>3.6 yr</td>
+      <td>1.8 yr</td>
+      <td>1.1 yr</td>
+    </tr>
+    <tr>
+      <td>80%</td>
+      <td>1.4 yr</td>
+      <td>2.7 yr</td>
+      <td>1.4 yr</td>
+      <td>0.8 yr</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout-warn">
+  <p><strong>Reading these tables:</strong> The realistic payback case is 1.5 to 3.5 years. B200 has better payback than H100 despite costing more, because revenue per hour scales proportionally higher. The government subsidy is the single biggest lever.</p>
+</div>
+
+<h2>Token Selling Model</h2>
+
+<p>Instead of renting bare GPU hours, you can run inference servers and sell API access priced per token. This is what Together.ai, DeepInfra, and Fireworks do.</p>
+
+<p>Think of it this way: <strong>selling GPU hours</strong> is renting out an empty room. <strong>Selling tokens</strong> is renting out a furnished apartment.</p>
+
+<h3>Token market prices (per million tokens)</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Model Size</th>
+      <th>Provider</th>
+      <th>Input $/M</th>
+      <th>Output $/M</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>8-20B (small)</td>
+      <td>DeepInfra</td>
+      <td>$0.05</td>
+      <td>$0.20</td>
+    </tr>
+    <tr>
+      <td>70B (medium)</td>
+      <td>DeepInfra</td>
+      <td>$0.12</td>
+      <td>$0.30</td>
+    </tr>
+    <tr>
+      <td>70B (medium)</td>
+      <td>Together.ai</td>
+      <td>$0.15</td>
+      <td>$0.60</td>
+    </tr>
+    <tr>
+      <td>400B+ (large)</td>
+      <td>Together.ai</td>
+      <td>$0.50</td>
+      <td>$3.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Token economics: worked examples</h3>
+
+<p><strong>Small model (8B) on 1x H100, own facility (electricity only):</strong></p>
+
+<pre><code>Tokens/month:     12,500 tok/s x 3,600 x 0.70 x 730 = ~23B tokens
+Electricity/month: 3.5kW x 730hr x 0.59 CNY = 1,506 CNY ($209)
+Revenue at $0.20/M output: 23,000M x $0.20 = $4,600/month
+Gross margin: 95%+ (electricity is nearly free at Chinese rates)</code></pre>
+
+<p><strong>Large model (70B) on 1x H100, own facility:</strong></p>
+
+<pre><code>Tokens/month:     400 tok/s x 3,600 x 0.70 x 730 = ~736M tokens
+Electricity/month: $209 (same)
+Revenue at $0.30/M output: 736M x $0.30 = $221/month
+Gross margin: still positive but tiny volume</code></pre>
+
+<div class="callout">
+  <p><strong>Key insight:</strong> Token selling with your own hardware is profitable at any model size because marginal cost is just electricity (~$209/month). The question is volume and demand. Small models (8B) produce far more tokens per GPU-hour and generate higher total revenue.</p>
+</div>
+
+<h3>Token selling payback</h3>
+
+<p>Assuming 1x H100 running a small model (8B), ~$4,600/month revenue, ~$209/month electricity:</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Purchase Cost</th>
+      <th>Monthly Net Profit</th>
+      <th>Payback</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>US price $30k</td>
+      <td>~$4,391</td>
+      <td>6.8 months</td>
+    </tr>
+    <tr>
+      <td>China $45k</td>
+      <td>~$4,391</td>
+      <td>10.2 months</td>
+    </tr>
+    <tr>
+      <td>China + 50% subsidy $22.5k</td>
+      <td>~$4,391</td>
+      <td>5.1 months</td>
+    </tr>
+    <tr>
+      <td>China + 70% subsidy $13.5k</td>
+      <td>~$4,391</td>
+      <td>3.1 months</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Token selling has faster payback than GPU rental, but requires technical ability to deploy inference services and a customer base to sell to.</p>
+
+<h3>GPU rental vs token selling comparison</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Factor</th>
+      <th>GPU Rental (VastAI)</th>
+      <th>Token Selling (small model)</th>
+      <th>Token Selling (large model)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Revenue predictability</td>
+      <td>Medium</td>
+      <td>High</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>Gross margin (own HW)</td>
+      <td>70-85%</td>
+      <td>90-95%</td>
+      <td>50-70%</td>
+    </tr>
+    <tr>
+      <td>Operational complexity</td>
+      <td>Low</td>
+      <td>High</td>
+      <td>Very high</td>
+    </tr>
+    <tr>
+      <td>Customer acquisition</td>
+      <td>Marketplace</td>
+      <td>You find them</td>
+      <td>You find them</td>
+    </tr>
+    <tr>
+      <td>Best for</td>
+      <td>Passive income</td>
+      <td>High volume APIs</td>
+      <td>Private deploys</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Investment Options</h2>
+
+<div class="actor-card">
+  <h4>Option 1: Facility-Only Play (Lowest Risk)</h4>
+  <p>Lease the facility (power, cooling, space) to an AI compute company. Operator provides infrastructure; tenant provides GPU servers.</p>
+  <p><strong>Investment:</strong> Near zero (facility already exists)</p>
+  <p><strong>Revenue:</strong> Hosting fees, typically 0.1-0.3 CNY/kWh markup on power + space rental</p>
+  <p><strong>Payback:</strong> Immediate (no hardware purchase)</p>
+  <p><strong>Risk:</strong> Low. No GPU depreciation. Revenue is modest but predictable. This is a traditional colocation model.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Option 2: Small Test (10 Servers, Subsidy-Dependent)</h4>
+  <p>Purchase 10 GPU servers. List on VastAI or similar marketplace. Test utilization rates for 3-6 months before scaling.</p>
+  <p><strong>Investment:</strong> 2.1M-3.5M CNY before subsidy, 1.05M-1.75M CNY after 50% subsidy</p>
+  <p><strong>Annual revenue (60% util):</strong> ~$273,000 (1.97M CNY) via GPU rental, or ~$552,000 (3.97M CNY) via token selling</p>
+  <p><strong>Payback at 50% subsidy:</strong> ~1.8 years (GPU rental) or ~11 months (token selling)</p>
+  <p><strong>Risk:</strong> Medium. GPU depreciation is real (3-5 year useful life). Utilization below 40% extends payback beyond GPU lifespan.</p>
+  <p><strong>Key prerequisite:</strong> Verify subsidy eligibility before purchasing.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Option 3: Full Pivot (100 Servers, Marketplace Scale)</h4>
+  <p>Convert the entire facility to GPU compute. Requires significant capital but achieves marketplace-relevant scale.</p>
+  <p><strong>Investment:</strong> 21M-35M CNY before subsidy</p>
+  <p><strong>Annual revenue (60% util):</strong> ~$2.73M (19.7M CNY) via GPU rental</p>
+  <p><strong>Payback at 50% subsidy:</strong> ~1.8 years</p>
+  <p><strong>Risk:</strong> High. Large capital outlay, GPU obsolescence risk, utilization depends on marketplace demand. At this scale, direct enterprise contracts (not marketplace) may offer better rates and utilization guarantees.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Option 4: Workflow Delivery (Highest Margin, Most Complex)</h4>
+  <p>Instead of renting bare GPU hours, sell AI inference services (completed workloads, not raw compute). The margin on workflow delivery is 10-100x over commodity GPU rental.</p>
+  <p><strong>Investment:</strong> Hardware + software platform development</p>
+  <p><strong>Revenue per unit:</strong> Much higher (selling results, not hours)</p>
+  <p><strong>Payback:</strong> Potentially under 1 year, but requires software capability</p>
+  <p><strong>Risk:</strong> Highest complexity. Requires AI platform expertise to build and maintain the inference stack.</p>
+</div>
+
+<div class="actor-card">
+  <h4>Option 5: Token Router (Asset-Light Middleman)</h4>
+  <p>Instead of running AI yourself, operate as a compute intermediary. Buyers purchase tokens through your platform; you source compute from multiple GPU suppliers and take a margin.</p>
+  <p><strong>Investment:</strong> Platform development costs only. No GPU hardware purchase required.</p>
+  <p><strong>Revenue:</strong> 10-20% commission on each transaction</p>
+  <p><strong>Payback:</strong> Depends on transaction volume</p>
+  <p><strong>Risk:</strong> Low hardware risk (no GPU depreciation). Market risk depends on ability to aggregate demand. This is the model companies like inference.ai operate.</p>
+</div>
+
+<h2>Subsidy Reality Check</h2>
+
+<div class="callout-danger">
+  <p><strong>The 50-70% hardware subsidy does not exist.</strong> What exists at those percentages are compute SERVICE rental vouchers (算力券), not hardware purchase subsidies. This is a critical distinction.</p>
+</div>
+
+<h3>What actually exists: compute service vouchers (50-60%)</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>City</th>
+      <th>Subsidy Rate</th>
+      <th>Annual Cap</th>
+      <th>Conditions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Shenzhen</td>
+      <td>50% (60% for startups)</td>
+      <td>10M CNY</td>
+      <td>Must be registered in Shenzhen</td>
+    </tr>
+    <tr>
+      <td>Chengdu</td>
+      <td>50% domestic / 30% non-domestic</td>
+      <td>5M CNY</td>
+      <td>Favors domestic chips</td>
+    </tr>
+    <tr>
+      <td>Shijiazhuang</td>
+      <td>50%</td>
+      <td>1M CNY</td>
+      <td>SMEs, trial until June 2026</td>
+    </tr>
+    <tr>
+      <td>Beijing E-Town</td>
+      <td>Up to 50%</td>
+      <td>30M CNY</td>
+      <td>Tiered by company size</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Sources: <a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">Shenzhen policy</a>, <a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">Shijiazhuang plan</a></p>
+
+<h3>Hardware purchase subsidies: only ~10% where they exist</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Region</th>
+      <th>Subsidy Rate</th>
+      <th>Cap</th>
+      <th>Conditions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Beijing E-Town</td>
+      <td>10%</td>
+      <td>10M CNY</td>
+      <td>Domestic AI chips ONLY (Huawei Ascend, Cambricon)</td>
+    </tr>
+    <tr>
+      <td>Guizhou</td>
+      <td>10%</td>
+      <td>2M CNY</td>
+      <td>Must connect to provincial dispatch platform</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout-warn">
+  <p><strong>NVIDIA chips and Chinese subsidies are mutually exclusive.</strong> Most subsidy programs require or strongly favor domestic chips. Electricity subsidies in Gansu, Guizhou, and Inner Mongolia (up to 50% off power rates) explicitly exclude data centers using foreign chips.</p>
+</div>
+
+<h3>Impact on ROI tables</h3>
+
+<p>The "50% subsidy" and "70% subsidy" columns in the payback tables above should be read as <strong>hypothetical best-case scenarios</strong>, not as currently available programs. The realistic hardware cost is the full China gray-market price (e.g. 700k CNY for B200) unless subsidy eligibility can be confirmed through a domestic chip pathway.</p>
+
+<p>Sources: <a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html" style="color: var(--accent);">Hebei AI+ Action Plan</a>, <a href="https://www.gov.cn/zhengce/zhengceku/202401/content_6924596.htm" style="color: var(--accent);">NDRC East Data West Computing</a></p>
+
+<h2>Locations</h2>
+
+<h3>Tangshan (Hebei)</h3>
+
+<p>Example facility city. Advantages: existing mining infrastructure, 0.59 CNY/kWh industrial power, proximity to Beijing (90 min by rail). Limitations: not a designated East Data West Computing hub, no verified AI-specific subsidy program. Available incentives are general high-tech enterprise tax benefits (15% corporate rate vs 25%) and potential for ad-hoc negotiations with local government for significant investments.</p>
+
+<h3>East Data West Computing hubs (东数西算)</h3>
+
+<p>China's national framework routes compute demand from eastern population centers to western regions with cheaper power. The designated hub regions and their advantages:</p>
+
+<ul>
+  <li><strong>Guizhou:</strong> Hydropower, cool climate, Apple/Huawei data centers already present. 10% hardware subsidy available (domestic chips). Power rates as low as 0.30-0.35 CNY/kWh.</li>
+  <li><strong>Inner Mongolia:</strong> Wind + solar, extremely cheap land. Well-connected to Beijing via fiber. Power rates 0.26-0.35 CNY/kWh for qualifying facilities.</li>
+  <li><strong>Gansu:</strong> Abundant renewable energy, government actively recruiting. Electricity subsidies up to 50%, but foreign chip exclusion applies.</li>
+  <li><strong>Ningxia:</strong> Similar renewable profile to Gansu, designated national hub. Zhongwei is a major data center cluster.</li>
+</ul>
+
+<h3>Taizhou (Zhejiang)</h3>
+
+<p>Coastal alternative with different advantages: proximity to Shanghai's AI ecosystem, Zhejiang's strong tech policy environment, established manufacturing base. Power costs are higher (~0.70+ CNY/kWh) but latency to major markets is lower.</p>
+
+<div class="callout">
+  <p><strong>Location choice depends on the business model.</strong> For marketplace GPU rental (latency-tolerant workloads like training and batch inference), western hubs with cheap power win. For real-time inference serving east-coast customers, proximity matters more than power cost.</p>
+</div>
+
+<h2>Cross-Border Considerations</h2>
+
+<p>Can China-based GPU farms sell compute internationally? This is the highest-value scenario, since international rates ($2-8/hr per GPU) far exceed domestic Chinese rates. But several factors limit it.</p>
+
+<h3>Technical constraints</h3>
+
+<ul>
+  <li><strong>Latency:</strong> China-to-US round-trip latency is typically 150-250ms. This is acceptable for training and batch inference but problematic for real-time applications. China-to-Southeast Asia is 30-80ms, a more viable market for real-time serving.</li>
+  <li><strong>Great Firewall:</strong> International bandwidth is throttled and subject to deep packet inspection. VPN tunnels add overhead and introduce compliance risk. Dedicated cross-border lines (CN2, IPLC) are expensive and require telecom carrier agreements.</li>
+  <li><strong>Bandwidth cost:</strong> International bandwidth from China is 5-10x the cost of domestic bandwidth. High-throughput workloads (large model weights, training data transfers) become expensive.</li>
+</ul>
+
+<h3>Legal and regulatory</h3>
+
+<ul>
+  <li><strong>Hardware provenance:</strong> H100/B200 GPUs are US export-controlled to China. Gray-market acquisition is how they arrive. Advertising these GPUs on international marketplaces creates visibility into the supply chain that operators may want to avoid.</li>
+  <li><strong>Data sovereignty:</strong> China's data localization laws (PIPL, Data Security Law) restrict certain categories of data from leaving the country. International customers sending data to China-based GPUs may face compliance issues in their own jurisdictions.</li>
+  <li><strong>Platform policies:</strong> VastAI and RunPod do accept hosts globally, but verification and trust scores are harder to achieve from China-based facilities due to network reliability concerns.</li>
+</ul>
+
+<div class="callout-warn">
+  <p><strong>Realistic assessment:</strong> Cross-border GPU rental from China is technically possible but operationally complex. The strongest use cases are serving the domestic Chinese market, Southeast Asian customers with low-latency requirements, or operating as a Chinese-market-focused node in a global compute network.</p>
+</div>
+
+<h2>What Not to Do</h2>
+
+<ol>
+  <li><strong>Do not assume 100% utilization.</strong> No marketplace achieves this. Budget for 50-60%.</li>
+  <li><strong>Do not buy hardware before confirming subsidy eligibility.</strong> The subsidy is the difference between a 1.8-year and 3.6-year payback.</li>
+  <li><strong>Do not assume ASIC miners can run AI.</strong> They cannot. The facility is the asset, not the chips.</li>
+  <li><strong>Do not ignore GPU depreciation.</strong> A 3-year payback on hardware that becomes obsolete in 4 years means only 1 year of profit before the cycle repeats.</li>
+  <li><strong>Do not use a single number for ROI.</strong> Payback depends on utilization, subsidy, and purchase price. Use the sensitivity tables, not a single estimate.</li>
+</ol>
+
+<h2>Recommended Next Steps</h2>
+
+<ol>
+  <li><strong>Verify current mining profitability.</strong> Is the facility cash-flow positive after electricity? If not, the pivot decision is already made.</li>
+  <li><strong>Investigate provincial AI compute subsidy policies.</strong> Application process, eligibility criteria, domestic chip requirements.</li>
+  <li><strong>Register on VastAI</strong> to understand verification requirements and current utilization data for the target GPU tier.</li>
+  <li><strong>Get a real quote</strong> on B200 or equivalent GPU servers through Chinese channels, including subsidy-eligible pricing for domestic alternatives (Huawei Ascend).</li>
+  <li><strong>Start with Option 1 or a minimal Option 2</strong> (2-3 servers) to validate utilization rates before committing significant capital.</li>
+  <li><strong>Reassess in 3 months</strong> based on test utilization data.</li>
+</ol>
+
+</article>
+
+<div class="draft-notice">
+  <p>Analysis by Jason Sun. Data as of May 2026. <a href="mailto:jason@adanomad.com">jason@adanomad.com</a></p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 Jason Sun</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'compute', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>

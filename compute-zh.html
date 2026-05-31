@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从挖矿到AI算力 — 孙派</title>
+<meta name="description" content="中国矿场转型AI算力的完整分析：设备、市场、补贴、回本周期。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans+SC:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --red-dim: rgba(248,81,73,0.12);
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --red-dim: rgba(207,34,46,0.08);
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Noto Sans SC', 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.nav-dropdown { position: relative; }
+.nav-dropdown-toggle {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; background: none; border: none;
+  display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.nav-dropdown-toggle:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-dropdown-toggle::after {
+  content: ''; display: inline-block; width: 0; height: 0;
+  border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor; margin-top: 1px;
+}
+.nav-dropdown-menu {
+  position: absolute; top: 100%; right: 0; min-width: 140px; padding: 6px 0;
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  border-radius: 8px; box-shadow: var(--shadow); z-index: 400;
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.nav-dropdown-menu a {
+  display: block; font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none; padding: 6px 16px; transition: all 0.15s;
+}
+.nav-dropdown-menu a:hover { color: var(--text); background: var(--bg-elevated); text-decoration: none; }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Noto Sans SC', 'Inter Tight', sans-serif;
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 800; line-height: 1.2; letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Noto Sans SC', 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.callout-warn {
+  border-left: 3px solid var(--orange);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--orange-dim); border-radius: 0 8px 8px 0;
+}
+.callout-warn p { margin: 0; font-size: 15px; }
+
+.callout-danger {
+  border-left: 3px solid var(--red);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--red-dim); border-radius: 0 8px 8px 0;
+}
+.callout-danger p { margin: 0; font-size: 15px; }
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto; margin: 24px 0;
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.table-wrap table {
+  width: 100%; border-collapse: collapse;
+  font-size: 14px; line-height: 1.5;
+}
+.table-wrap th {
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  font-size: 12px; font-weight: 600;
+  background: var(--bg-elevated); color: var(--text-dim);
+  padding: 10px 14px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--border-strong);
+}
+.table-wrap td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+}
+.table-wrap td:first-child {
+  font-family: 'Noto Sans SC', 'Inter Tight', sans-serif; font-weight: 500;
+  color: var(--text);
+}
+.table-wrap tr:last-child td { border-bottom: none; }
+.table-wrap tr:hover td { background: var(--bg-surface); }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
+  .nav-brand { font-size: 13px; }
+  .nav-dropdown-toggle { font-size: 12px; padding: 5px 6px; }
+  .nav-dropdown-menu { min-width: 120px; }
+  .nav-dropdown-menu a { font-size: 12px; padding: 6px 14px; }
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+  .table-wrap { font-size: 12px; }
+  .table-wrap th, .table-wrap td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book-zh.html" class="nav-link">书</a>
+      <a href="/" class="nav-link">文章</a>
+      <a href="/#about" class="nav-link">关于</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">更多</button>
+        <div class="nav-dropdown-menu">
+          <a href="/lessons-zh.html">经验</a>
+          <a href="/research-zh.html">研究</a>
+          <a href="/vault-zh.html">时间胶囊</a>
+          <a href="/china-ai.html">中国AI</a>
+          <a href="/dir.html">目录</a>
+        </div>
+      </div>
+      <a href="/compute.html" class="nav-link">EN</a>
+      <button class="nav-theme" id="themeToggle" title="切换主题">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">基础设施分析</div>
+  <h1 class="hero-title">从挖矿到AI算力</h1>
+  <p class="hero-subtitle">中国基础设施指南：矿场哪些资产可以转用、哪些不能，以及真实的回本数据。</p>
+</div>
+
+<article class="article" id="article">
+
+<h2>核心结论</h2>
+
+<p>"8年回本"是算错了。但"不到1年回本"也不对。</p>
+
+<p><strong>实际回本时间：1.5到3.5年</strong>，取决于三个因素：</p>
+
+<ol>
+  <li><strong>机器利用率</strong>（别人租不租你的机器）</li>
+  <li><strong>能不能拿到政府补贴</strong></li>
+  <li><strong>买机器的价格</strong>（美国价 vs 国内灰市价）</li>
+</ol>
+
+<h2>机会在哪里</h2>
+
+<p>现有矿场有三个对AI算力有价值的资产：</p>
+
+<ol>
+  <li><strong>电力容量</strong>，已有稳定的供电合同（如河北0.59元/度）</li>
+  <li><strong>物理基础设施：</strong>架空地板、冷却系统、备用发电机、安保</li>
+  <li><strong>运维经验：</strong>懂得如何让数据中心7x24小时运转的人</li>
+</ol>
+
+<p>这三个资产比矿机本身更有价值。厂房才是真正的资产，不是里面的芯片。</p>
+
+<h2>矿机不能跑AI</h2>
+
+<div class="callout-danger">
+  <p><strong>关键事实：</strong>S19矿机是SHA-256专用芯片(ASIC)，没有GPU，没有显存，没有CUDA核心，不能跑AI推理。这是硬件架构的限制，不是软件问题。</p>
+</div>
+
+<p>问题不是"现有矿机能不能跑AI？"答案是不能。问题是："能不能把GPU服务器放进现有厂房，省掉建设成本？"</p>
+
+<p><strong>能用的资产：</strong>厂房、电力、冷却系统、运维经验</p>
+<p><strong>不能用的资产：</strong>矿机芯片本身</p>
+
+<h3>现有设备的四个选择</h3>
+
+<div class="stack-layer">
+  <div class="stack-num">A</div>
+  <div class="stack-body">
+    <h4>继续挖矿（维持现状）</h4>
+    <p>只要电费还能覆盖就继续。风险：难度在涨，设备老化，最多再挖1-2年。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">B</div>
+  <div class="stack-body">
+    <h4>卖掉矿机换GPU</h4>
+    <p>在二手市场清仓ASIC矿机（5年以上设备折价严重）。所得用作购买GPU服务器的首付。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">C</div>
+  <div class="stack-body">
+    <h4>逐步过渡</h4>
+    <p>用挖矿收入逐步购买GPU服务器，每季度买5-10台。自筹资金，无需外部融资，但增速较慢。</p>
+  </div>
+</div>
+
+<div class="stack-layer">
+  <div class="stack-num">D</div>
+  <div class="stack-body">
+    <h4>混合运营</h4>
+    <p>一边继续挖矿，一边在空余位置装GPU。每退2台矿机(~6kW)，空出来的电够装1台GPU服务器(~5kW)。</p>
+  </div>
+</div>
+
+<h2>GPU算力市场和价格</h2>
+
+<p>GPU算力市场平台的工作方式类似"算力版Airbnb"。你把硬件挂上去，平台给你找租户。2026年5月数据：</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>GPU型号</th>
+      <th>VastAI</th>
+      <th>RunPod社区</th>
+      <th>RunPod安全</th>
+      <th>Lambda</th>
+      <th>CoreWeave</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RTX 4090</td>
+      <td>$0.29-0.40/时</td>
+      <td>$0.34/时</td>
+      <td>$0.44/时</td>
+      <td>--</td>
+      <td>--</td>
+    </tr>
+    <tr>
+      <td>A100 80GB</td>
+      <td>$0.67-0.90/时</td>
+      <td>$0.89/时</td>
+      <td>$1.89/时</td>
+      <td>--</td>
+      <td>--</td>
+    </tr>
+    <tr>
+      <td>H100 SXM</td>
+      <td>$1.65-2.40/时</td>
+      <td>$2.49/时</td>
+      <td>$3.49/时</td>
+      <td>$2.99/时</td>
+      <td>$6.16/时</td>
+    </tr>
+    <tr>
+      <td>B200 SXM</td>
+      <td>~$5.98/时</td>
+      <td>$5.98/时</td>
+      <td>--</td>
+      <td>$6.08/时</td>
+      <td>$8.60/时</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>平台费用：</strong>VastAI由卖家定价，平台在买家那边加10-15%。RunPod社区价比安全云低20-30%。按20%平台费估算比较保守合理。</p>
+
+<div class="callout">
+  <p><strong>认证很重要。</strong>VastAI上未认证的GPU几乎没人租。认证过的H100按~$2.15/时、70%利用率算，每月每GPU可赚~$1,100。认证是市场收入的前提。</p>
+</div>
+
+<h2>服务器经济账：GPU出租模式</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>项目</th>
+      <th>H100服务器</th>
+      <th>B200服务器</th>
+      <th>来源</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>市场价（卖家到手）</td>
+      <td>$2.15/时</td>
+      <td>$5.50/时</td>
+      <td>VastAI认证价</td>
+    </tr>
+    <tr>
+      <td>服务器功耗</td>
+      <td>3.5 kW</td>
+      <td>5 kW</td>
+      <td>推理服务器典型值</td>
+    </tr>
+    <tr>
+      <td>电费</td>
+      <td>0.59元/度</td>
+      <td>0.59元/度</td>
+      <td>河北工业电价</td>
+    </tr>
+    <tr>
+      <td>每小时电费</td>
+      <td>$0.29</td>
+      <td>$0.41</td>
+      <td>按7.2 CNY/USD</td>
+    </tr>
+    <tr>
+      <td>每小时净收入</td>
+      <td>$1.86</td>
+      <td>$5.09</td>
+      <td>市场价减电费</td>
+    </tr>
+    <tr>
+      <td>每日净收入(100%利用率)</td>
+      <td>$44.64</td>
+      <td>$122.16</td>
+      <td>x 24小时</td>
+    </tr>
+    <tr>
+      <td>GPU使用寿命</td>
+      <td>3-5年</td>
+      <td>3-5年</td>
+      <td>淘汰前</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>回本周期：完整测算</h2>
+
+<p>回本时间取决于三个变量：利用率、硬件成本、补贴。没有哪个平台能做到100%利用率。按50-60%算比较靠谱。VastAI认证卖家通常做到70-85%。</p>
+
+<h3>H100服务器</h3>
+<p>美国价~$30,000，国内灰市~$45,000（32.4万元）</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>利用率</th>
+      <th>美国价($30k)</th>
+      <th>国内($45k)</th>
+      <th>补贴50%($22.5k)</th>
+      <th>补贴70%($13.5k)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>40%</td>
+      <td>4.6年</td>
+      <td>6.9年</td>
+      <td>3.5年</td>
+      <td>2.1年</td>
+    </tr>
+    <tr>
+      <td>60%</td>
+      <td>3.1年</td>
+      <td>4.6年</td>
+      <td>2.3年</td>
+      <td>1.4年</td>
+    </tr>
+    <tr>
+      <td>80%</td>
+      <td>2.3年</td>
+      <td>3.5年</td>
+      <td>1.7年</td>
+      <td>1.0年</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>B200服务器</h3>
+<p>美国价~$50,000，国内灰市~$97,000（70万元）</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>利用率</th>
+      <th>美国价($50k)</th>
+      <th>国内灰市(70万)</th>
+      <th>补贴50%(35万)</th>
+      <th>补贴70%(21万)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>40%</td>
+      <td>2.8年</td>
+      <td>5.5年</td>
+      <td>2.8年</td>
+      <td>1.6年</td>
+    </tr>
+    <tr>
+      <td>60%</td>
+      <td>1.9年</td>
+      <td>3.6年</td>
+      <td>1.8年</td>
+      <td>1.1年</td>
+    </tr>
+    <tr>
+      <td>80%</td>
+      <td>1.4年</td>
+      <td>2.7年</td>
+      <td>1.4年</td>
+      <td>0.8年</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout-warn">
+  <p><strong>怎么看这些表：</strong>现实回本周期在1.5到3.5年。B200虽然贵，但回本比H100快，因为每小时收入比例更高。政府补贴是最大的杠杆。</p>
+</div>
+
+<h2>Token（令牌）销售模式</h2>
+
+<p>除了出租裸GPU时间，还可以运行推理服务器，按Token（AI处理的最小单位）计费出售API访问。这是Together.ai、DeepInfra、Fireworks的模式。</p>
+
+<p>打个比方：<strong>卖GPU时间</strong> = 出租毛坯房，<strong>卖Token</strong> = 出租精装房。</p>
+
+<h3>Token市场价格（每百万个Token）</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>模型大小</th>
+      <th>平台</th>
+      <th>输入 $/M</th>
+      <th>输出 $/M</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>小模型（80亿参数）</td>
+      <td>DeepInfra</td>
+      <td>$0.05</td>
+      <td>$0.20</td>
+    </tr>
+    <tr>
+      <td>中模型（700亿参数）</td>
+      <td>DeepInfra</td>
+      <td>$0.12</td>
+      <td>$0.30</td>
+    </tr>
+    <tr>
+      <td>中模型（700亿参数）</td>
+      <td>Together.ai</td>
+      <td>$0.15</td>
+      <td>$0.60</td>
+    </tr>
+    <tr>
+      <td>大模型（4000亿+参数）</td>
+      <td>Together.ai</td>
+      <td>$0.50</td>
+      <td>$3.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Token经济账：实际计算</h3>
+
+<p><strong>小模型(8B)，1台H100，自有厂房（只算电费）：</strong></p>
+
+<pre><code>月产Token数:    12,500 tok/s x 3,600 x 0.70 x 730 = ~230亿个
+月电费:          3.5kW x 730小时 x 0.59元 = 1,506元 ($209)
+月收入（按$0.20/百万Token）: 23,000M x $0.20 = $4,600 (~33,000元)
+毛利率:          95%以上（边际成本就是电费）</code></pre>
+
+<p><strong>大模型(70B)，1台H100，自有厂房：</strong></p>
+
+<pre><code>月产Token数:    400 tok/s x 3,600 x 0.70 x 730 = ~7.4亿个
+月电费:          同上 1,506元
+月收入（按$0.30/百万Token）: 736M x $0.30 = $221 (~1,590元)
+结论:            赚得少，因为大模型吃算力，产出慢</code></pre>
+
+<div class="callout">
+  <p><strong>核心发现：</strong>自己有机器的话，卖Token比卖GPU时间赚得多。因为边际成本就是电费（在中国才1500元/月），而小模型(8B)卖Token月收入可达3-5万元/台。但前提是要会部署推理服务，还要有客户。</p>
+</div>
+
+<h3>Token销售回本周期</h3>
+
+<p>假设1台H100跑小模型(8B)，月收入~$4,600，月电费~$209：</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>购入成本</th>
+      <th>月净利润</th>
+      <th>回本时间</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>美国价 $30k</td>
+      <td>~$4,391</td>
+      <td>6.8个月</td>
+    </tr>
+    <tr>
+      <td>国内灰市 $45k</td>
+      <td>~$4,391</td>
+      <td>10.2个月</td>
+    </tr>
+    <tr>
+      <td>补贴50% $22.5k</td>
+      <td>~$4,391</td>
+      <td>5.1个月</td>
+    </tr>
+    <tr>
+      <td>补贴70% $13.5k</td>
+      <td>~$4,391</td>
+      <td>3.1个月</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>卖Token回本更快，但需要技术能力部署推理服务，还需要客户基础。</p>
+
+<h3>GPU出租 vs Token销售对比</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>因素</th>
+      <th>GPU出租（VastAI）</th>
+      <th>Token销售（小模型）</th>
+      <th>Token销售（大模型）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>收入可预测性</td>
+      <td>中</td>
+      <td>高</td>
+      <td>高</td>
+    </tr>
+    <tr>
+      <td>毛利率（自有设备）</td>
+      <td>70-85%</td>
+      <td>90-95%</td>
+      <td>50-70%</td>
+    </tr>
+    <tr>
+      <td>运营复杂度</td>
+      <td>低</td>
+      <td>高</td>
+      <td>很高</td>
+    </tr>
+    <tr>
+      <td>获客方式</td>
+      <td>平台自带</td>
+      <td>自己找</td>
+      <td>自己找</td>
+    </tr>
+    <tr>
+      <td>适合</td>
+      <td>被动收入</td>
+      <td>高流量API</td>
+      <td>私有化部署</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>五个投资方案</h2>
+
+<div class="actor-card">
+  <h4>方案一：只出租厂房（最低风险）</h4>
+  <p>把厂房（电力+冷却+空间）租给AI算力公司。你当房东，租户自己带GPU服务器。</p>
+  <p><strong>投入：</strong>基本为零（厂房已有）</p>
+  <p><strong>收入：</strong>电费差价 + 空间租金，每月几万到十几万</p>
+  <p><strong>回本：</strong>立即（没有硬件投入）</p>
+  <p><strong>风险：</strong>极低。不承担GPU贬值风险。收入不高但稳定可预期。传统托管模式。</p>
+</div>
+
+<div class="actor-card">
+  <h4>方案二：小规模测试（10台GPU服务器）</h4>
+  <p>买10台GPU服务器，挂VastAI等平台，测试3-6个月看利用率再决定是否扩大。</p>
+  <p><strong>投入：</strong>210万-350万元（补贴前），105万-175万元（50%补贴后）</p>
+  <p><strong>年收入(60%利用率)：</strong>~197万元（GPU出租）或~397万元（Token销售）</p>
+  <p><strong>回本(50%补贴)：</strong>~1.8年（GPU出租）或~11个月（Token销售）</p>
+  <p><strong>风险：</strong>中等。GPU有3-5年使用寿命，利用率低于40%回本期会超过设备寿命。</p>
+  <p><strong>关键前提：</strong>先确认补贴资格再买。</p>
+</div>
+
+<div class="actor-card">
+  <h4>方案三：全面转型（100台服务器）</h4>
+  <p>整个厂房转型为GPU算力中心。需要大量资金，但能达到有市场意义的规模。</p>
+  <p><strong>投入：</strong>2100万-3500万元（补贴前）</p>
+  <p><strong>年收入(60%利用率)：</strong>~1970万元（GPU出租）</p>
+  <p><strong>回本(50%补贴)：</strong>~1.8年</p>
+  <p><strong>风险：</strong>高。资金量大，GPU有贬值风险，利用率取决于市场需求。这个规模可以直接对接企业客户，不走平台，价格和利用率保障更好。</p>
+</div>
+
+<div class="actor-card">
+  <h4>方案四：卖AI服务（最高利润，最复杂）</h4>
+  <p>不卖裸算力，卖完整的AI推理服务（卖结果，不卖小时）。利润是裸算力出租的10-100倍。</p>
+  <p><strong>投入：</strong>硬件 + 软件平台开发</p>
+  <p><strong>单位利润：</strong>远高于裸算力</p>
+  <p><strong>回本：</strong>可能不到1年，但需要软件能力</p>
+  <p><strong>风险：</strong>复杂度最高。需要AI平台开发和维护能力。</p>
+</div>
+
+<div class="actor-card">
+  <h4>方案五：Token路由器（轻资产中间商）</h4>
+  <p>不自己跑AI，做算力中介。买家通过你的平台购买Token，你从不同GPU供应商采购算力，赚差价。</p>
+  <p><strong>投入：</strong>平台开发费用，不需要买GPU</p>
+  <p><strong>收入：</strong>每笔交易抽成10-20%</p>
+  <p><strong>回本：</strong>取决于交易量</p>
+  <p><strong>风险：</strong>硬件风险低（不承担GPU贬值）。市场风险取决于聚合需求的能力。inference.ai就是这个模式。</p>
+</div>
+
+<h2>补贴真实情况（重要纠正）</h2>
+
+<div class="callout-danger">
+  <p><strong>50-70%的硬件补贴不存在。</strong>这个数字说的是算力服务租用券（算力券），不是买设备的补贴。区别很大：算力券 = 你租别人的GPU，政府补贴你租金的50%。硬件补贴 = 你买GPU服务器，政府补贴你购买价的10%。</p>
+</div>
+
+<h3>算力服务租用券（50-60%）</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>城市</th>
+      <th>补贴比例</th>
+      <th>每年上限</th>
+      <th>条件</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>深圳</td>
+      <td>50%（初创企业60%）</td>
+      <td>1000万元</td>
+      <td>需注册在深圳</td>
+    </tr>
+    <tr>
+      <td>成都</td>
+      <td>国产算力50%/非国产30%</td>
+      <td>500万元</td>
+      <td>明确偏向国产芯片</td>
+    </tr>
+    <tr>
+      <td>石家庄</td>
+      <td>50%</td>
+      <td>100万元</td>
+      <td>中小企业，试行到2026年6月</td>
+    </tr>
+    <tr>
+      <td>北京经开区</td>
+      <td>最高50%</td>
+      <td>3000万元</td>
+      <td>分档</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>来源：<a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">深圳政策</a>，<a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">石家庄方案</a></p>
+
+<h3>硬件购买补贴（只有~10%）</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>地区</th>
+      <th>补贴比例</th>
+      <th>上限</th>
+      <th>条件</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>北京经开区</td>
+      <td>10%</td>
+      <td>1000万元</td>
+      <td>必须用国产AI芯片（华为昇腾、寒武纪）</td>
+    </tr>
+    <tr>
+      <td>贵州</td>
+      <td>10%</td>
+      <td>200万元</td>
+      <td>需接入省级调度平台</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout-warn">
+  <p><strong>NVIDIA芯片和中国补贴基本互斥。</strong>大多数补贴项目要求或强烈偏向国产芯片。甘肃、贵州、内蒙古的电费补贴（最高50%减免）明确排除使用外国芯片的数据中心。</p>
+</div>
+
+<h3>对回本测算的影响</h3>
+
+<p>前面表格中"补贴50%"和"补贴70%"的列应该理解为<strong>理论最佳情况</strong>，不是现有政策。实际硬件成本是国内灰市全价（B200约70万元），除非走国产芯片路线并确认补贴资格。</p>
+
+<p>来源：<a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html" style="color: var(--accent);">河北AI+行动方案</a>，<a href="https://www.gov.cn/zhengce/zhengceku/202401/content_6924596.htm" style="color: var(--accent);">国家发改委东数西算</a></p>
+
+<h2>选址分析</h2>
+
+<h3>唐山（河北）</h3>
+
+<p>示例城市。优势：已有矿场基础设施、0.59元/度工业电价、距北京90分钟高铁。局限：不是东数西算指定枢纽，没有查到AI专项补贴。可用的政策是一般性高新企业税收优惠（15%企业税率 vs 25%），以及大型投资项目的个案谈判空间。</p>
+
+<h3>东数西算枢纽</h3>
+
+<p>国家战略框架，将东部算力需求导向西部廉价电力地区。指定枢纽及其优势：</p>
+
+<ul>
+  <li><strong>贵州：</strong>水电充沛、气候凉爽，苹果/华为数据中心已入驻。10%硬件补贴（国产芯片）。电价低至0.30-0.35元/度。</li>
+  <li><strong>内蒙古：</strong>风电+光伏，土地极便宜，与北京光纤连接好。合格设施电价0.26-0.35元/度。</li>
+  <li><strong>甘肃：</strong>可再生能源丰富，政府积极招商。电费补贴最高50%，但排除外国芯片。</li>
+  <li><strong>宁夏：</strong>与甘肃类似的可再生能源优势，国家指定枢纽。中卫是主要数据中心集群。</li>
+</ul>
+
+<h3>台州（浙江）</h3>
+
+<p>沿海替代方案，优势不同：靠近上海AI生态圈，浙江科技政策环境好，制造业基础扎实。电费较高（~0.70+元/度），但到主要市场的延迟更低。</p>
+
+<div class="callout">
+  <p><strong>选址取决于商业模式。</strong>如果做GPU出租（延迟不敏感的训练和批量推理），西部电价便宜的枢纽占优。如果做东部客户的实时推理服务，地理距离比电价更重要。</p>
+</div>
+
+<h2>跨境考量</h2>
+
+<p>中国的GPU农场能不能把算力卖到海外？这是最高价值的场景，因为国际价格（$2-8/时/GPU）远高于国内。但有几个限制。</p>
+
+<h3>技术限制</h3>
+
+<ul>
+  <li><strong>延迟：</strong>中美往返延迟通常150-250ms。训练和批量推理可以接受，但实时应用有问题。中国到东南亚30-80ms，更适合做实时服务。</li>
+  <li><strong>防火墙：</strong>国际带宽被限速，受深度包检测影响。VPN隧道增加开销且有合规风险。专线（CN2、IPLC）价格贵，需要运营商协议。</li>
+  <li><strong>带宽成本：</strong>中国的国际带宽是国内的5-10倍。大模型权重、训练数据等高吞吐量传输成本很高。</li>
+</ul>
+
+<h3>法律和监管</h3>
+
+<ul>
+  <li><strong>硬件来源：</strong>H100/B200 GPU受美国出口管制，通过灰色渠道进入中国。在国际平台上公开这些GPU会暴露供应链，运营方可能想避免这种可见性。</li>
+  <li><strong>数据主权：</strong>中国的数据本地化法律（《个人信息保护法》、《数据安全法》）限制某些类别的数据出境。国际客户将数据发送到中国GPU上可能面临其本国司法管辖的合规问题。</li>
+  <li><strong>平台政策：</strong>VastAI和RunPod接受全球卖家，但从中国设施获得认证和信誉分较难，因为网络可靠性是考量因素。</li>
+</ul>
+
+<div class="callout-warn">
+  <p><strong>现实评估：</strong>从中国跨境出租GPU技术上可行，但运营上复杂。最强的使用场景是服务中国国内市场、有低延迟需求的东南亚客户、或作为全球算力网络中面向中国市场的节点。</p>
+</div>
+
+<h2>不要做的事</h2>
+
+<ol>
+  <li><strong>不要假设100%利用率。</strong>没有哪个平台能做到。按50-60%算靠谱。</li>
+  <li><strong>不要先买机器再申请补贴。</strong>补贴是回本1.8年和3.6年的区别。</li>
+  <li><strong>不要以为矿机能跑AI。</strong>S19是专用芯片，不能跑AI。能用的是厂房和电力。</li>
+  <li><strong>不要忽视GPU贬值。</strong>3年回本的硬件如果4年就过时，意味着只有1年纯利润期。</li>
+  <li><strong>不要只看一个数字。</strong>回本时间取决于利用率、补贴、购价三个变量。看表格，不看单个估算。</li>
+</ol>
+
+<h2>建议的下一步</h2>
+
+<ol>
+  <li><strong>确认当前挖矿是否盈利。</strong>扣除电费后还有正现金流吗？如果没有，转型决策已经替你做了。</li>
+  <li><strong>调查省级AI算力补贴政策。</strong>申请流程、资格条件、国产芯片要求。</li>
+  <li><strong>在VastAI上注册</strong>，了解认证流程和目标GPU型号的利用率数据。</li>
+  <li><strong>拿真实报价</strong>，通过国内渠道询B200或同级GPU服务器价格，包括国产替代方案（华为昇腾）的补贴资格确认。</li>
+  <li><strong>先试方案一或小规模方案二</strong>（2-3台服务器），验证利用率后再投入大量资金。</li>
+  <li><strong>3个月后复盘</strong>，基于测试利用率数据决定下一步。</li>
+</ol>
+
+</article>
+
+<div class="draft-notice">
+  <p>孙派分析。数据截至2026年5月。<a href="mailto:jason@adanomad.com">jason@adanomad.com</a></p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 孙派</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'compute-zh', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>

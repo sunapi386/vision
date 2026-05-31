@@ -44,6 +44,8 @@ DEPLOY_FILES = [
     "dir.html",
     "maye.html",
     "ai-clinical.html",
+    "compute.html",
+    "compute-zh.html",
     "sw.js",
     "sw-zh.js",
 ]
