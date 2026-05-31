@@ -374,7 +374,7 @@ body {
 <h2>ASIC vs GPU: Why Miners Cannot Run AI</h2>
 
 <div class="callout-danger">
-  <p><strong>Critical fact:</strong> SHA-256 ASIC miners (e.g. Antminer S19) have no GPU, no VRAM, and no CUDA cores. They cannot run AI inference workloads. This is a hardware architecture limitation, not a software one.</p>
+  <p><strong>Critical fact:</strong> SHA-256 ASIC miners (e.g. <a href="https://support.bitmain.com/hc/en-us/articles/900000253583-S19-Specifications" style="color: var(--accent);">Antminer S19</a>) have no GPU, no VRAM, and no CUDA cores. They cannot run AI inference workloads. This is a hardware architecture limitation, not a software one.</p>
 </div>
 
 <p>The question is not "can the existing miners run AI?" The answer is no. The question is: "can we drop GPU servers into the existing facility and skip the buildout cost?"</p>
@@ -471,8 +471,10 @@ body {
 
 <p><strong>Platform fees:</strong> VastAI hosts set their own price; the platform adds 10-15% on the renter side. RunPod Community pricing runs 20-30% below their secure cloud tier. A 20% platform fee is a reasonable conservative estimate.</p>
 
+<p style="font-size: 13px; color: var(--text-dim);">Sources: <a href="https://vast.ai/pricing" style="color: var(--accent);">VastAI pricing</a>, <a href="https://www.runpod.io/pricing" style="color: var(--accent);">RunPod pricing</a>, <a href="https://lambda.ai/pricing" style="color: var(--accent);">Lambda pricing</a>, <a href="https://www.coreweave.com/pricing" style="color: var(--accent);">CoreWeave pricing</a></p>
+
 <div class="callout">
-  <p><strong>Verification matters.</strong> Unverified GPUs on VastAI earn almost nothing. Verified H100 hosts at ~$2.15/hr with 70% utilization earn ~$1,100/month per GPU. Verification is critical for marketplace income.</p>
+  <p><strong>Verification matters.</strong> Unverified GPUs on VastAI earn almost nothing. Verified H100 hosts at ~$2.15/hr with 70% utilization earn ~$1,100/month per GPU. Verification is critical for marketplace income. See <a href="https://vast.ai/hosting" style="color: var(--accent);">VastAI hosting guide</a>.</p>
 </div>
 
 <h2>Server Economics: GPU Rental Model</h2>
@@ -669,6 +671,8 @@ body {
 </table>
 </div>
 
+<p style="font-size: 13px; color: var(--text-dim);">Sources: <a href="https://www.together.ai/pricing" style="color: var(--accent);">Together.ai pricing</a>, <a href="https://deepinfra.com/pricing" style="color: var(--accent);">DeepInfra pricing</a></p>
+
 <h3>Token economics: worked examples</h3>
 
 <p><strong>Small model (8B) on 1x H100, own facility (electricity only):</strong></p>
@@ -687,6 +691,7 @@ Gross margin: still positive but tiny volume</code></pre>
 
 <div class="callout">
   <p><strong>Key insight:</strong> Token selling with your own hardware is profitable at any model size because marginal cost is just electricity (~$209/month). The question is volume and demand. Small models (8B) produce far more tokens per GPU-hour and generate higher total revenue.</p>
+  <p style="font-size: 12px; color: var(--text-dimmer); margin-top: 8px;">Throughput estimates based on <a href="https://vllm.ai/blog/perf-update" style="color: var(--accent);">vLLM benchmarks</a> and <a href="https://developer.nvidia.com/blog/achieving-top-inference-performance-with-the-nvidia-h100-tensor-core-gpu-and-nvidia-tensorrt-llm/" style="color: var(--accent);">NVIDIA TensorRT-LLM</a>.</p>
 </div>
 
 <h3>Token selling payback</h3>
@@ -871,7 +876,7 @@ Gross margin: still positive but tiny volume</code></pre>
 </table>
 </div>
 
-<p>Sources: <a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">Shenzhen policy</a>, <a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">Shijiazhuang plan</a></p>
+<p>Sources: <a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">Shenzhen policy</a>, <a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">Shijiazhuang plan</a>, <a href="https://www.beijing.gov.cn/zhengce/zhengcefagui/202503/t20250303_4024044.html" style="color: var(--accent);">Beijing E-Town AI policy</a>, <a href="https://www.chinanews.com.cn/cj/2026/04-13/10603158.shtml" style="color: var(--accent);">Chengdu details</a></p>
 
 <h3>Hardware purchase subsidies: only ~10% where they exist</h3>
 
@@ -903,7 +908,7 @@ Gross margin: still positive but tiny volume</code></pre>
 </div>
 
 <div class="callout-warn">
-  <p><strong>NVIDIA chips and Chinese subsidies are mutually exclusive.</strong> Most subsidy programs require or strongly favor domestic chips. Electricity subsidies in Gansu, Guizhou, and Inner Mongolia (up to 50% off power rates) explicitly exclude data centers using foreign chips.</p>
+  <p><strong>NVIDIA chips and Chinese subsidies are mutually exclusive.</strong> Most subsidy programs require or strongly favor domestic chips. Electricity subsidies in Gansu, Guizhou, and Inner Mongolia (up to 50% off power rates) explicitly exclude data centers using foreign chips. See <a href="https://www.tomshardware.com/tech-industry/semiconductors/china-certifies-nine-domestic-ai-chips-for-government-procurement" style="color: var(--accent);">China's approved domestic chip list</a>.</p>
 </div>
 
 <h3>Impact on ROI tables</h3>
@@ -912,18 +917,20 @@ Gross margin: still positive but tiny volume</code></pre>
 
 <p>Sources: <a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html" style="color: var(--accent);">Hebei AI+ Action Plan</a>, <a href="https://www.gov.cn/zhengce/zhengceku/202401/content_6924596.htm" style="color: var(--accent);">NDRC East Data West Computing</a></p>
 
+<p style="font-size: 13px; color: var(--text-dim);">Further reading: <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/china-subsidizes-ai-computing-for-small-domestic-companies-computing-power-vouchers-spread-across-multiple-chinese-cities" style="color: var(--accent);">Tom's Hardware: compute voucher overview</a>, <a href="https://www.tomshardware.com/tech-industry/china-and-americas-ai-war-isnt-just-about-compute-its-about-energy-energy-subsidies-promote-homegrown-chip-push-amid-data-center-energy-squeeze" style="color: var(--accent);">Tom's Hardware: energy subsidies</a>, <a href="https://www.fpri.org/article/2025/09/from-vouchers-to-visas-chinas-innovative-plan-for-ai-dominance/" style="color: var(--accent);">FPRI: From Vouchers to Visas</a></p>
+
 <h2>Locations</h2>
 
 <h3>Tangshan (Hebei)</h3>
 
-<p>Example facility city. Advantages: existing mining infrastructure, 0.59 CNY/kWh industrial power, proximity to Beijing (90 min by rail). Limitations: not a designated East Data West Computing hub, no verified AI-specific subsidy program. Available incentives are general high-tech enterprise tax benefits (15% corporate rate vs 25%) and potential for ad-hoc negotiations with local government for significant investments.</p>
+<p>Example facility city. Advantages: existing mining infrastructure, 0.59 CNY/kWh industrial power, proximity to Beijing (90 min by rail). Limitations: not a designated East Data West Computing hub, no verified AI-specific subsidy program. Available incentives are general high-tech enterprise tax benefits (15% corporate rate vs 25%) and potential for ad-hoc negotiations with local government for significant investments. See <a href="https://www.tangshan.gov.cn/zhuzhan/szfjbgswj/20230506/1524086.html" style="color: var(--accent);">Tangshan Big Data Plan</a>.</p>
 
 <h3>East Data West Computing hubs (东数西算)</h3>
 
 <p>China's national framework routes compute demand from eastern population centers to western regions with cheaper power. The designated hub regions and their advantages:</p>
 
 <ul>
-  <li><strong>Guizhou:</strong> Hydropower, cool climate, Apple/Huawei data centers already present. 10% hardware subsidy available (domestic chips). Power rates as low as 0.30-0.35 CNY/kWh.</li>
+  <li><strong>Guizhou:</strong> Hydropower, cool climate, Apple/Huawei data centers already present. 10% hardware subsidy available (domestic chips). Power rates as low as 0.30-0.35 CNY/kWh. <a href="https://www.smartcity.team/policies/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%94%BF%E7%AD%96%E5%BA%93/guizhousuanlijili/" style="color: var(--accent);">Guizhou compute incentive</a></li>
   <li><strong>Inner Mongolia:</strong> Wind + solar, extremely cheap land. Well-connected to Beijing via fiber. Power rates 0.26-0.35 CNY/kWh for qualifying facilities.</li>
   <li><strong>Gansu:</strong> Abundant renewable energy, government actively recruiting. Electricity subsidies up to 50%, but foreign chip exclusion applies.</li>
   <li><strong>Ningxia:</strong> Similar renewable profile to Gansu, designated national hub. Zhongwei is a major data center cluster.</li>
@@ -952,7 +959,7 @@ Gross margin: still positive but tiny volume</code></pre>
 <h3>Legal and regulatory</h3>
 
 <ul>
-  <li><strong>Hardware provenance:</strong> H100/B200 GPUs are US export-controlled to China. Gray-market acquisition is how they arrive. Advertising these GPUs on international marketplaces creates visibility into the supply chain that operators may want to avoid.</li>
+  <li><strong>Hardware provenance:</strong> H100/B200 GPUs are US export-controlled to China. Gray-market acquisition is how they arrive. Advertising these GPUs on international marketplaces creates visibility into the supply chain that operators may want to avoid. Recent policy: <a href="https://introl.com/blog/bis-export-policy-h200-mi325x-china-case-by-case-2026" style="color: var(--accent);">BIS H200 export policy shift</a>, <a href="https://www.tomshardware.com/tech-industry/semiconductors/nvidia-prepares-h200-shipments-to-china-as-chip-war-lines-blur" style="color: var(--accent);">H200 shipments to China</a></li>
   <li><strong>Data sovereignty:</strong> China's data localization laws (PIPL, Data Security Law) restrict certain categories of data from leaving the country. International customers sending data to China-based GPUs may face compliance issues in their own jurisdictions.</li>
   <li><strong>Platform policies:</strong> VastAI and RunPod do accept hosts globally, but verification and trust scores are harder to achieve from China-based facilities due to network reliability concerns.</li>
 </ul>
@@ -983,6 +990,62 @@ Gross margin: still positive but tiny volume</code></pre>
 </ol>
 
 </article>
+
+<div class="article" style="padding-top: 0; padding-bottom: 40px;">
+<h2>Sources</h2>
+
+<h3>GPU marketplace pricing</h3>
+<ul>
+  <li><a href="https://vast.ai/pricing" style="color: var(--accent);">VastAI pricing</a></li>
+  <li><a href="https://www.runpod.io/pricing" style="color: var(--accent);">RunPod pricing</a></li>
+  <li><a href="https://lambda.ai/pricing" style="color: var(--accent);">Lambda pricing</a></li>
+  <li><a href="https://www.coreweave.com/pricing" style="color: var(--accent);">CoreWeave pricing</a></li>
+  <li><a href="https://vast.ai/hosting" style="color: var(--accent);">VastAI hosting guide</a></li>
+</ul>
+
+<h3>Token pricing and throughput</h3>
+<ul>
+  <li><a href="https://www.together.ai/pricing" style="color: var(--accent);">Together.ai pricing</a></li>
+  <li><a href="https://deepinfra.com/pricing" style="color: var(--accent);">DeepInfra pricing</a></li>
+  <li><a href="https://vllm.ai/blog/perf-update" style="color: var(--accent);">vLLM performance benchmarks</a></li>
+  <li><a href="https://developer.nvidia.com/blog/achieving-top-inference-performance-with-the-nvidia-h100-tensor-core-gpu-and-nvidia-tensorrt-llm/" style="color: var(--accent);">NVIDIA TensorRT-LLM H100 inference</a></li>
+</ul>
+
+<h3>Chinese subsidy policies</h3>
+<ul>
+  <li><a href="https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12097397.html" style="color: var(--accent);">Shenzhen compute voucher policy</a></li>
+  <li><a href="https://www.sjz.gov.cn/columns/5ba204c3-5e8b-4e0b-bb4f-d40774650307/202508/25/4cd4ed6d-21a9-4122-a892-1dc65a567973.html" style="color: var(--accent);">Shijiazhuang compute voucher plan</a></li>
+  <li><a href="https://www.beijing.gov.cn/zhengce/zhengcefagui/202503/t20250303_4024044.html" style="color: var(--accent);">Beijing E-Town AI policy</a></li>
+  <li><a href="https://www.chinanews.com.cn/cj/2026/04-13/10603158.shtml" style="color: var(--accent);">Chengdu compute voucher details</a></li>
+  <li><a href="https://gxt.hebei.gov.cn/hbgyhxxht/zcfg30/snzc/2025101509241559128/index.html" style="color: var(--accent);">Hebei AI+ Action Plan</a></li>
+  <li><a href="https://www.gov.cn/zhengce/zhengceku/202401/content_6924596.htm" style="color: var(--accent);">NDRC East Data West Computing</a></li>
+  <li><a href="https://www.smartcity.team/policies/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%94%BF%E7%AD%96%E5%BA%93/guizhousuanlijili/" style="color: var(--accent);">Guizhou compute incentive</a></li>
+</ul>
+
+<h3>Locations and infrastructure</h3>
+<ul>
+  <li><a href="https://www.tangshan.gov.cn/zhuzhan/szfjbgswj/20230506/1524086.html" style="color: var(--accent);">Tangshan Big Data Plan</a></li>
+</ul>
+
+<h3>Export controls and cross-border</h3>
+<ul>
+  <li><a href="https://introl.com/blog/bis-export-policy-h200-mi325x-china-case-by-case-2026" style="color: var(--accent);">BIS H200 export policy shift</a></li>
+  <li><a href="https://www.tomshardware.com/tech-industry/semiconductors/nvidia-prepares-h200-shipments-to-china-as-chip-war-lines-blur" style="color: var(--accent);">NVIDIA H200 shipments to China</a></li>
+  <li><a href="https://www.tomshardware.com/tech-industry/semiconductors/china-certifies-nine-domestic-ai-chips-for-government-procurement" style="color: var(--accent);">China approved domestic AI chips</a></li>
+</ul>
+
+<h3>Analysis and commentary</h3>
+<ul>
+  <li><a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/china-subsidizes-ai-computing-for-small-domestic-companies-computing-power-vouchers-spread-across-multiple-chinese-cities" style="color: var(--accent);">Tom's Hardware: compute voucher overview</a></li>
+  <li><a href="https://www.tomshardware.com/tech-industry/china-and-americas-ai-war-isnt-just-about-compute-its-about-energy-energy-subsidies-promote-homegrown-chip-push-amid-data-center-energy-squeeze" style="color: var(--accent);">Tom's Hardware: energy subsidies</a></li>
+  <li><a href="https://www.fpri.org/article/2025/09/from-vouchers-to-visas-chinas-innovative-plan-for-ai-dominance/" style="color: var(--accent);">FPRI: From Vouchers to Visas</a></li>
+</ul>
+
+<h3>Hardware specifications</h3>
+<ul>
+  <li><a href="https://support.bitmain.com/hc/en-us/articles/900000253583-S19-Specifications" style="color: var(--accent);">Bitmain Antminer S19 specifications</a></li>
+</ul>
+</div>
 
 <div class="draft-notice">
   <p>Analysis by Jason Sun. Data as of May 2026. <a href="mailto:jason@adanomad.com">jason@adanomad.com</a></p>
