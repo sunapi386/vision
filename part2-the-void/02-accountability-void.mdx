@@ -94,7 +94,7 @@ When an AI system produces work, it communicates with uniform certainty. Every s
 
 This is not a minor UX problem. It is a structural failure in the accountability infrastructure. Without calibrated confidence -- a reliable signal that says "this claim is 92% likely correct" versus "this claim is 55% likely correct, you should check it" -- human-in-the-loop governance is theater. The human is reviewing everything or reviewing nothing, because the system provides no guidance about where human attention is most needed.
 
-The assumption that humans are the reliable baseline makes this worse. Zero-shot humans achieve only around 34% F1 on entity extraction tasks, roughly matching what LLMs produce without fine-tuning. The notion that a human reviewer naturally catches what the AI misses is wrong. Both are guessing. Both need calibration infrastructure to become reliable. The difference is that humans are slower at guessing.
+The assumption that humans are the reliable baseline makes this worse. Zero-shot humans achieve only around 34% F1 on entity extraction tasks, roughly matching what LLMs produce without fine-tuning. The notion that a human reviewer naturally catches what the AI misses is wrong. Both need calibration infrastructure to become reliable.
 
 The problem is measurable. Research on ensemble-based confidence estimation for AI systems reveals a consistent pattern: when you ask multiple independent models to verify the same AI output, they agree that incorrect outputs are wrong -- but they also overwhelmingly agree that correct outputs are correct, producing confidence scores clustered near 100% even for outputs that are only right half the time. The models are systematically overconfident. They express certainty they do not possess.
 
