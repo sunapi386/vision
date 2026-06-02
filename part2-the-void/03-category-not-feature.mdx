@@ -8,7 +8,7 @@ The instinct, when presented with the accountability void, is to assume it can b
 
 This instinct is wrong. Not because these companies are incapable — they're among the most capable engineering organizations on Earth — but because accountability for multi-agent, multi-org workflows is structurally different from the problems their platforms are designed to solve. Bolting accountability onto an agent control plane is like bolting financial auditing onto an email server. The email server can send the invoices. But the invoices need a ledger, and the ledger needs to be independent of the email server.
 
-The accountability layer is a different category of infrastructure. Understanding why requires examining what it must do and how that differs from what existing systems do.
+The accountability layer is a different category of infrastructure. Here is why.
 
 ## The Control Plane Approach
 
@@ -56,7 +56,7 @@ A control server managed by Organization A can govern Organization A's agents. B
 
 That something is a protocol — a standardized format for structured accountability records that each organization can produce, consume, and validate independently. Not a server that both organizations must connect to. Not a shared database that both organizations must trust. A format that travels with the data, carries its own evidence, and can be validated by anyone who receives it.
 
-This is the same architectural pattern that makes HTTPS work. HTTPS doesn't require a shared server between the client and the server. The certificate travels with the connection. The client validates the certificate independently. The trust is in the protocol, not in a shared intermediary.
+HTTPS works the same way. The certificate travels with the connection. The client validates it independently. No shared server required.
 
 Agent accountability requires the same pattern. The receipt must travel with the work. The cost tree must be inspectable by any party in the workflow. The citation chain must be verifiable by anyone who receives the output. The governance record must be auditable by any regulator with jurisdiction. This can't be accomplished by a server that sits in one organization's infrastructure. It requires a format that works everywhere, controlled by no one.
 

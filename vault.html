@@ -311,7 +311,7 @@ body {
 
 <h2>The Problem</h2>
 
-<p>You know something that matters. Maybe it's evidence of fraud. Maybe it's a personal history that would hurt people who are still alive. Maybe it's an idea you can't release yet. You want it preserved and eventually disclosed -- but not now, and not on anyone else's terms.</p>
+<p>You know something that matters. Maybe it's evidence of fraud. Maybe it's a personal history that would hurt people who are still alive. Maybe it's an idea you can't release yet. You want it preserved and eventually disclosed. But not now, and not on anyone else's terms.</p>
 
 <p>Every existing solution fails at this. A safety deposit box requires a bank that stays solvent. A lawyer requires a firm that survives. A USB drive in a shoebox requires someone who remembers where the shoebox is. Google's Inactive Account Manager requires Google to keep caring about a feature with zero revenue. Each depends on an institution outlasting your timeline, and institutions are poor at that.</p>
 
@@ -325,7 +325,7 @@ body {
   <div class="stack-num">01</div>
   <div class="stack-body">
     <h4>Permanent storage</h4>
-    <p>The encrypted payload goes on Arweave -- a blockchain designed for permanent data. You pay once. The endowment model prepays ~200 years of replication at declining cost curves. No subscription. No renewal. No leverage point for ransom.</p>
+    <p>The encrypted payload goes on Arweave, a blockchain designed for permanent data. You pay once. The endowment model prepays ~200 years of replication at declining cost curves. No subscription. No renewal. No leverage point for ransom.</p>
   </div>
 </div>
 
@@ -341,7 +341,7 @@ body {
   <div class="stack-num">03</div>
   <div class="stack-body">
     <h4>Distributed key custody</h4>
-    <p>The wrapped key is split via Shamir's Secret Sharing into n shares, distributed to independent custodians who don't know each other. Any k-of-n can reconstruct the key. No single custodian can open it alone. No single custodian can block release by defecting. Shamir's scheme is information-theoretically secure -- quantum computers don't help.</p>
+    <p>The wrapped key is split via Shamir's Secret Sharing into n shares, distributed to independent custodians who don't know each other. Any k-of-n can reconstruct the key. No single custodian can open it alone. No single custodian can block release by defecting. Shamir's scheme is information-theoretically secure. Quantum computers don't help.</p>
   </div>
 </div>
 
@@ -383,7 +383,7 @@ body {
   <h4>The Subjects</h4>
   <p><strong>Wants:</strong> permanent suppression.</p>
   <p><strong>Fear:</strong> the capsule exists at all.</p>
-  <p><strong>Constraint:</strong> the ciphertext is on Arweave and can't be deleted. The key is distributed across anonymous custodians they can't identify. The only remaining attack is breaking the encryption -- and the PQC layer closes that window across every foreseeable computing paradigm.</p>
+  <p><strong>Constraint:</strong> the ciphertext is on Arweave and can't be deleted. The key is distributed across anonymous custodians they can't identify. The only remaining attack is breaking the encryption -- and the PQC layer closes that window for any computing architecture we can anticipate.</p>
 </div>
 
 <div class="actor-card">
@@ -395,7 +395,7 @@ body {
 
 <h2>Plausible Deniability</h2>
 
-<p>A vault that everyone knows exists is already a liability. Plausible deniability isn't a feature -- it's a survival property.</p>
+<p>A vault that everyone knows exists is already a liability. Plausible deniability isn't a feature. It's a survival property.</p>
 
 <h3>Decoy capsules</h3>
 
@@ -407,7 +407,7 @@ body {
 
 <h3>Steganographic mode</h3>
 
-<p>For maximum deniability: embed the encrypted capsule inside innocuous files -- images, documents, audio -- uploaded to Arweave. The capsule's existence is hidden, not just its contents. You can't suppress what you can't find.</p>
+<p>For maximum deniability: embed the encrypted capsule inside innocuous files (images, documents, audio) uploaded to Arweave. The capsule's existence is hidden, not just its contents. You can't suppress what you can't find.</p>
 
 <h2>Anti-Hostage Design</h2>
 
@@ -433,7 +433,7 @@ body {
 
 <ul>
   <li><strong>Receipt chain</strong>: an agent receipt proves "this agent did X at time T." A vault proves "this person deposited X at time T, to be revealed at T+N." Same commitment pattern.</li>
-  <li><strong>Trust without trusting actors</strong>: the book argues you design systems where individual actors can defect and the system still holds. A vault does exactly that -- any custodian, any chain, any storage provider can fail, and the capsule still opens.</li>
+  <li><strong>Trust without trusting actors</strong>: the book argues you design systems where individual actors can defect and the system still holds. A vault does exactly that: any custodian, any chain, any storage provider can fail, and the capsule still opens.</li>
   <li><strong>ZK proofs</strong>: agent receipts prove compliance without exposing proprietary logic. A vault proves content properties without opening the capsule. Same technique, different domain.</li>
   <li><strong>Accountability as infrastructure</strong>: the book's central argument. A vault makes accountability infrastructure for human disclosure -- not just machine execution.</li>
 </ul>
@@ -452,7 +452,7 @@ body {
   <li><strong>Total for the full stack</strong>: under $500 for a PQC-proof, ZK-verified, game-theoretically sound vault with a 20-year horizon. No subscriptions. Nothing to renew.</li>
 </ul>
 
-<p>Compare this to a legal trust ($30,000-50,000 to self-sustain across decades) and the cost structure inverts the traditional relationship between security and accessibility. The most robust version is also the cheapest.</p>
+<p>Compare this to a legal trust ($30,000-50,000 to self-sustain across decades) . The most robust version is also the cheapest.</p>
 
 <h2>What Gets Built First</h2>
 

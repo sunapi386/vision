@@ -152,7 +152,7 @@ INTERSTITIALS = {
   <div class="cta-line fade-in">The accountability layer always comes second.</div>
   <div class="cta-line fade-in">The accountability layer always outlasts the revolution.</div>
   <div class="cta-divider"></div>
-  <div class="cta-accent fade-in">The agent economy has its revolution. It is waiting for its ledger.</div>
+  <div class="cta-accent fade-in">The revolution is here. The bookkeeping is not.</div>
 </div>""",
 }
 
@@ -272,8 +272,8 @@ ABSTRACT_PARAGRAPHS = [
     '<strong>AI is reshaping who does work, not just where it happens.</strong> Agents draft contracts, triage patients, process invoices, write reports. The revolution is here. But when Agent A calls Agent B calls Agent C across three organizations &mdash; nobody can account for what happened, what it cost, or whether the data was handled correctly.',
     'This is not a feature gap. It is a <strong>category gap</strong> &mdash; the same kind of gap that double-entry bookkeeping filled for commerce, that TLS filled for the internet, that container standards filled for software deployment.',
     'Seven independent forces &mdash; regulatory, economic, safety, legal, environmental, geopolitical, enterprise &mdash; are converging on the same requirement: <strong>standardized agent accountability.</strong> None of them are coordinating. They all need the same infrastructure.',
-    'This document traces the pattern: the world has changed, a void exists in the infrastructure, history shows how that void always gets filled, and a specific seven-layer stack is what the agent economy requires. It examines the transitions &mdash; organizational, human, governmental, economic &mdash; that must happen simultaneously. And it projects what work looks like when the infrastructure exists.',
-    'The accountability layer will be built. The question is whether it is designed intentionally as a coherent stack, or cobbled together from incompatible patches.',
+    'The argument is simple: the agent economy needs the same kind of accountability infrastructure that every previous economic revolution eventually built. This book makes the case for what that infrastructure looks like, who needs it, and what happens if nobody builds it intentionally.',
+    'The accountability layer will be built. If nobody designs it intentionally, it will be assembled from incompatible patches after the first catastrophes force the issue.',
 ]
 
 AUDIO_SLUGS = {
@@ -993,7 +993,7 @@ TEMPLATE = """<!DOCTYPE html>
 <div class="hero">
   <div class="hero-eyebrow">Jason Sun</div>
   <h1 class="hero-title">Trust at Scale</h1>
-  <p class="hero-subtitle">The accountability infrastructure for the agent economy.</p>
+  <p class="hero-subtitle">What happens when nobody can account for what the machines did.</p>
   <p class="hero-author">May 2026</p>
   <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
     <a href="#" id="listenCTA" onclick="document.getElementById('audioToggle').click(); return false;" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">Listen to the audiobook</a>
@@ -1709,7 +1709,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <div class="about-section" id="about">
   <div class="about-inner">
     <h2>About</h2>
-    <p>I'm Jason Sun. I run <a href="https://aceteam.ai">AceTeam</a>, where we build accountability infrastructure for autonomous AI: cost attribution, provenance tracking, governance enforcement. The layer that lets organizations actually trust agent output.</p>
+    <p>I'm Jason Sun. I run <a href="https://aceteam.ai">AceTeam</a>, where we build accountability infrastructure for autonomous AI: cost attribution, provenance tracking, governance enforcement. The part that tells you whether to believe what the agent said.</p>
     <p><a href="https://github.com/aceteam-ai/aep-quickstart">Try the protocol</a> &middot; <a href="mailto:jason@aceteam.ai">jason@aceteam.ai</a></p>
   </div>
 </div>

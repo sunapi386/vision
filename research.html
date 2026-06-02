@@ -330,7 +330,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <h2>Three Methods for Confidence Estimation</h2>
 
-<p>The methods divide by access level: how much of the model's internals you can see. Each level trades deployment complexity for calibration quality. Together they form a matrix that determines which approach works in a given deployment.</p>
+<p>The methods divide by access level: how much of the model's internals you can see. Each level trades deployment complexity for calibration quality. Which method you use depends on how much access you have to the model's internals.</p>
 
 <div class="stack-layer">
   <div class="stack-num">01</div>
@@ -452,7 +452,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>Cloud-based specialist judges are expensive to run in production. The distillation pipeline compresses them into LoRA adapters on a single small backbone model (Qwen 0.6B or Llama 1B). Each adapter is 5-25MB. Multiple adapters share one base deployment, making per-specialist inference cheap.</p>
 
-<p>The pipeline has four phases: (1) synthetic data generation from 10-50 seed examples per category using frontier models, (2) teacher evaluation to validate the task is solvable at the target accuracy, (3) LoRA fine-tuning on the small backbone, (4) integration into the gateway. This pipeline is task-agnostic. The same four phases apply whether the target is safety detection, entity extraction, PII redaction, or any classification task. The flywheel is general-purpose.</p>
+<p>The pipeline has four phases: (1) synthetic data generation from 10-50 seed examples per category using frontier models, (2) teacher evaluation to validate the task is solvable at the target accuracy, (3) LoRA fine-tuning on the small backbone, (4) integration into the gateway. This pipeline is task-agnostic. The same four phases apply whether the target is safety detection, entity extraction, PII redaction, or any classification task. The same four-phase pipeline works for any classification task.</p>
 
 <p>Published benchmarks from comparable distillation approaches (Distill Labs, Berlin) show that 1-4B parameter models can match 120B model accuracy on targeted classification tasks. Their PII redaction benchmark shows a 1B model matching GPT-4. Turnaround is approximately 8 hours at approximately 100 USD per distillation.</p>
 
@@ -472,13 +472,13 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>The multi-stage synthesis: parallel debate (all critics analyze simultaneously), reconciliation (common conclusions drawn), contradiction resolution (disagreements adjudicated), then final answer generation. The underlying models can be open-source LLMs with LoRA adapters for each dimension, making the approach feasible on commodity hardware.</p>
 
-<p>The key differentiator: the mixture-of-opinions architecture does not produce calibrated confidence scores. It produces better answers, but cannot tell you how confident it is in those answers. The ensemble approach produces calibrated confidence as a first-class output. Combining the two, diverse perspectives communicating in latent space with calibrated uncertainty estimation on top, remains an open problem and a potentially powerful architecture.</p>
+<p>The critical difference: the mixture-of-opinions architecture does not produce calibrated confidence scores. It produces better answers, but cannot tell you how confident it is in those answers. The ensemble approach produces calibrated confidence as a first-class output. Combining the two, diverse perspectives communicating in latent space with calibrated uncertainty estimation on top, is an open problem worth solving.</p>
 
-<h3>Per-organization calibration as flywheel</h3>
+<h3>Per-organization calibration</h3>
 
 <p>Safety thresholds are not universal. What counts as unsafe depends on the organization, the domain, the regulatory environment, and the specific workflow. A marketing agency and a healthcare provider have fundamentally different risk profiles. Calibration must be per-organization.</p>
 
-<p>Every approve/deny decision by a human reviewer becomes training data for that organization's calibration model. Over time, the system learns their specific risk tolerance, common edge cases, and policy interpretations. This creates a compounding data advantage: the longer an organization uses the system, the better it calibrates to their needs. The data dependency that initially looks like a weakness (you need organization-specific data to calibrate) becomes a moat. No competitor can replicate another organization's accumulated calibration data.</p>
+<p>Every approve/deny decision by a human reviewer becomes training data for that organization's calibration model. Over time, the system learns their specific risk tolerance, common edge cases, and policy interpretations. The longer an organization uses the system, the better it calibrates to their needs. The data dependency that initially looks like a weakness (you need organization-specific data to calibrate) turns into a lock-in effect. No competitor can replicate another organization's accumulated calibration data.</p>
 
 <h2>Information Geometry and Fine-Tuning</h2>
 
@@ -489,16 +489,16 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 <p>Natural gradient descent operates in Fisher information space rather than Euclidean parameter space. The Fisher information matrix measures how sensitive the model's output distribution is to each parameter. Moving in the natural gradient direction makes equal-sized changes in distribution space, regardless of how the parameters happen to be scaled. This connects directly to catastrophic forgetting: standard fine-tuning can destroy previously learned distributions because Euclidean steps in parameter space correspond to wildly unequal steps in distribution space.</p>
 
 <div class="callout">
-  <p>If you could improve information theory by using geodesics, it would improve literally everything that depends on it. Every loss function, every optimizer, every training schedule is implicitly navigating this manifold. Better navigation means better convergence, less forgetting, and more efficient use of training data.</p>
+  <p>If you could improve information theory by using geodesics, it would improve literally everything that depends on it. Every loss function, every optimizer, every training schedule is implicitly navigating this manifold. Get the navigation right and you converge faster, forget less, and waste less data.</p>
 </div>
 
 <h2>Programs as Weights</h2>
 
 <p>Natural language instructions can be compiled into LoRA adapters: small weight modifications (approximately 5-25MB) that encode behavioral programs into a base model. The base model can be as small as GPT-2 124M or Qwen 0.6B. These adapters run in the browser via WebAssembly with no server round-trip.</p>
 
-<p>This creates a foundation for policy enforcement. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is not an input that can be jailbroken. It is part of the model itself.</p>
+<p>This is policy enforcement at the weight level. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is not an input that can be jailbroken. It is part of the model itself.</p>
 
-<p>The gap is calibration. Programs-as-weights can enforce behaviors but cannot currently report how confident they are in their enforcement. A compiled policy adapter can block an action but cannot say "I am 73% sure this action violates the policy." Connecting the calibration methods described above to compiled policy adapters is an open problem. Solving it would mean policies that are both tamper-resistant (compiled into weights) and uncertainty-aware (calibrated confidence on every decision).</p>
+<p>The gap is calibration. Programs-as-weights can enforce behaviors but cannot currently report how confident they are in their enforcement. A compiled policy adapter can block an action but cannot say "I am 73% sure this action violates the policy." Connecting the calibration methods described above to compiled policy adapters is an open problem. Solve it and you get tamper-resistant policies that can also tell you how sure they are.</p>
 
 <h2>References</h2>
 
