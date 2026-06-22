@@ -1,0 +1,13 @@
+[Unit]
+Description=jasonsun.org analytics tracker
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /var/www/jasonsun.org/track.py 9100
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
