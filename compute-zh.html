@@ -330,21 +330,22 @@ body {
   <div class="site-nav-inner">
     <a class="nav-brand" href="/">Jason Sun</a>
     <div class="nav-links">
-      <a href="/book-zh.html" class="nav-link">书</a>
-      <a href="/" class="nav-link">文章</a>
-      <a href="/#about" class="nav-link">关于</a>
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/#about" class="nav-link nav-about">About</a>
       <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">更多</button>
+        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">More</button>
         <div class="nav-dropdown-menu">
-          <a href="/lessons-zh.html">经验</a>
-          <a href="/research-zh.html">研究</a>
-          <a href="/vault-zh.html">时间胶囊</a>
-          <a href="/china-ai.html">中国AI</a>
-          <a href="/dir.html">目录</a>
+          <a href="/lessons.html">Lessons</a>
+          <a href="/research.html">Research</a>
+          <a href="/vault.html">Vault</a>
+          <a href="/china-ai.html">China AI</a>
+          <a href="/hamilton.html">Hamilton</a>
         </div>
       </div>
       <a href="/compute.html" class="nav-link">EN</a>
-      <button class="nav-theme" id="themeToggle" title="切换主题">&#9788;</button>
+      
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
     </div>
   </div>
 </nav>
@@ -357,18 +358,6 @@ body {
 </div>
 
 <article class="article" id="article">
-
-<h2>核心结论</h2>
-
-<p>"8年回本"是算错了。但"不到1年回本"也不对。</p>
-
-<p><strong>实际回本时间：1.5到3.5年</strong>，取决于三个因素：</p>
-
-<ol>
-  <li><strong>机器利用率</strong>（别人租不租你的机器）</li>
-  <li><strong>能不能拿到政府补贴</strong></li>
-  <li><strong>买机器的价格</strong>（美国价 vs 国内灰市价）</li>
-</ol>
 
 <h2>机会在哪里</h2>
 
@@ -798,26 +787,26 @@ body {
   <h4>方案一：只出租厂房（最低风险）</h4>
   <p>把厂房（电力+冷却+空间）租给AI算力公司。你当房东，租户自己带GPU服务器。</p>
   <p><strong>投入：</strong>基本为零（厂房已有）</p>
-  <p><strong>收入：</strong>电费差价 + 空间租金，每月几万到十几万</p>
+  <p><strong>收入：</strong>托管费，通常电价加价0.1-0.3元/度 + 空间租金</p>
   <p><strong>回本：</strong>立即（没有硬件投入）</p>
   <p><strong>风险：</strong>极低。不承担GPU贬值风险。收入不高但稳定可预期。传统托管模式。</p>
 </div>
 
 <div class="actor-card">
-  <h4>方案二：小规模测试（10台GPU服务器）</h4>
+  <h4>方案二：小规模测试（10台服务器，依赖补贴）</h4>
   <p>买10台GPU服务器，挂VastAI等平台，测试3-6个月看利用率再决定是否扩大。</p>
   <p><strong>投入：</strong>210万-350万元（补贴前），105万-175万元（50%补贴后）</p>
-  <p><strong>年收入(60%利用率)：</strong>~197万元（GPU出租）或~397万元（Token销售）</p>
+  <p><strong>年收入(60%利用率)：</strong>~$273,000（197万元）GPU出租，或~$552,000（397万元）Token销售</p>
   <p><strong>回本(50%补贴)：</strong>~1.8年（GPU出租）或~11个月（Token销售）</p>
   <p><strong>风险：</strong>中等。GPU有3-5年使用寿命，利用率低于40%回本期会超过设备寿命。</p>
   <p><strong>关键前提：</strong>先确认补贴资格再买。</p>
 </div>
 
 <div class="actor-card">
-  <h4>方案三：全面转型（100台服务器）</h4>
+  <h4>方案三：全面转型（100台服务器，市场规模）</h4>
   <p>整个厂房转型为GPU算力中心。需要大量资金，但能达到有市场意义的规模。</p>
   <p><strong>投入：</strong>2100万-3500万元（补贴前）</p>
-  <p><strong>年收入(60%利用率)：</strong>~1970万元（GPU出租）</p>
+  <p><strong>年收入(60%利用率)：</strong>~$2.73M（1970万元）GPU出租</p>
   <p><strong>回本(50%补贴)：</strong>~1.8年</p>
   <p><strong>风险：</strong>高。资金量大，GPU有贬值风险，利用率取决于市场需求。这个规模可以直接对接企业客户，不走平台，价格和利用率保障更好。</p>
 </div>
@@ -840,10 +829,10 @@ body {
   <p><strong>风险：</strong>硬件风险低（不承担GPU贬值）。市场风险取决于聚合需求的能力。inference.ai就是这个模式。</p>
 </div>
 
-<h2>补贴真实情况（重要纠正）</h2>
+<h2>补贴真实情况</h2>
 
 <div class="callout-danger">
-  <p><strong>50-70%的硬件补贴不存在。</strong>这个数字说的是算力服务租用券（算力券），不是买设备的补贴。区别很大：算力券 = 你租别人的GPU，政府补贴你租金的50%。硬件补贴 = 你买GPU服务器，政府补贴你购买价的10%。</p>
+  <p><strong>50-70%的硬件补贴不存在。</strong>这个比例对应的是算力服务租用券（算力券），不是硬件购买补贴。这是一个关键区别。</p>
 </div>
 
 <h3>算力服务租用券（50-60%）</h3>

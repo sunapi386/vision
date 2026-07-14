@@ -226,13 +226,26 @@ li { margin: 6px 0; }
 </head>
 <body>
 
-<nav class="site-nav">
+<nav class="site-nav" id="siteNav">
   <div class="site-nav-inner">
     <a class="nav-brand" href="/">Jason Sun</a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Essay</a>
-      <a class="nav-link" href="/book.html">Book</a>
-      <button class="nav-theme" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/#about" class="nav-link nav-about">About</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">More</button>
+        <div class="nav-dropdown-menu">
+          <a href="/lessons.html">Lessons</a>
+          <a href="/research.html">Research</a>
+          <a href="/vault.html">Vault</a>
+          <a href="/china-ai.html">China AI</a>
+          <a href="/hamilton.html">Hamilton</a>
+        </div>
+      </div>
+      <a href="/index-zh.html" class="nav-link">中文</a>
+      
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
     </div>
   </div>
 </nav>

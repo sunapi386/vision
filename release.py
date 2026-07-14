@@ -44,6 +44,7 @@ DEPLOY_FILES = [
     "dir.html",
     "maye.html",
     "ai-clinical.html",
+    "hamilton.html",
     "compute.html",
     "compute-zh.html",
     "sw.js",
@@ -293,6 +294,9 @@ def verify():
 def build():
     print("\n--- Build ---")
     run(["python3", str(VISION_DIR / "build.py")])
+    # Keep the standalone essays' nav in sync with templates/nav.html so the
+    # menu is single-source and never drifts (adds/removes propagate everywhere).
+    run(["python3", str(VISION_DIR / "sync_nav.py")])
 
 
 def tts():

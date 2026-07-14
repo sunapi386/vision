@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sovereign Compute Case for Hamilton | Jason Sun</title>
+<meta name="description" content="Hamilton is Canada's top-ranked site for sovereign research compute. Why the data-centre moratorium should distinguish it from commercial hyperscale.">
+<meta name="author" content="Jason Sun">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jasonsun.org/hamilton.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Sovereign Compute Case for Hamilton">
+<meta property="og:description" content="Hamilton is Canada's top-ranked site for sovereign research compute. Why the moratorium should distinguish it from commercial hyperscale.">
+<meta property="og:url" content="https://jasonsun.org/hamilton.html">
+<meta property="og:site_name" content="Jason Sun">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Sovereign Compute Case for Hamilton">
+<meta name="twitter:description" content="Hamilton is Canada's top-ranked site for sovereign research compute, not commercial hyperscale.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The Sovereign Compute Case for Hamilton",
+  "author": {"@type": "Person", "name": "Jason Sun", "url": "https://jasonsun.org/"},
+  "publisher": {"@type": "Person", "name": "Jason Sun"},
+  "description": "Hamilton is Canada's top-ranked site for sovereign research compute. Why the data-centre moratorium should distinguish it from commercial hyperscale, and what the framework should say.",
+  "url": "https://jasonsun.org/hamilton.html",
+  "keywords": "sovereign compute, data centre, Hamilton, DRAC, EuroHPC, AI infrastructure, brownfield redevelopment, moratorium",
+  "about": ["Sovereign compute", "Data centre policy", "Hamilton Ontario", "AI infrastructure", "Digital Research Alliance of Canada"]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #05070c;
+  --bg-surface: #0d1117;
+  --bg-elevated: #161b22;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-dimmer: #484f58;
+  --accent: #6aaefc;
+  --accent-dim: rgba(106,174,252,0.12);
+  --green: #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.12);
+  --red: #f85149;
+  --red-dim: rgba(248,81,73,0.12);
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --max-width: 720px;
+  --nav-height: 48px;
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-surface: #f6f8fa;
+  --bg-elevated: #eef1f5;
+  --text: #1f2328;
+  --text-dim: #59636e;
+  --text-dimmer: #8b949e;
+  --accent: #0969da;
+  --accent-dim: rgba(9,105,218,0.08);
+  --green: #1a7f37;
+  --green-dim: rgba(26,127,55,0.08);
+  --orange: #9a6700;
+  --orange-dim: rgba(154,103,0,0.08);
+  --red: #cf222e;
+  --red-dim: rgba(207,34,46,0.08);
+  --purple: #8250df;
+  --cyan: #0891b2;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--text-dimmer) transparent; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(15px, 1.45vw, 18px);
+  font-weight: 400;
+  line-height: 1.80;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.site-nav.scrolled {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.site-nav-inner {
+  width: 100%; max-width: 960px;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-theme {
+  background: none; border: none; color: var(--text-dim); cursor: pointer;
+  font-size: 16px; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;
+}
+.nav-theme:hover { color: var(--text); background: var(--bg-elevated); }
+
+.nav-dropdown { position: relative; }
+.nav-dropdown-toggle {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; background: none; border: none;
+  display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.nav-dropdown-toggle:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-dropdown-toggle::after {
+  content: ''; display: inline-block; width: 0; height: 0;
+  border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor; margin-top: 1px;
+}
+.nav-dropdown-menu {
+  position: absolute; top: 100%; right: 0; min-width: 140px; padding: 6px 0;
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  border-radius: 8px; box-shadow: var(--shadow); z-index: 400;
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.nav-dropdown-menu a {
+  display: block; font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none; padding: 6px 16px; transition: all 0.15s;
+}
+.nav-dropdown-menu a:hover { color: var(--text); background: var(--bg-elevated); text-decoration: none; }
+
+.progress-bar {
+  position: fixed; top: var(--nav-height); left: 0; height: 2px;
+  background: var(--accent); z-index: 299; width: 0; transition: width 0.1s;
+}
+
+.hero {
+  min-height: 70vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text-dimmer);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(30px, 5vw, 56px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-dim); max-width: 560px; line-height: 1.6;
+}
+
+.article {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 120px;
+}
+
+.article h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  margin: 72px 0 20px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.article h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+.article h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600; color: var(--accent);
+  margin: 40px 0 12px;
+}
+
+.article p { margin: 16px 0; }
+.article p + p { margin-top: 12px; }
+
+.article strong { font-weight: 600; color: var(--text); }
+.article em { font-style: italic; }
+
+.article ul, .article ol {
+  margin: 16px 0; padding-left: 24px;
+}
+.article li {
+  margin: 8px 0; line-height: 1.7;
+}
+
+.article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em; padding: 2px 6px;
+  background: var(--bg-elevated); border-radius: 4px;
+}
+
+.article pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin: 24px 0;
+  overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+.article pre code {
+  background: none; padding: 0; font-size: inherit;
+}
+
+.actor-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+}
+.actor-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+}
+.actor-card p {
+  font-size: 14px; color: var(--text-dim); margin: 6px 0; line-height: 1.6;
+}
+
+.stack-layer {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px; margin: 8px 0;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; transition: background 0.2s;
+}
+.stack-layer:hover { background: var(--bg-elevated); }
+.stack-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  min-width: 20px; padding-top: 2px;
+}
+.stack-body h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.stack-body p {
+  font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5;
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--accent-dim); border-radius: 0 8px 8px 0;
+}
+.callout p { margin: 0; font-size: 15px; }
+
+.callout-warn {
+  border-left: 3px solid var(--orange);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--orange-dim); border-radius: 0 8px 8px 0;
+}
+.callout-warn p { margin: 0; font-size: 15px; }
+
+.callout-danger {
+  border-left: 3px solid var(--red);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--red-dim); border-radius: 0 8px 8px 0;
+}
+.callout-danger p { margin: 0; font-size: 15px; }
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto; margin: 24px 0;
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.table-wrap table {
+  width: 100%; border-collapse: collapse;
+  font-size: 14px; line-height: 1.5;
+}
+.table-wrap th {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-elevated); color: var(--text-dim);
+  padding: 10px 14px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--border-strong);
+}
+.table-wrap td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+}
+.table-wrap td:first-child {
+  font-family: 'Inter Tight', sans-serif; font-weight: 500;
+  color: var(--text);
+}
+.table-wrap tr:last-child td { border-bottom: none; }
+.table-wrap tr:hover td { background: var(--bg-surface); }
+
+.draft-notice {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 12px 24px;
+  text-align: center; font-size: 12px; color: var(--text-dimmer);
+}
+.draft-notice a { color: var(--accent); text-decoration: none; }
+.draft-notice a:hover { text-decoration: underline; }
+
+.colophon {
+  max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 80px;
+  text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.8;
+}
+.colophon p { margin: 4px 0; }
+.colophon a { color: var(--text-dimmer); }
+
+@media (max-width: 640px) {
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
+  .nav-brand { font-size: 13px; }
+  .nav-dropdown-toggle { font-size: 12px; padding: 5px 6px; }
+  .nav-dropdown-menu { min-width: 120px; }
+  .nav-dropdown-menu a { font-size: 12px; padding: 6px 14px; }
+  .article { padding: 40px 16px 80px; }
+  .actor-card { padding: 16px; }
+  .stack-layer { flex-direction: column; gap: 8px; }
+  .hero { padding: 60px 16px 40px; min-height: 50vh; }
+  .table-wrap { font-size: 12px; }
+  .table-wrap th, .table-wrap td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a class="nav-brand" href="/">Jason Sun</a>
+    <div class="nav-links">
+      <a href="/book.html" class="nav-link">Book</a>
+      <a href="/" class="nav-link">Essay</a>
+      <a href="/#about" class="nav-link nav-about">About</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">More</button>
+        <div class="nav-dropdown-menu">
+          <a href="/lessons.html">Lessons</a>
+          <a href="/research.html">Research</a>
+          <a href="/vault.html">Vault</a>
+          <a href="/china-ai.html">China AI</a>
+          <a href="/hamilton.html">Hamilton</a>
+        </div>
+      </div>
+      <a href="/index-zh.html" class="nav-link">中文</a>
+      
+      <button class="nav-theme" id="themeToggle" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="progress-bar" id="progress"></div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Policy analysis</div>
+  <h1 class="hero-title">The Sovereign Compute Case for&nbsp;Hamilton</h1>
+  <p class="hero-subtitle">Hamilton is Canada's top-ranked site for sovereign research compute. Why the moratorium should separate it from commercial hyperscale, and what the framework should say.</p>
+</div>
+
+<article class="article" id="article">
+
+<p><em>On July 14, 2026, Hamilton City Council held a special education session on AI data centres, the day before a vote to ratify a city-wide moratorium on new data centre development. This is my read on what was said, and what the city should do with it.</em></p>
+
+<h2>The conflation at the heart of the fight</h2>
+
+<p>Hamilton is about to pause all data centre development for up to a year. The draft passed council 15 to 1. The public mood is clear: roughly 1,200 letters opposed the commercial Steelport proposal on the former Stelco lands, citing energy, water, noise, and the fact that a lights-out commercial box employs almost no one.</p>
+
+<p>Those concerns are legitimate. But the moratorium, as drafted, treats every kind of compute as the same thing. It is not. Two very different models of compute are on the table, and only one of them matches the fears driving the opposition:</p>
+
+<ul>
+  <li><strong>Commercial hyperscale.</strong> A privately owned campus that rents capacity to whoever pays. Large draw, greenfield footprint, few permanent jobs, value exported to shareholders. This is the model people are protesting.</li>
+  <li><strong>Sovereign research compute.</strong> Publicly owned infrastructure operated for Canadian researchers, hospitals, and universities. Smaller, efficiency-first, built on reused industrial land, with the public as owner and beneficiary. This is a different thing wearing the same two words.</li>
+</ul>
+
+<p>The one useful job of the moratorium year is to write that distinction into the zoning framework. Banning both is the easy political move. It is also the wrong one, and the experts council invited said so in three different ways.</p>
+
+<h2>What the experts actually said</h2>
+
+<p><strong>Martin Karsten (University of Waterloo) made the efficiency case.</strong> His group's IRQ-suspension change to the Linux networking stack is 30 lines of code. It lifts server throughput by up to 45 percent without hurting latency and cuts data centre energy use by up to 30 percent. It shipped in Linux kernel 6.13. The point is not the kernel patch. The point is the principle: you meet demand by making systems smarter, not by pouring concrete and drawing more power. Scale is a lazy substitute for efficiency.</p>
+
+<p><strong>Michael Schull (Digital Research Alliance of Canada) made the sovereignty case.</strong> Canada is last in the G7 on research compute capacity. Finland, a country smaller than the Greater Toronto and Hamilton Area, has more supercomputing in its single Lumi site than all of Canada combined. And Lumi was built inside a repurposed pulp and paper mill.</p>
+
+<p>Schull laid out the European public-compute playbook, and it reads like a rebuttal to every fear on the table:</p>
+
+<ul>
+  <li>Individual centres are typically under 30 megawatts, not the hundreds of megawatts a hyperscale campus wants.</li>
+  <li>They are publicly owned. None of the European reference sites involve a commercial hyperscaler.</li>
+  <li>They favour brownfield redevelopment: a former pulp mill in Finland (Lumi), a former steel mill in Scotland (Ravenscraig), a deconsecrated church in Barcelona.</li>
+  <li>They reuse existing industrial power, recover waste heat for district heating, and use closed-loop cooling to minimize water.</li>
+  <li>They include public discovery centres so the community owns the story, not just the risk.</li>
+</ul>
+
+<p>Then the headline. DRAC evaluated 33 sites across Canada for the federal research supercomputer, with third-party engineering, an independent economic impact assessment, and job-creation analysis. <strong>Hamilton ranked first.</strong></p>
+
+<h2>Sovereign is not hyperscale</h2>
+
+<p>Put the two side by side and the public's objections sort themselves almost entirely into one column.</p>
+
+<ul>
+  <li><strong>Owner:</strong> public research institution vs. private commercial operator.</li>
+  <li><strong>Scale:</strong> under 30 MW vs. the 400 MW to 1 GW that has been floated for the commercial site.</li>
+  <li><strong>Purpose:</strong> Canadian health, climate, and AI research vs. rented capacity for the highest bidder.</li>
+  <li><strong>Land:</strong> reused industrial brownfield vs. greenfield build.</li>
+  <li><strong>Community:</strong> waste-heat recovery, closed-loop cooling, a discovery centre, jobs anchored to a university vs. a lights-out box.</li>
+</ul>
+
+<p>Water depletion, runaway power draw, no jobs, value extracted out of the community: those are hyperscale problems. They are not intrinsic to compute, and the framework should say so.</p>
+
+<h2>Why Hamilton, specifically</h2>
+
+<p>The European model that Schull held up as best practice is not a stretch for Hamilton. It is a description of Hamilton. Ravenscraig is a repurposed steel mill; the Stelco lands are a repurposed steel mill waiting to happen. The industrial power infrastructure is already in the ground. The city sits on a legacy of stranded hydro capacity from shut-down plants. And Hamilton already produces the demand: the federally funded VITAL project, which builds models to catch patients deteriorating in hospital before they crash, draws on data from Hamilton Health Sciences, the Juravinski site, and McMaster Children's. The research this compute serves is partly Hamilton's own.</p>
+
+<p>That is why Hamilton ranked first out of 33. Not as a favour, and not as a commercial play. As the best brownfield-plus-power-plus-research match in the country.</p>
+
+<h2>The option nobody is discussing: distributed</h2>
+
+<p>Even a 30 MW public site is not the only shape sovereign compute can take. The same efficiency-over-scale logic that Karsten applied at the kernel applies at the deployment layer. Compute can be distributed across many small, community-owned or institution-owned nodes on existing hardware and existing power, coordinated in software, with the data and the control staying in Canada. That is the model I work on. It needs no mega-campus at all, and it is the lowest-footprint way to give a city sovereign capacity without asking it to accept a single large draw. A serious framework should leave room for it, not just for the one big building.</p>
+
+<h2>What the framework should actually do</h2>
+
+<p>A one-year pause is not the enemy of sovereign compute. Used well, it is how Hamilton gets it right. The framework should:</p>
+
+<ol>
+  <li><strong>Distinguish, in zoning, sovereign and research compute from commercial hyperscale.</strong> Different uses, different rules. Do not ban a category to stop a proposal.</li>
+  <li><strong>Set conditions, not a blanket prohibition.</strong> Require brownfield or retrofit siting, closed-loop cooling with hard water caps, waste-heat recovery, use of existing industrial power, and published efficiency standards.</li>
+  <li><strong>Tier by megawatt and water draw,</strong> so a sub-30 MW public research facility is not governed by the same rule as a gigawatt commercial campus.</li>
+  <li><strong>Require public benefit,</strong> such as a discovery centre, community access, or research partnerships, as a condition of approval.</li>
+  <li><strong>Keep the distributed model in scope,</strong> so the framework does not accidentally outlaw the lowest-impact option by writing rules that only imagine one large building.</li>
+</ol>
+
+<h2>One thing to verify before anyone runs with this</h2>
+
+<div style="border-left: 3px solid var(--orange); background: var(--orange-dim); padding: 14px 18px; border-radius: 6px; margin: 20px 0;">
+  <p style="margin: 0;"><strong>The catch, stated plainly.</strong> These are not two proposals on two parcels. They are the same land. Slate Asset Management owns the roughly 800-acre former Stelco site it brands Steelport, and DRAC's federal bid, under the 705 million dollar AI Sovereign Compute Infrastructure Program, names that site. The reported structure is that Slate builds the facility and then sells the land and facility to DRAC, a public non-profit. So the honest framing is not "separate the sovereign site from the commercial one." It is that this single site can be governed toward a public-owned, research-purpose, efficiency-first end state, and the framework should enable that conditional path rather than ban the category because a private developer breaks ground. Judge the end state and the conditions, not who holds the shovel.</p>
+</div>
+
+<p>The debate Hamilton thinks it is having is about whether to allow data centres. The debate worth having is about which kind, on what land, owned by whom, and to whose benefit. The city is Canada's top-ranked site for the good kind. The framework year is the chance to say yes to that without saying yes to the rest.</p>
+
+</article>
+
+<div class="article" style="padding-top: 0; padding-bottom: 40px;">
+<h2>Sources</h2>
+
+<h3>The July 14 council session and the moratorium</h3>
+<ul>
+  <li><a href="https://thepublicrecord.ca/2026/07/horwath-calls-special-council-meeting-to-hear-from-ai-data-centre-proponents-ahead-of-bylaw-vote/" style="color: var(--accent);">TPR: Horwath calls special council meeting ahead of bylaw vote</a></li>
+  <li><a href="https://www.cbc.ca/news/canada/hamilton/data-centre-moratorium-9.7247233" style="color: var(--accent);">CBC: Hamilton council approves pause on data centre development</a></li>
+  <li><a href="https://www.theglobeandmail.com/business/commentary/article-hamilton-just-hit-pause-on-all-ai-data-centres-this-is-big/" style="color: var(--accent);">Globe and Mail: Hamilton just hit pause on all AI data centres</a></li>
+</ul>
+
+<h3>Efficiency over scale (Karsten)</h3>
+<ul>
+  <li><a href="https://uwaterloo.ca/computer-science/news/cheriton-school-computer-science-researchers-update-linux" style="color: var(--accent);">University of Waterloo: kernel update could cut data-centre energy up to 30%</a></li>
+  <li><a href="https://cs.uwaterloo.ca/~mkarsten/papers/sigmetrics2024-preprint.pdf" style="color: var(--accent);">Karsten et al., "Kernel vs. User-Level Networking" (SIGMETRICS 2024)</a></li>
+</ul>
+
+<h3>Sovereign public compute (DRAC / EuroHPC)</h3>
+<ul>
+  <li><a href="https://alliancecan.ca/" style="color: var(--accent);">Digital Research Alliance of Canada</a></li>
+  <li><a href="https://eurohpc-ju.europa.eu/index_en" style="color: var(--accent);">EuroHPC Joint Undertaking</a></li>
+  <li><a href="https://www.lumi-supercomputer.eu/" style="color: var(--accent);">LUMI supercomputer (repurposed pulp mill, Finland)</a></li>
+</ul>
+</div>
+
+<div class="draft-notice">
+  <p>Analysis by Jason Sun. Data as of May 2026. <a href="mailto:jason@adanomad.com">jason@adanomad.com</a></p>
+</div>
+
+<div class="colophon">
+  <p>&copy; 2026 Jason Sun</p>
+</div>
+
+<script>
+(function() {
+  // Theme
+  var toggle = document.getElementById('themeToggle');
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if (saved) { html.setAttribute('data-theme', saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { html.setAttribute('data-theme', 'light'); }
+  function updateIcon() { toggle.innerHTML = html.getAttribute('data-theme') === 'dark' ? '&#9788;' : '&#9790;'; }
+  updateIcon();
+  toggle.addEventListener('click', function() {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcon();
+  });
+
+  // Nav scroll
+  var siteNav = document.getElementById('siteNav');
+  function updateNav() { siteNav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Progress
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH > 0) progress.style.width = (window.scrollY / docH * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Analytics
+  var _sid = sessionStorage.getItem('sid') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  sessionStorage.setItem('sid', _sid);
+  function track(event, data) {
+    var payload = Object.assign({ event: event, page: 'hamilton', sid: _sid }, data || {});
+    try { navigator.sendBeacon('/api/track', JSON.stringify(payload)); } catch(e) {}
+  }
+  track('pageview', { path: location.pathname });
+})();
+</script>
+</body>
+</html>
