@@ -1,6 +1,6 @@
 <h2 id="the-argument">The Argument</h2>
 
-<p>AI agents are doing real work. Not as demos. In production. Contracts are being reviewed, medical records triaged, incident reports drafted, invoices processed, code written, research synthesized. The shift from &ldquo;AI as tool&rdquo; to &ldquo;AI as worker&rdquo; is not incremental. It is structural. And it is happening faster than the infrastructure can keep up.</p>
+<p>AI agents are doing real work. Not as demos. In production. Contracts are being reviewed, medical records triaged, incident reports drafted, invoices processed, code written, research synthesized. The shift from &ldquo;AI as tool&rdquo; to &ldquo;AI as worker&rdquo; is structural, and it is happening faster than the infrastructure can keep up.</p>
 
 <p>When a human consulting firm works on a project, every transaction has paperwork. Engagement letters, subcontracts, NDAs, invoices, deliverable specifications. If the client questions the analysis, the firm traces the chain: the conclusion came from the specialist&rsquo;s report, which was based on the sub-contractor&rsquo;s research, which used the data analyst&rsquo;s findings, which were derived from a licensed dataset. Every step is documented. Every cost is attributable. Every participant is identifiable.</p>
 
@@ -62,13 +62,13 @@
 
 <p>Without calibrated confidence, the physician either trusts the number uncritically (dangerous) or ignores it entirely (wasteful). Human error in medicine is not a technology problem. It is a systems problem. A patient arrives for kidney surgery and receives heart surgery because a label was transposed. A medication is prescribed that interacts fatally with a drug the patient took three years ago, recorded in a different system. These failures demand the same accountability infrastructure the rest of the economy needs.</p>
 
-<p>The data access problem makes it worse. Health systems that hold population-level data across all providers sit on uniquely valuable training sets, but they default to refusal because no trust protocols exist to manage access. The innovators get their data elsewhere, build their products, and the jurisdiction that held the most valuable dataset gains nothing. This is not a privacy failure. It is a trust infrastructure failure: the data was sensitive enough to require accountability protocols for access, and those protocols did not exist.</p>
+<p>The data access problem makes it worse. Health systems that hold population-level data across all providers sit on uniquely valuable training sets, but they default to refusal because no trust protocols exist to manage access. The innovators get their data elsewhere, build their products, and the jurisdiction that held the most valuable dataset gains nothing. This is a trust infrastructure failure, not a privacy failure: the data was sensitive enough to require accountability protocols for access, and those protocols did not exist.</p>
 
 <hr>
 
 <h2 id="the-stack">The Stack</h2>
 
-<p>The accountability infrastructure is not one protocol. It is a stack of seven layers, each building on the one below, each solving a distinct problem.</p>
+<p>The accountability infrastructure is a stack of seven layers, each building on the one below, each solving a distinct problem.</p>
 
 <div class="layer-diagram">
   <div class="layer-item"><span class="layer-num">7</span><span class="layer-name">Marketplace</span><span class="layer-desc">Agent-to-agent commerce</span></div>
@@ -86,7 +86,7 @@
 
 <p>Layer 3 (Exchange) is the least mature and one of the most important. When multiple organizations collaborate on a workflow, someone needs to settle the bill. Today this happens through monthly invoices, manual estimates, and disputes that take weeks. The exchange layer automates reconciliation from the exact cost trees that Layer 1 already produces.</p>
 
-<p>Layer 4 (Trust) is the agent economy&rsquo;s credit bureau. Not a single score, but a structured record of accuracy, reliability, compliance, and safety across thousands or millions of transactions. A trust score from 100 transactions is marginal. From 1,000,000, it is authoritative. The value compounds with participation, creating a network effect.</p>
+<p>Layer 4 (Trust) is the agent economy&rsquo;s credit bureau, a structured record of accuracy, reliability, compliance, and safety across thousands or millions of transactions rather than a single score. A trust score from 100 transactions is marginal. From 1,000,000, it is authoritative. The value compounds with participation, creating a network effect.</p>
 
 <p>Layer 5 (Enforcement) goes beyond &ldquo;is this output safe?&rdquo; to &ldquo;should this operation proceed, given cost anomalies, data sensitivity, confidence scores, and historical behavior?&rdquo; The critical innovation is calibrated judgment: diverse ensembles of judge models producing confidence scores where 0.7 actually means correct 70% of the time. Bayesian calibrators on internal model representations distinguish between genuine ambiguity and knowledge gaps. Active learning selectively requests human verification where information gain is highest. The enforcement layer is not a metal detector at an airport. It is a security operations center.</p>
 
@@ -108,7 +108,7 @@
 
 <p>This is where the confidence void becomes a workforce problem, not just an infrastructure problem. Without calibrated confidence (a signal that says &ldquo;the AI is 95% sure about this invoice but only 60% sure about that one, review that one first&rdquo;), the human governor is either rubber-stamping everything (dangerous), spot-checking randomly (inefficient), or reviewing everything (pointless).</p>
 
-<p>Interpreting calibrated uncertainty becomes a professional skill, as fundamental to the AI-augmented professional as reading financial statements is to the traditional accountant. The physician needs to understand what it means when the AI is 70% confident in a medication recommendation: not just statistically, but clinically, for this patient, with this history.</p>
+<p>Interpreting calibrated uncertainty becomes a professional skill, as fundamental to the AI-augmented professional as reading financial statements is to the traditional accountant. The physician needs to understand what it means when the AI is 70% confident in a medication recommendation: what the number says statistically, and what it means clinically, for this patient, with this history.</p>
 
 <p>The education system is not preparing people for this shift. Universities teach students to execute work that AI will increasingly do. Law schools teach contract drafting. Accounting programs teach transaction processing. Medical schools teach scan interpretation. The foundational skills remain essential; you cannot govern what you do not understand. But education stops at execution. It does not teach governance: evaluating AI output, designing AI workflows, measuring AI performance, deciding when to intervene.</p>
 
@@ -134,11 +134,11 @@
 
 <p><strong>Enterprise.</strong> CISOs responsible for AI governance in organizations deploying agents at scale. AI maturity declining 20% year-over-year because organizations bought the tools without building the operational infrastructure.</p>
 
-<p>These forces do not need to coordinate. They are all demanding the same thing: a way to account for what AI agents do. Cost attribution, data provenance, governance enforcement, and calibrated confidence are not features of a product. They are infrastructure, the same way TCP/IP is infrastructure, the same way HTTPS is infrastructure, the same way double-entry bookkeeping is infrastructure.</p>
+<p>These forces do not need to coordinate. They are all demanding the same thing: a way to account for what AI agents do. Cost attribution, data provenance, governance enforcement, and calibrated confidence are not features of a product. They are infrastructure, the same way TCP/IP, HTTPS, and double-entry bookkeeping are infrastructure.</p>
 
 <p>The infrastructure will be built. Someone will build it. The question is whether it will be designed intentionally as a coherent stack, or cobbled together from incompatible patches, each serving a different vendor&rsquo;s interest, none serving the public interest.</p>
 
-<p>That question is not rhetorical. It is the design problem of the decade.</p>
+<p>That is the design problem of the decade.</p>
 
 <hr>
 
@@ -150,15 +150,15 @@
 
 <p>Inference does not require a $30 billion data center. A $5,000 workstation already runs models that would have required a data center five years ago. GPU performance per dollar improves roughly 40% annually. By 2030, the hardware for a full enterprise AI stack will cost less than a high-end laptop. In ten years, inference-capable hardware is as ubiquitous as Wi-Fi routers.</p>
 
-<p>A critical acceleration: multiple independent groups have converged on the same architectural insight: you can distill a large model&rsquo;s capabilities into tiny specialized programs that run on sub-billion-parameter models locally. A natural language specification gets compiled into compact weights that execute with no API call, no internet connection, no per-token fee. These compiled programs can be versioned, shared, and composed like software libraries. The convergence is not coordinated. It is structural. The economics of sending every request to a cloud API are unsustainable at scale.</p>
+<p>A critical acceleration: multiple independent groups have converged on the same architectural insight: you can distill a large model&rsquo;s capabilities into tiny specialized programs that run on sub-billion-parameter models locally. A natural language specification gets compiled into compact weights that execute with no API call, no internet connection, no per-token fee. These compiled programs can be versioned, shared, and composed like software libraries. The convergence is structural, not coordinated. The economics of sending every request to a cloud API are unsustainable at scale.</p>
 
 <p>When every organization can run its own AI on its own hardware, the sovereignty question answers itself. Canadian data stays on Canadian hardware. Patient records never leave the hospital. Defense workloads run air-gapped. Not because of a cloud provider&rsquo;s contractual promise, but because the data physically never leaves the building. Distribution makes sovereignty a physical reality rather than a legal abstraction.</p>
 
-<p>The distributed architecture (sovereign nodes connected by encrypted mesh, coordinated by protocol) is how the accountability stack gets deployed. Not as a cloud service that concentrates control, but as infrastructure that each organization owns. The accountability layer, the compute layer, the enforcement layer: all running locally, interoperating through standards. The same architecture that made the internet resilient makes AI infrastructure resilient.</p>
+<p>The distributed architecture (sovereign nodes connected by encrypted mesh, coordinated by protocol) is how the accountability stack gets deployed, as infrastructure that each organization owns rather than a cloud service that concentrates control. The accountability layer, the compute layer, the enforcement layer: all running locally, interoperating through standards. The same architecture that made the internet resilient makes AI infrastructure resilient.</p>
 
 <p>A centralized architecture concentrates power: control over the machines that do cognitive work for the entire economy. A distributed architecture distributes that power to the organizations and communities that use it. These are not equivalent options.</p>
 
-<p>This is the infrastructure AceTeam is building. Not another agent framework. Not another model wrapper. The accountability layer that sits beneath all of them: distributed, sovereign, designed for a world where AI agents do real work and someone has to account for what happened. The seven-layer stack described above is the architecture. The team, the trust gradient, the human-in-the-loop checkpoints, the calibrated confidence: these are what make it work.</p>
+<p>This is the infrastructure AceTeam is building. Not another agent framework or model wrapper, but the accountability layer that sits beneath all of them: distributed, sovereign, designed for a world where AI agents do real work and someone has to account for what happened. The seven-layer stack described above is the architecture. The team, the trust gradient, the human-in-the-loop checkpoints, the calibrated confidence: these are what make it work.</p>
 
 <div class="cta-block">
   <h3>The Complete Argument</h3>

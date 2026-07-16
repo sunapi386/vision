@@ -4,15 +4,15 @@ title: "The Ecosystem Today"
 
 # The Ecosystem Today
 
-The shift from AI-as-tool to AI-as-worker isn't a prediction. It's happening right now, across thousands of teams, with real software that real people use every day. Before arguing about what's missing, here is what already exists. This moves fast, so specifics matter more than impressions.
+The shift from AI-as-tool to AI-as-worker is happening right now, across thousands of teams, with real software that real people use every day. Before arguing about what's missing, here is what already exists. This moves fast, so specifics matter more than impressions.
 
 ## Vibe Coding: The Canary in the Coal Mine
 
 The clearest signal that AI has crossed from tool to worker is what developers now call "vibe coding": building software by describing intent in natural language and letting an AI write, test, and debug the code.
 
-This isn't code completion. It isn't autocomplete on steroids. It's a fundamentally different mode of working.
+This is a fundamentally different mode of working, not code completion or autocomplete on steroids.
 
-**Cursor** took the VS Code editor and rebuilt it around AI. The developer describes what they want ("add a pagination component that handles server-side rendering and preserves scroll position") and the AI reads the existing codebase, identifies the relevant files, generates the implementation, and applies the changes as a diff the developer can review. It understands project structure, import conventions, and testing patterns. It doesn't just generate code; it generates code that fits.
+**Cursor** took the VS Code editor and rebuilt it around AI. The developer describes what they want ("add a pagination component that handles server-side rendering and preserves scroll position") and the AI reads the existing codebase, identifies the relevant files, generates the implementation, and applies the changes as a diff the developer can review. It understands project structure, import conventions, and testing patterns. The code it generates fits.
 
 **Windsurf** (from Codeium) pushed further into autonomous mode. Its Cascade feature chains multiple reasoning steps together (reading documentation, exploring the codebase, generating code, running tests, interpreting failures, and iterating), all before the developer sees the result. The developer reviews a completed feature, not a code snippet.
 
@@ -20,7 +20,7 @@ This isn't code completion. It isn't autocomplete on steroids. It's a fundamenta
 
 **Replit Agent** goes further still. Given a natural language description of an entire application, it generates the project structure, writes the code, configures the database, sets up authentication, deploys to production, and provides a live URL. An application that would have taken a junior developer a week to scaffold is running in minutes.
 
-These tools aren't novelties. Cursor has millions of users. Windsurf and Claude Code are in active use at companies from startups to enterprises. GitHub Copilot, the earliest of the AI coding tools, reported that developers accept over 30% of its suggestions, and that figure understates the impact because the suggestions are getting longer, more complex, and more architecturally aware with each model generation.
+Cursor alone has millions of users. Windsurf and Claude Code are in active use at companies from startups to enterprises. GitHub Copilot, the earliest of the AI coding tools, reported that developers accept over 30% of its suggestions, and that figure understates the impact because the suggestions are getting longer, more complex, and more architecturally aware with each model generation.
 
 Developer productivity is the sideshow. The real signal is that if AI can write and ship production software, every other knowledge-work domain is next. If AI can write, test, and deploy software, one of the most complex cognitive tasks humans do, then data pipelines, document processing, research workflows, and business operations are all on the same trajectory. Software development is just the first knowledge work domain where the tools matured enough for the transition to be visible.
 
@@ -38,9 +38,9 @@ The frameworks enabling this are proliferating rapidly.
 
 **AutoGen** (from Microsoft Research) enables multi-agent conversations where agents discuss, debate, and refine their work. A coding agent writes code, a review agent critiques it, a testing agent runs tests, and the coding agent iterates based on feedback. The conversation continues until the group reaches consensus or a quality threshold is met. It models the multi-agent workflow as a dialogue rather than a pipeline.
 
-**OpenClaw**, **Semantic Kernel**, **Autogen Studio**, **Agency Swarm**: the list of frameworks grows monthly. Each takes a slightly different architectural approach, but they all converge on the same insight: complex work requires multiple specialized agents coordinating, not a single model answering questions.
+The list of frameworks grows monthly: **OpenClaw**, **Semantic Kernel**, **Autogen Studio**, **Agency Swarm**. Each takes a slightly different architectural approach, but they all converge on the same insight: complex work requires multiple specialized agents coordinating, not a single model answering questions.
 
-These frameworks solve the orchestration problem: how to decompose work, coordinate agents, and recombine their output. What none of them addresses is the accountability problem: who tracks what the agents did, what it cost, where the data went, and whether the humans who delegated the work can verify the result. AceTeam occupies that different space: not another orchestration framework, but the accountability infrastructure beneath all of them.
+These frameworks solve the orchestration problem: how to decompose work, coordinate agents, and recombine their output. What none of them addresses is the accountability problem: who tracks what the agents did, what it cost, where the data went, and whether the humans who delegated the work can verify the result. AceTeam occupies that space: the accountability infrastructure beneath all of them.
 
 When work is decomposed into agent roles and recombined through orchestration frameworks, the resulting system behaves less like a tool and more like an organization. It has specialists, managers, review processes, and quality gates. The difference is that the "employees" are software, the "hiring" is configuration, and the "payroll" is compute cost.
 
@@ -78,7 +78,7 @@ The window won't last forever. As agent architectures mature, they'll likely dev
 
 ## Cross-Org Agent Workflows Are Already Here
 
-The multi-agent future isn't theoretical. Cross-organizational agent workflows are already running in production, even if most people haven't noticed.
+Cross-organizational agent workflows are already running in production, even if most people haven't noticed.
 
 Consider what happens today when a consulting firm uses AI for client work. The firm's document processing agent ingests client financial statements. That agent calls an extraction model, perhaps a fine-tuned open-source model running on the firm's own infrastructure, or perhaps Claude or GPT-4 via API. The extraction output feeds into an analysis agent that compares financial ratios against industry benchmarks from a third-party data provider. The analysis agent's output feeds into a report generation agent that produces a structured deliverable.
 
@@ -88,23 +88,23 @@ Or consider a more explicit case: a research organization's literature review ag
 
 The same pattern is emerging in healthcare (clinical decision support agents querying drug interaction databases maintained by pharmaceutical companies), legal services (contract review agents querying regulatory databases maintained by government agencies), and financial services (risk assessment agents querying credit data maintained by bureaus).
 
-These aren't science fiction scenarios. They're production systems running today, processing real work. The agents are crossing organizational boundaries with every API call. But the infrastructure for tracking what crosses those boundaries (costs, data, consent, provenance) doesn't exist.
+All of this runs in production today, handling real work. The agents are crossing organizational boundaries with every API call. But the infrastructure for tracking what crosses those boundaries (costs, data, consent, provenance) doesn't exist.
 
 ## The Stack, Assembled
 
 Taken together, the ecosystem looks like this:
 
-**At the application layer**: vibe coding tools (Cursor, Windsurf, Claude Code, Replit Agent) are proving that AI can replace human workers for complex cognitive tasks, starting with software development.
+At the application layer, vibe coding tools (Cursor, Windsurf, Claude Code, Replit Agent) are proving that AI can replace human workers for complex cognitive tasks, starting with software development.
 
-**At the framework layer**: multi-agent orchestration systems (LangChain, CrewAI, DSPy, AutoGen) are enabling AI workers to collaborate on tasks too complex for any single model, decomposing work into specialist roles and recombining the output.
+At the framework layer, multi-agent orchestration systems (LangChain, CrewAI, DSPy, AutoGen) let AI workers collaborate on tasks too complex for any single model, decomposing work into specialist roles and recombining the output.
 
-**At the communication layer**: interoperability protocols (A2A, backed by 150+ organizations and the Linux Foundation) are standardizing how agents discover and talk to each other across organizational boundaries.
+At the communication layer, interoperability protocols (A2A, backed by 150+ organizations and the Linux Foundation) are standardizing how agents discover and talk to each other across organizational boundaries.
 
-**At the transport layer**: the OpenAI-compatible API format has accidentally created a universal interception point where accountability, governance, and cost tracking could be inserted transparently.
+At the transport layer, the OpenAI-compatible API format has accidentally created a universal interception point where accountability, governance, and cost tracking could be inserted transparently.
 
-**At the deployment layer**: cross-organizational agent workflows are already running in production, with data flowing across company boundaries on every API call.
+And at the deployment layer, cross-organizational agent workflows are already running in production, with data flowing across company boundaries on every API call.
 
-The pieces are assembling rapidly. The AI agent economy isn't a future state; it's the present tense. Agents are being built, deployed, networked, and orchestrated at a pace that makes the smartphone adoption curve look gradual.
+The pieces are assembling rapidly. The AI agent economy is the present tense: agents are being built, deployed, networked, and orchestrated at a pace that makes the smartphone adoption curve look gradual.
 
 But there's a conspicuous absence in this stack. The communication layer is being standardized. The framework layer is maturing. The application layer is exploding. What's missing is the accountability layer: the infrastructure that tracks what agents did, what it cost, where the data went, and whether anyone consented. The agent economy is being assembled without the bookkeeping.
 

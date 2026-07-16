@@ -20,13 +20,13 @@ This model has clear value. It prevents agents from executing disallowed actions
 
 But the model has fundamental limitations that become apparent in multi-agent, multi-organizational workflows.
 
-**The control server is scoped to one organization.** It sees the agents it manages. It doesn't see agents operated by other organizations. When a consulting firm's agent calls a research firm's agent, the consulting firm's control server evaluates the outbound call, and the research firm's control server evaluates the inbound request, but neither server has visibility into the other's evaluation. There's no shared context. The consulting firm doesn't know what the research firm's agent did with its data. The research firm doesn't know why the consulting firm's agent made the request.
+The control server is scoped to one organization. It sees the agents it manages. It doesn't see agents operated by other organizations. When a consulting firm's agent calls a research firm's agent, the consulting firm's control server evaluates the outbound call, and the research firm's control server evaluates the inbound request, but neither server has visibility into the other's evaluation. There's no shared context. The consulting firm doesn't know what the research firm's agent did with its data. The research firm doesn't know why the consulting firm's agent made the request.
 
-**The evaluation is stateless.** Each policy check is independent. The control server evaluates "is this action allowed?" without context about what happened before. Was this the fifth time the agent accessed this data source? Has the cumulative cost of this session exceeded the budget? Has the agent's behavior pattern changed in ways that suggest a compromised prompt? Stateless evaluation can't answer these questions. It evaluates each action in isolation, like a security guard who checks IDs at the door but has no memory of who entered the building yesterday.
+The evaluation is stateless. Each policy check is independent. The control server evaluates "is this action allowed?" without context about what happened before. Was this the fifth time the agent accessed this data source? Has the cumulative cost of this session exceeded the budget? Has the agent's behavior pattern changed in ways that suggest a compromised prompt? Stateless evaluation can't answer these questions. It evaluates each action in isolation, like a security guard who checks IDs at the door but has no memory of who entered the building yesterday.
 
-**The record stays at the checkpoint.** When the control server approves an action, the record of that approval lives on the control server's database. The data itself (the document being processed, the API response being generated) moves on without any record of the evaluation attached to it. Six months later, a compliance audit asks: "was this output evaluated for safety before it was sent to the client?" The answer requires checking the control server's logs, matching timestamps, and hoping the record was retained. The output itself carries no evidence that it was ever evaluated.
+The record stays at the checkpoint. When the control server approves an action, the record of that approval lives on the control server's database. The data itself (the document being processed, the API response being generated) moves on without any record of the evaluation attached to it. Six months later, a compliance audit asks: "was this output evaluated for safety before it was sent to the client?" The answer requires checking the control server's logs, matching timestamps, and hoping the record was retained. The output itself carries no evidence that it was ever evaluated.
 
-**There's no composability.** When Agent A calls Sub-agent B, which calls Sub-agent C, the control server sees three independent policy checks. It doesn't understand that these three checks are part of a single workflow. There's no parent-child relationship between the evaluations. No roll-up of costs from children to parent. No way to enforce that the total budget for the workflow, across all sub-agents, stays within a defined limit.
+There's no composability. When Agent A calls Sub-agent B, which calls Sub-agent C, the control server sees three independent policy checks. It doesn't understand that these three checks are part of a single workflow. There's no parent-child relationship between the evaluations. No roll-up of costs from children to parent. No way to enforce that the total budget for the workflow, across all sub-agents, stays within a defined limit.
 
 The control plane approach is a security camera at the door. It records who entered, and it can block unauthorized visitors. But the package that enters the building has no record of being checked. The chain of custody is in the camera footage, not on the package.
 
@@ -48,7 +48,7 @@ The critical difference: the record travels with the work. Six months later, a c
 
 ## Why This Can't Be a Feature
 
-The distinction between the control plane approach and the accountability layer approach isn't a matter of engineering preference. It's a structural constraint that determines what's possible.
+The distinction between the control plane approach and the accountability layer approach is a structural constraint that determines what's possible, not a matter of engineering preference.
 
 ### Cross-org accountability requires protocol, not servers
 
@@ -88,7 +88,7 @@ Double-entry bookkeeping solved this by imposing a structural constraint: every 
 
 The agent economy needs its equivalent. Not a narrative log of what happened, which is the current approach of API call logs and billing dashboards. A structural format for accountability records that composes recursively, travels with the data, enforces constraints at every boundary, and produces artifacts that any party can audit independently.
 
-This is not something you bolt onto an existing agent framework. It's not a dashboard that sits beside the workflow. It's not a monitoring service that watches from outside. It's a category of infrastructure, as fundamental to the agent economy as double-entry bookkeeping is to the financial economy.
+This does not bolt onto an existing agent framework, and it is not a dashboard beside the workflow or a monitoring service watching from outside. It is a category of infrastructure, as fundamental to the agent economy as double-entry bookkeeping is to the financial economy.
 
 ## What the Category Looks Like
 
@@ -122,7 +122,7 @@ The accountability layer sits beneath all of these, providing the raw records fr
 
 This category doesn't exist yet. The agent economy is assembling itself without it: the frameworks are maturing, the communication standards are solidifying, the hardware is getting cheap, and the agents are crossing organizational boundaries with every API call. But the bookkeeping isn't there.
 
-The void isn't just a missing feature. It's a missing foundation. And the seven forces converging on the same destination guarantee that the foundation will be built. The only question is whether it's built correctly, as a protocol-level standard that composes across the entire ecosystem, or incorrectly, as fragmented, proprietary solutions that each platform implements differently, creating the compliance equivalent of the browser wars.
+The void is a missing foundation, not just a missing feature. And the seven forces converging on the same destination guarantee that the foundation will be built. The only question is whether it's built correctly, as a protocol-level standard that composes across the entire ecosystem, or incorrectly, as fragmented, proprietary solutions that each platform implements differently, creating the compliance equivalent of the browser wars.
 
 History suggests that the protocol approach wins. TCP/IP won over proprietary networking. HTTP won over proprietary web protocols. HTTPS won over proprietary security schemes. In each case, the open protocol that composed across the ecosystem became the standard, and the proprietary alternatives became footnotes.
 

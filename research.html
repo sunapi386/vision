@@ -315,9 +315,9 @@ body {
 
 <h2>The Overconfidence Problem</h2>
 
-<p>Large language models are systematically overconfident. When a model says 95% confidence, the answer is right about half the time. This is not a rounding error. It breaks every system downstream that trusts those numbers.</p>
+<p>Large language models are systematically overconfident. When a model says 95% confidence, the answer is right about half the time. A gap that size breaks every system downstream that trusts those numbers.</p>
 
-<p>The gap is worse than people think. GPT-4o mini self-reports 90-100% confidence on entity extractions where actual accuracy sits around 35%. Single judge models assign confidence 1.0 to 86% of entities they extract, but only 40% of those entities are correct. This is not noise. It is structural.</p>
+<p>The gap is worse than people think. GPT-4o mini self-reports 90-100% confidence on entity extractions where actual accuracy sits around 35%. Single judge models assign confidence 1.0 to 86% of entities they extract, but only 40% of those entities are correct. The error is structural, not noise.</p>
 
 <p>Published guard models are no better. Llama Guard, Shield Guard, and Wild Guard, the standard open-source safety classifiers, have Expected Calibration Error (ECE) of 14-28% [2]. ECE measures the average gap between predicted confidence and observed accuracy. An ECE of 20% means the model's confidence is, on average, 20 points away from reality:</p>
 
@@ -327,11 +327,11 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>There is also a selection bias that compounds the problem. Extraction models do an implicit top-K filtering before confidence is ever estimated: they only output entities they believe are correct. The confidence model never sees clearly wrong extractions. It evaluates a pre-filtered distribution where most inputs are plausible. A perfect extractor paired with a perfect confidence model would just output "correct" for everything, trivially calibrated but completely uninformative. The practical consequence: precision can be improved after the fact through calibration, but recall cannot. If the extraction model suppresses uncertain outputs before they reach the confidence estimator, those potential corrections are lost permanently.</p>
 
-<p>RLHF makes this worse. The GPT-4 technical report documents calibration degradation after human feedback training [5]. RLHF optimizes for outputs that sound confident and authoritative, because human annotators reward those qualities. The model learns to express certainty as rhetoric, decoupled from actual accuracy. This is not a bug in RLHF. It is a direct consequence of optimizing for human preference rather than calibrated truthfulness.</p>
+<p>RLHF makes this worse. The GPT-4 technical report documents calibration degradation after human feedback training [5]. RLHF optimizes for outputs that sound confident and authoritative, because human annotators reward those qualities. The model learns to express certainty as rhetoric, decoupled from actual accuracy. That is RLHF working as designed: the direct consequence of optimizing for human preference rather than calibrated truthfulness.</p>
 
 <h2>Three Methods for Confidence Estimation</h2>
 
-<p>The methods divide by access level: how much of the model's internals you can see. Each level trades deployment complexity for calibration quality. Which method you use depends on how much access you have to the model's internals.</p>
+<p>The methods divide by access level: how much of the model's internals you can see. Each level trades deployment complexity for calibration quality.</p>
 
 <div class="stack-layer">
   <div class="stack-num">01</div>
@@ -404,12 +404,12 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 <p>The acquisition function is expected information gain. For each candidate entity, estimate how much total uncertainty reduction you would get from a human label. Entities with confidence near 0.5 are not automatically the best candidates. An entity at 0.5 confidence with 50 downstream relations is worth more than an entity at 0.5 confidence with zero downstream relations. The graph structure determines query value.</p>
 
 <div class="callout">
-  <p>If you have a human budget of 10 minutes, you pick the 20 things you are most uncertain of. But uncertainty is not just the confidence score. It is the confidence score weighted by downstream impact in the knowledge graph.</p>
+  <p>If you have a human budget of 10 minutes, you pick the 20 things you are most uncertain of. But uncertainty here means more than the confidence score: it is the confidence score weighted by downstream impact in the knowledge graph.</p>
 </div>
 
 <p>Even at high confidence, the system should occasionally verify for systematic drift. A model that was 95% accurate last month may have degraded. Periodic spot-checks on high-confidence outputs detect this before it compounds. This is the exploration-exploitation tradeoff: mostly exploit your confidence estimates to focus human effort on uncertain items, but explore enough to detect when the estimates themselves have gone stale.</p>
 
-<p>The Bayesian extension replaces point estimates with full distributions. Instead of "this entity has confidence 0.73," the system maintains a $\text{Beta}(14, 5)$ distribution with mean 0.74 and 95% credible interval [0.55, 0.89]. Distributions capture not just the model's best guess but how much evidence backs it. An entity with confidence 0.73 from three observations is genuinely less certain than one with confidence 0.73 from three hundred observations, even though the point estimates are identical.</p>
+<p>The Bayesian extension replaces point estimates with full distributions. Instead of "this entity has confidence 0.73," the system maintains a $\text{Beta}(14, 5)$ distribution with mean 0.74 and 95% credible interval [0.55, 0.89]. A distribution captures both the model's best guess and how much evidence backs it. An entity with confidence 0.73 from three observations is genuinely less certain than one with confidence 0.73 from three hundred observations, even though the point estimates are identical.</p>
 
 <h2>The Safety Application</h2>
 
@@ -419,7 +419,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>Instead of a single monolithic safety model, the system deploys per-category specialists: one for privacy violations, one for financial risk, one for security threats, one for ethical concerns. Each specialist is a small model fine-tuned on category-specific data. This mirrors the black-box ensemble from confidence estimation, but with domain specialization.</p>
 
-<p>Specialist diversity improved detection recall from 63% (single general judge) to 73% (four specialists). The improvement comes not from more parameters but from more perspectives. A general safety model treats "agent emails SSH keys to an external address" and "agent provides unsolicited investment advice" as the same class of problem. A specialist architecture treats them as fundamentally different failure modes requiring different training data, evaluation criteria, and confidence thresholds.</p>
+<p>Specialist diversity improved detection recall from 63% (single general judge) to 73% (four specialists). The improvement comes from more perspectives, not more parameters. A general safety model treats "agent emails SSH keys to an external address" and "agent provides unsolicited investment advice" as the same class of problem. A specialist architecture treats them as fundamentally different failure modes requiring different training data, evaluation criteria, and confidence thresholds.</p>
 
 <p>Turn off individual specialists and you see their value directly. Without the finance specialist, unauthorized purchase actions pass through undetected. Without the privacy specialist, credential exfiltration slips by. Each specialist catches failures the others miss, because each is trained on a different slice of the risk taxonomy.</p>
 
@@ -453,7 +453,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>Cloud-based specialist judges are expensive to run in production. The distillation pipeline compresses them into LoRA adapters on a single small backbone model (Qwen 0.6B or Llama 1B). Each adapter is 5-25MB. Multiple adapters share one base deployment, making per-specialist inference cheap.</p>
 
-<p>The pipeline has four phases: (1) synthetic data generation from 10-50 seed examples per category using frontier models, (2) teacher evaluation to validate the task is solvable at the target accuracy, (3) LoRA fine-tuning on the small backbone, (4) integration into the gateway. This pipeline is task-agnostic. The same four phases apply whether the target is safety detection, entity extraction, PII redaction, or any classification task. The same four-phase pipeline works for any classification task.</p>
+<p>The pipeline has four phases: (1) synthetic data generation from 10-50 seed examples per category using frontier models, (2) teacher evaluation to validate the task is solvable at the target accuracy, (3) LoRA fine-tuning on the small backbone, (4) integration into the gateway. This pipeline is task-agnostic. The same four phases apply whether the target is safety detection, entity extraction, PII redaction, or any classification task.</p>
 
 <p>Published benchmarks from comparable distillation approaches (Distill Labs, Berlin) show that 1-4B parameter models can match 120B model accuracy on targeted classification tasks. Their PII redaction benchmark shows a 1B model matching GPT-4. Turnaround is approximately 8 hours at approximately 100 USD per distillation.</p>
 
@@ -497,7 +497,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <p>Natural language instructions can be compiled into LoRA adapters: small weight modifications (approximately 5-25MB) that encode behavioral programs into a base model. The base model can be as small as GPT-2 124M or Qwen 0.6B. These adapters run in the browser via WebAssembly with no server round-trip.</p>
 
-<p>This is policy enforcement at the weight level. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is not an input that can be jailbroken. It is part of the model itself.</p>
+<p>This is policy enforcement at the weight level. Instead of prompting a model with safety rules at inference time (which can be bypassed), you compile the rules into the model's weights. The policy is part of the model itself, not an input that can be jailbroken.</p>
 
 <p>The gap is calibration. Programs-as-weights can enforce behaviors but cannot currently report how confident they are in their enforcement. A compiled policy adapter can block an action but cannot say "I am 73% sure this action violates the policy." Connecting the calibration methods described above to compiled policy adapters is an open problem. Solve it and you get tamper-resistant policies that can also tell you how sure they are.</p>
 

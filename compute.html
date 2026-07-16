@@ -370,7 +370,7 @@ body {
   <li><strong>Operator expertise:</strong> people who know how to keep a data center running 24/7</li>
 </ol>
 
-<p>These three assets are worth more than the mining rigs themselves. The facility is the real value, not the chips inside it.</p>
+<p>These three assets are worth more than the mining rigs themselves. The facility is the real value.</p>
 
 <h2>ASIC vs GPU: Why Miners Cannot Run AI</h2>
 
@@ -378,7 +378,7 @@ body {
   <p><strong>Critical fact:</strong> SHA-256 ASIC miners (e.g. <a href="https://support.bitmain.com/hc/en-us/articles/900000253583-S19-Specifications" style="color: var(--accent);">Antminer S19</a>) have no GPU, no VRAM, and no CUDA cores. They cannot run AI inference workloads. This is a hardware architecture limitation, not a software one.</p>
 </div>
 
-<p>The question is not "can the existing miners run AI?" The answer is no. The question is: "can we drop GPU servers into the existing facility and skip the buildout cost?"</p>
+<p>Can the existing miners run AI? No. The question that matters is whether we can drop GPU servers into the existing facility and skip the buildout cost.</p>
 
 <p><strong>What transfers:</strong> the facility, the power, the cooling, the operator's knowledge.</p>
 <p><strong>What does not transfer:</strong> the chips.</p>
@@ -622,14 +622,14 @@ body {
 </div>
 
 <div class="callout-warn">
-  <p><strong>Reading these tables:</strong> The realistic payback case is 1.5 to 3.5 years. B200 has better payback than H100 despite costing more, because revenue per hour scales proportionally higher. The government subsidy is the single biggest lever.</p>
+  <p><strong>The realistic payback case is 1.5 to 3.5 years.</strong> B200 has better payback than H100 despite costing more, because revenue per hour scales proportionally higher. The government subsidy is the single biggest lever.</p>
 </div>
 
 <h2>Token Selling Model</h2>
 
 <p>Instead of renting bare GPU hours, you can run inference servers and sell API access priced per token. This is what Together.ai, DeepInfra, and Fireworks do.</p>
 
-<p>Think of it this way: <strong>selling GPU hours</strong> is renting out an empty room. <strong>Selling tokens</strong> is renting out a furnished apartment.</p>
+<p><strong>Selling GPU hours</strong> is renting out an empty room. <strong>Selling tokens</strong> is renting out a furnished apartment.</p>
 
 <h3>Token market prices (per million tokens)</h3>
 
@@ -691,7 +691,7 @@ Revenue at $0.30/M output: 736M x $0.30 = $221/month
 Gross margin: still positive but tiny volume</code></pre>
 
 <div class="callout">
-  <p><strong>Key insight:</strong> Token selling with your own hardware is profitable at any model size because marginal cost is just electricity (~$209/month). The question is volume and demand. Small models (8B) produce far more tokens per GPU-hour and generate higher total revenue.</p>
+  <p><strong>Token selling with your own hardware is profitable at any model size</strong> because marginal cost is just electricity (~$209/month). The question is volume and demand. Small models (8B) produce far more tokens per GPU-hour and generate higher total revenue.</p>
   <p style="font-size: 12px; color: var(--text-dimmer); margin-top: 8px;">Throughput estimates based on <a href="https://vllm.ai/blog/perf-update" style="color: var(--accent);">vLLM benchmarks</a> and <a href="https://developer.nvidia.com/blog/achieving-top-inference-performance-with-the-nvidia-h100-tensor-core-gpu-and-nvidia-tensorrt-llm/" style="color: var(--accent);">NVIDIA TensorRT-LLM</a>.</p>
 </div>
 
@@ -966,7 +966,7 @@ Gross margin: still positive but tiny volume</code></pre>
 </ul>
 
 <div class="callout-warn">
-  <p><strong>Realistic assessment:</strong> Cross-border GPU rental from China is technically possible but operationally complex. The strongest use cases are serving the domestic Chinese market, Southeast Asian customers with low-latency requirements, or operating as a Chinese-market-focused node in a global compute network.</p>
+  <p><strong>Cross-border GPU rental from China is technically possible but operationally complex.</strong> The strongest use cases are serving the domestic Chinese market, Southeast Asian customers with low-latency requirements, or operating as a Chinese-market-focused node in a global compute network.</p>
 </div>
 
 <h2>What Not to Do</h2>

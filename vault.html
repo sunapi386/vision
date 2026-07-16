@@ -316,7 +316,7 @@ body {
 
 <p>Every existing solution fails at this. A safety deposit box requires a bank that stays solvent. A lawyer requires a firm that survives. A USB drive in a shoebox requires someone who remembers where the shoebox is. Google's Inactive Account Manager requires Google to keep caring about a feature with zero revenue. Each depends on an institution outlasting your timeline, and institutions are poor at that.</p>
 
-<p>The question isn't whether we can encrypt data. The question is whether we can build a system where every actor can individually defect and the capsule still opens on schedule.</p>
+<p>Encrypting data is easy. The hard part is building a system where every actor can individually defect and the capsule still opens on schedule.</p>
 
 <h2>The Design</h2>
 
@@ -350,7 +350,7 @@ body {
   <div class="stack-num">04</div>
   <div class="stack-body">
     <h4>Autonomous trigger</h4>
-    <p>A smart contract monitors for a verified death event via decentralized oracle networks (Chainlink, etc.) that watch public death registries. On confirmation, a countdown begins -- configurable to any duration. When the timer expires, the contract signals key reconstruction. No human decision in the loop. An AI agent handles the dead man's switch: periodic check-ins, escalation on missed signals, beneficiary discovery at release time.</p>
+    <p>A smart contract monitors for a verified death event via decentralized oracle networks (Chainlink, etc.) that watch public death registries. On confirmation, a countdown begins, configurable to any duration. When the timer expires, the contract signals key reconstruction. No human decision in the loop. An AI agent handles the dead man's switch: periodic check-ins, escalation on missed signals, beneficiary discovery at release time.</p>
   </div>
 </div>
 
@@ -358,7 +358,7 @@ body {
   <div class="stack-num">05</div>
   <div class="stack-body">
     <h4>Zero-knowledge proof layer</h4>
-    <p>Before encryption, the depositor generates ZK proofs (Groth16 or Plonk) over the plaintext. These proofs are stored alongside the ciphertext on Arweave and are publicly verifiable at any time. They attest to properties -- "this capsule contains financial records from 2025," "this capsule references entity X" -- without revealing the content. The depositor can credibly claim "I have the evidence" without opening the seal.</p>
+    <p>Before encryption, the depositor generates ZK proofs (Groth16 or Plonk) over the plaintext. These proofs are stored alongside the ciphertext on Arweave and are publicly verifiable at any time. They attest to properties ("this capsule contains financial records from 2025," "this capsule references entity X") without revealing the content. The depositor can credibly claim "I have the evidence" without opening the seal.</p>
   </div>
 </div>
 
@@ -370,37 +370,37 @@ body {
   <h4>The Depositor</h4>
   <p><strong>Wants:</strong> certainty of eventual release, privacy until then, no ability for anyone to tamper or suppress.</p>
   <p><strong>Fear:</strong> dying and the secret dying with them. Or the capsule leaking early.</p>
-  <p><strong>Constraint:</strong> genuinely cannot open the capsule early. Doesn't hold enough shares. The smart contract is public -- anyone can verify the time-lock hasn't expired. Their inability is verifiable and protects them under duress.</p>
+  <p><strong>Constraint:</strong> genuinely cannot open the capsule early. Doesn't hold enough shares. The smart contract is public: anyone can verify the time-lock hasn't expired. Their inability is verifiable and protects them under duress.</p>
 </div>
 
 <div class="actor-card">
   <h4>The Custodians</h4>
   <p><strong>Wants:</strong> minimal liability, minimal effort.</p>
   <p><strong>Fear:</strong> legal exposure from the contents, pressure from powerful parties to destroy their share.</p>
-  <p><strong>Constraint:</strong> they don't know the other custodians. They don't know what the capsule contains. They may not even know they're holding a time capsule share -- it's just an encrypted blob. Bribery requires finding all k custodians, which requires knowing n identities that were never linked on-chain.</p>
+  <p><strong>Constraint:</strong> they don't know the other custodians. They don't know what the capsule contains. They may not even know they're holding a time capsule share. To them it's just an encrypted blob. Bribery requires finding all k custodians, which requires knowing n identities that were never linked on-chain.</p>
 </div>
 
 <div class="actor-card">
   <h4>The Subjects</h4>
   <p><strong>Wants:</strong> permanent suppression.</p>
   <p><strong>Fear:</strong> the capsule exists at all.</p>
-  <p><strong>Constraint:</strong> the ciphertext is on Arweave and can't be deleted. The key is distributed across anonymous custodians they can't identify. The only remaining attack is breaking the encryption -- and the PQC layer closes that window for any computing architecture we can anticipate.</p>
+  <p><strong>Constraint:</strong> the ciphertext is on Arweave and can't be deleted. The key is distributed across anonymous custodians they can't identify. The only remaining attack is breaking the encryption, and the PQC layer closes that window for any computing architecture we can anticipate.</p>
 </div>
 
 <div class="actor-card">
   <h4>The Infrastructure</h4>
   <p><strong>Wants:</strong> to continue existing.</p>
   <p><strong>Fear:</strong> irrelevance, collapse.</p>
-  <p><strong>Constraint:</strong> redundancy. If Arweave dies, mirrored copies on Filecoin and cold storage persist. If the smart contract chain dies, the Shamir shares can be manually reconstructed. No single infrastructure failure kills the vault. A law firm has reputational incentive spanning centuries. A blockchain has no agency -- it either runs or it doesn't. A startup has every incentive to pivot away from a product with a 20-year payoff cycle. The design trusts math and redundancy, not business models.</p>
+  <p><strong>Constraint:</strong> redundancy. If Arweave dies, mirrored copies on Filecoin and cold storage persist. If the smart contract chain dies, the Shamir shares can be manually reconstructed. No single infrastructure failure kills the vault. A law firm has reputational incentive spanning centuries. A blockchain has no agency. It either runs or it doesn't. A startup has every incentive to pivot away from a product with a 20-year payoff cycle. The design trusts math and redundancy, not business models.</p>
 </div>
 
 <h2>Plausible Deniability</h2>
 
-<p>A vault that everyone knows exists is already a liability. Plausible deniability isn't a feature. It's a survival property.</p>
+<p>A vault that everyone knows exists is already a liability. Plausible deniability is a survival property.</p>
 
 <h3>Decoy capsules</h3>
 
-<p>Every deposit creates multiple encrypted blobs of identical size. One contains real content; the rest contain procedurally generated plausible decoy content. Different passphrases open different blobs. Under duress, the depositor reveals the decoy passphrase. An adversary cannot distinguish real from decoy without the real passphrase. This is a hidden volume scheme -- the same principle as VeraCrypt, applied to decentralized storage.</p>
+<p>Every deposit creates multiple encrypted blobs of identical size. One contains real content; the rest contain procedurally generated plausible decoy content. Different passphrases open different blobs. Under duress, the depositor reveals the decoy passphrase. An adversary cannot distinguish real from decoy without the real passphrase. This is a hidden volume scheme (the same principle as VeraCrypt, applied to decentralized storage).</p>
 
 <h3>Unlinkable deposits</h3>
 
@@ -408,7 +408,7 @@ body {
 
 <h3>Steganographic mode</h3>
 
-<p>For maximum deniability: embed the encrypted capsule inside innocuous files (images, documents, audio) uploaded to Arweave. The capsule's existence is hidden, not just its contents. You can't suppress what you can't find.</p>
+<p>For maximum deniability: embed the encrypted capsule inside innocuous files (images, documents, audio) uploaded to Arweave. Even the capsule's existence is hidden. You can't suppress what you can't find.</p>
 
 <h2>Anti-Hostage Design</h2>
 
@@ -428,7 +428,7 @@ body {
   <p>The same cryptographic primitives that govern an AI agent's execution receipt also govern a dead man's last testimony. The math doesn't care about the timescale.</p>
 </div>
 
-<p>In <a href="/book.html" style="color: var(--accent);">Trust at Scale</a>, the argument is that trust breaks down at scale because you can't personally verify every actor. The solution is cryptographic commitments -- receipts, audit trails, verifiable proofs. Agent execution protocols prove "this agent did X at time T" with a cryptographic receipt chain.</p>
+<p>In <a href="/book.html" style="color: var(--accent);">Trust at Scale</a>, the argument is that trust breaks down at scale because you can't personally verify every actor. The solution is cryptographic commitments: receipts, audit trails, verifiable proofs. Agent execution protocols prove "this agent did X at time T" with a cryptographic receipt chain.</p>
 
 <p>A vault is the same primitive stretched across decades instead of milliseconds.</p>
 
@@ -436,7 +436,7 @@ body {
   <li><strong>Receipt chain</strong>: an agent receipt proves "this agent did X at time T." A vault proves "this person deposited X at time T, to be revealed at T+N." Same commitment pattern.</li>
   <li><strong>Trust without trusting actors</strong>: the book argues you design systems where individual actors can defect and the system still holds. A vault does exactly that: any custodian, any chain, any storage provider can fail, and the capsule still opens.</li>
   <li><strong>ZK proofs</strong>: agent receipts prove compliance without exposing proprietary logic. A vault proves content properties without opening the capsule. Same technique, different domain.</li>
-  <li><strong>Accountability as infrastructure</strong>: the book's central argument. A vault makes accountability infrastructure for human disclosure -- not just machine execution.</li>
+  <li><strong>Accountability as infrastructure</strong>: the book's central argument. A vault extends that infrastructure from machine execution to human disclosure.</li>
 </ul>
 
 <p>If the accountability layer works for AI agents making API calls in milliseconds, it works for a whistleblower ensuring the truth outlives them by twenty years. One set of primitives. Every timescale. That's what "at scale" means.</p>
@@ -453,11 +453,11 @@ body {
   <li><strong>Total for the full stack</strong>: under $500 for a PQC-proof, ZK-verified, game-theoretically sound vault with a 20-year horizon. No subscriptions. Nothing to renew.</li>
 </ul>
 
-<p>Compare this to a legal trust ($30,000-50,000 to self-sustain across decades) . The most robust version is also the cheapest.</p>
+<p>Compare this to a legal trust ($30,000-50,000 to self-sustain across decades). The most durable version is also the cheapest.</p>
 
 <h2>What Gets Built First</h2>
 
-<p>A vault is not a product. It's a protocol. The distinction matters because a product can be shut down and a protocol can't.</p>
+<p>A vault is a protocol, not a product. The distinction matters because a product can be shut down and a protocol can't.</p>
 
 <p>The minimum viable protocol: Arweave deposit, Shamir key split, timer contract on an L2, basic deposit interface. No AI agent, no ZK proofs, no deniability layer in v1. Those are protocol upgrades, not launch requirements.</p>
 

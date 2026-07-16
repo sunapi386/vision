@@ -78,21 +78,21 @@ The two lines are crossing right now. And when they cross, the economics of AI c
 
 **Five years ago**, running a large language model required eight NVIDIA A100 GPUs at $10,000 each: $80,000 just for the GPUs, before the server chassis, cooling, and storage. Total system cost: $150,000-$250,000. The open-source models available (GPT-2, early BERT variants) were research toys with unusable output quality. The software required custom serving code written by ML engineers costing $300,000-$500,000 per year. Total cost of self-hosted inference in 2021: $500,000 to $1,000,000 per year, minimum, for output quality dramatically worse than what GPT-3's API could produce.
 
-**Today**, a single NVIDIA RTX 5090 has 32GB of VRAM and costs $2,000. A server with four of them (128GB total VRAM) costs $15,000-$20,000 and can run a 70-billion parameter model with room to spare. Open-weight models such as Llama 3.1, DeepSeek R1, Qwen 2.5, and Mistral Large match or exceed GPT-4's performance on most benchmarks. Not perfectly, not on all tasks, but close enough that for most business applications, the quality difference is negligible. Inference software (vLLM, llama.cpp, Ollama, TensorRT-LLM) handles batching, quantization, and serving automatically. Install in minutes. No ML expertise required.
+**Today**, a single NVIDIA RTX 5090 has 32GB of VRAM and costs $2,000. A server with four of them (128GB total VRAM) costs $15,000-$20,000 and can run a 70-billion parameter model with room to spare. Open-weight models such as Llama 3.1, DeepSeek R1, Qwen 2.5, and Mistral Large match or exceed GPT-4's performance on most benchmarks. They still fall short on some tasks, but for most business applications the quality difference is negligible. Inference software (vLLM, llama.cpp, Ollama, TensorRT-LLM) handles batching, quantization, and serving automatically. Install in minutes. No ML expertise required.
 
 The math on specific scenarios makes the crossover concrete:
 
 A mid-size professional services firm processing 5,000 documents per month at current cloud API pricing pays roughly $225/month. At that scale, cloud wins; the hassle of running your own infrastructure isn't worth it. But scale to 50,000 documents per month with multiple model calls per document (extraction, analysis, generation, review), and the monthly API cost reaches $4,000-$8,000. A $30,000 server running Llama 3 pays for itself in 4-6 months. After that, the marginal cost of inference is electricity, maybe $300/month. The firm saves $40,000-$90,000 per year, every year, permanently.
 
-At enterprise or government scale (millions of documents per year, strict data residency requirements, monthly cloud AI costs of $50,000-$500,000), the case for self-hosted infrastructure isn't just strong. It's overwhelming. A $500,000 GPU cluster running open-source models pays for itself in 1-3 months and provides better performance, better privacy, and better control than any cloud API.
+At enterprise or government scale (millions of documents per year, strict data residency requirements, monthly cloud AI costs of $50,000-$500,000), the case for self-hosted infrastructure is overwhelming. A $500,000 GPU cluster running open-source models pays for itself in 1-3 months and provides better performance, better privacy, and better control than any cloud API.
 
 The hardware trend is undeniable. GPU performance per dollar doubles roughly every 18-24 months. Open-source model quality improves every quarter. Inference software matures every month. Project forward five years: GPUs that cost $10,000 today will cost $2,000 and deliver 4x the performance. Open-source models will match the best proprietary models on virtually all tasks. Inference software will be as easy to deploy as a web server. A complete AI inference appliance will be the size of a mini-fridge and cost less than a car.
 
-This isn't speculative. It's extrapolation from trends that have held for decades: Moore's Law applied to AI inference.
+This is extrapolation from trends that have held for decades: Moore's Law applied to AI inference.
 
 ## The Convergence
 
-Each of these three forces is independently significant. Together, they create an unstable equilibrium.
+Each of these three forces stands on its own. Together, they create an unstable equilibrium.
 
 Cloud lock-in means organizations are accumulating dependency on infrastructure they don't control, with data they can't protect, at prices they can't negotiate.
 
