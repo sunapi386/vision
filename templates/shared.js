@@ -1,4 +1,4 @@
-// shared.js — theme toggle + nav scroll behavior, used by both index and book
+// shared.js - theme toggle + nav scroll behavior, used by both index and book
 
 // Theme
 var toggle = document.getElementById('themeToggle');

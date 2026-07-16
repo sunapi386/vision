@@ -18,7 +18,7 @@ Where did the data come from? Nobody knows. The extraction model processed some 
 
 Who saw the data? Nobody knows. The orchestrator passed data to sub-agents. Did any of those sub-agents log the data? Cache it? Send it to a third-party API? Are the sub-agents running on the same infrastructure, or did the data cross organizational boundaries?
 
-The agent economy is running without paperwork. And nobody seems to care — yet.
+The agent economy is running without paperwork. And nobody seems to care. Yet.
 
 ## Why This Matters Now
 
@@ -46,7 +46,7 @@ When a consulting firm delivers a report to a client, that report includes:
 
 Now look at what an AI agent produces: a result. Just a result. No methodology section (the model's reasoning is opaque). No source citations (unless you specifically engineer citation tracking). No cost breakdown (compute costs are aggregated, not itemized). No qualifications (which model version? what training data? what capabilities?). No liability (the terms of service explicitly disclaim all liability).
 
-This is not an oversight. It's a structural gap. The current architecture of AI systems — stateless API calls that process input and produce output — has no mechanism for accountability. There's no standard format for an AI receipt. No protocol for tracking data provenance across agent boundaries. No framework for attributing costs to specific processing steps.
+This is not an oversight. It's a structural gap. The current architecture of AI systems (stateless API calls that process input and produce output) has no mechanism for accountability. There's no standard format for an AI receipt. No protocol for tracking data provenance across agent boundaries. No framework for attributing costs to specific processing steps.
 
 ## The Three Missing Pieces
 
@@ -56,7 +56,7 @@ The accountability void has three components, and all three need solutions.
 
 When a human team works on a project, every hour is tracked. Time sheets, billing codes, project allocation. The client knows that Partner A spent 3 hours reviewing at $600/hour, and Associate B spent 12 hours researching at $250/hour. The total cost is decomposed into its components.
 
-When an AI system processes a workflow, the cost is a single number — or worse, it's invisible, buried in a monthly API invoice that aggregates thousands of calls. Which calls were for which client? Which steps consumed the most compute? Where are the inefficiencies? You can't optimize what you can't measure. And right now, nobody can measure AI costs at the granularity that professional work requires.
+When an AI system processes a workflow, the cost is a single number, or worse, it's invisible, buried in a monthly API invoice that aggregates thousands of calls. Which calls were for which client? Which steps consumed the most compute? Where are the inefficiencies? You can't optimize what you can't measure. And right now, nobody can measure AI costs at the granularity that professional work requires.
 
 **2. Data Provenance**
 
@@ -70,7 +70,7 @@ AI systems have no built-in provenance. A model reads a document, processes it, 
 
 When a consulting firm shares client data with a sub-contractor, there's an NDA. When a hospital shares patient data with a specialist, there's a BAA (Business Associate Agreement). When a company shares financial data with an auditor, there's a professional standards framework.
 
-When an AI agent passes data to another AI agent, there's nothing. No contract. No access control. No data governance agreement. No boundary definition. The data just flows — from agent to agent, from server to server, potentially from organization to organization — with no framework for controlling, tracking, or auditing the flow.
+When an AI agent passes data to another AI agent, there's nothing. No contract. No access control. No data governance agreement. No boundary definition. The data just flows, from agent to agent, from server to server, potentially from organization to organization, with no framework for controlling, tracking, or auditing the flow.
 
 ## Why Nobody Has Fixed This
 
@@ -78,11 +78,11 @@ The accountability void persists for three reasons:
 
 **First, speed beats compliance.** Organizations are racing to deploy AI because the productivity gains are real and immediate. The compliance risks are theoretical and future. When the CEO asks "why aren't we using AI yet?" nobody says "because we haven't solved the accountability problem." They just deploy and hope.
 
-**Second, the AI providers don't care.** OpenAI's business model is selling compute. Accountability features — cost attribution, provenance tracking, governance frameworks — are costs, not revenue. They add complexity. They slow down adoption. They create legal obligations. From the provider's perspective, accountability is someone else's problem.
+**Second, the AI providers don't care.** OpenAI's business model is selling compute. Accountability features (cost attribution, provenance tracking, governance frameworks) are costs, not revenue. They add complexity. They slow down adoption. They create legal obligations. From the provider's perspective, accountability is someone else's problem.
 
 **Third, the tools don't exist.** Even organizations that recognize the accountability gap have no easy way to fill it. Building custom cost tracking, provenance logging, and governance enforcement on top of existing AI APIs is a major engineering effort. Most organizations don't have the expertise or the budget. So they accept the void.
 
-But the void won't persist. Regulators will mandate accountability. Clients will demand it. Lawsuits will enforce it. The question isn't whether AI accountability will be required — it's whether it will be built into the architecture from the ground up, or bolted on after the fact.
+But the void won't persist. Regulators will mandate accountability. Clients will demand it. Lawsuits will enforce it. The question isn't whether AI accountability will be required; it's whether it will be built into the architecture from the ground up, or bolted on after the fact.
 
 Bolted-on accountability is like bolted-on security: it doesn't work. If accountability isn't in the architecture, it's not in the system. It's in a spreadsheet somewhere, maintained by a person who will eventually leave.
 

@@ -12,7 +12,7 @@ A chatbot is a text box. You type a question, you get an answer. Maybe the answe
 
 A workflow is a system. It has defined inputs, defined steps, defined outputs, and defined checkpoints where humans review and approve. It's repeatable, auditable, and predictable. It's the difference between asking someone a question and assigning someone a job.
 
-Every serious organization operates through workflows. Not because they love bureaucracy — because workflows are how you ensure quality, manage risk, and maintain accountability. A hospital doesn't let doctors prescribe medications by chatting with a colleague. There's a process: examine patient, review history, check interactions, prescribe, document, review. Each step has a purpose. Each step has a responsible party. Each step has a record.
+Every serious organization operates through workflows. Not because they love bureaucracy, but because workflows are how you ensure quality, manage risk, and maintain accountability. A hospital doesn't let doctors prescribe medications by chatting with a colleague. There's a process: examine patient, review history, check interactions, prescribe, document, review. Each step has a purpose. Each step has a responsible party. Each step has a record.
 
 AI products ignore this entirely. They give you a text box and call it transformation.
 
@@ -68,9 +68,9 @@ Right now, organizations implement these workflows through one of three approach
 
 **Approach 1: Manual labor.** Humans do every step by hand. A junior accountant manually reads bank statements. An immigration paralegal manually fills out forms. A claims adjuster manually reviews every document. This is the status quo for most professional services firms. It works, in the sense that it produces correct output. But it's slow, expensive, error-prone, and doesn't scale.
 
-**Approach 2: Legacy software.** Purpose-built software handles some steps. QuickBooks handles bookkeeping. Case management software tracks immigration files. Claims management systems handle routing and payment. These tools automate the mechanical parts — data entry, routing, payment processing — but they can't read documents, extract meaning, apply judgment, or generate output. The cognitive work still requires humans.
+**Approach 2: Legacy software.** Purpose-built software handles some steps. QuickBooks handles bookkeeping. Case management software tracks immigration files. Claims management systems handle routing and payment. These tools automate the mechanical parts (data entry, routing, payment processing) but they can't read documents, extract meaning, apply judgment, or generate output. The cognitive work still requires humans.
 
-**Approach 3: Duct-taped AI.** Engineers stitch together AI APIs with custom code. A Python script calls GPT-4 to extract data from documents, pipes the output to another script that applies business rules, pipes that to another script that generates a report. It works — until it doesn't. The scripts are fragile. The prompts are embedded in code. The error handling is ad hoc. The audit trail is a log file. When the model gets deprecated, the whole pipeline breaks. When a prompt needs updating, an engineer has to change code and redeploy.
+**Approach 3: Duct-taped AI.** Engineers stitch together AI APIs with custom code. A Python script calls GPT-4 to extract data from documents, pipes the output to another script that applies business rules, pipes that to another script that generates a report. It works, until it doesn't. The scripts are fragile. The prompts are embedded in code. The error handling is ad hoc. The audit trail is a log file. When the model gets deprecated, the whole pipeline breaks. When a prompt needs updating, an engineer has to change code and redeploy.
 
 None of these approaches solve the actual problem. The actual problem is: organizations need a way to define multi-step AI workflows with human checkpoints, run them reliably, audit them completely, and own them entirely.
 
@@ -80,11 +80,11 @@ I keep coming back to chatbots because the industry keeps pushing them as the so
 
 A chatbot interaction is stateless. Each conversation starts from scratch. There's no memory of what was decided yesterday, what was approved last week, or what policy was applied to the previous claim. You can bolt on "memory" features, but fundamentally, a chat interface is designed for one-off interactions, not for multi-step processes that span days or weeks.
 
-A chatbot interaction is unstructured. The output is natural language — a blob of text that a human has to parse, interpret, and manually transfer to whatever system needs it. If you need a JSON object with specific fields, you can ask for it, but you're relying on the model to generate valid structured output every time. When it fails — and it does fail — there's no graceful degradation. There's just a broken pipeline.
+A chatbot interaction is unstructured. The output is natural language: a blob of text that a human has to parse, interpret, and manually transfer to whatever system needs it. If you need a JSON object with specific fields, you can ask for it, but you're relying on the model to generate valid structured output every time. When it fails, and it does fail, there's no graceful degradation. There's just a broken pipeline.
 
 A chatbot interaction is unaccountable. Who approved this output? What data was it based on? What version of the model generated it? What was the confidence level? What were the alternative interpretations? A chatbot doesn't track any of this. It generates text and moves on.
 
-For consumer applications — writing emails, brainstorming ideas, answering questions — chatbots are fine. For professional applications where accuracy matters, where accountability is required, where output becomes part of a legal or financial record — chatbots are a toy pretending to be a tool.
+For consumer applications (writing emails, brainstorming ideas, answering questions) chatbots are fine. For professional applications where accuracy matters, where accountability is required, where output becomes part of a legal or financial record, chatbots are a toy pretending to be a tool.
 
 ## The Gap
 
@@ -94,9 +94,9 @@ AI can read documents, extract data, apply rules, generate reports, and flag ano
 
 But organizations can't use a Jupyter notebook. They need a system that non-engineers can configure, that handles errors gracefully, that produces audit trails automatically, that integrates with their existing tools, that respects their approval hierarchies, and that runs on infrastructure they control.
 
-That system doesn't exist. Not because it's impossible to build — because nobody has built it yet. The AI companies are focused on foundation models. The enterprise software companies are bolting AI chat widgets onto their existing products. The workflow automation companies (Zapier, n8n, Make) are adding AI nodes to their platforms but treating AI as just another API call — missing the nuance that AI outputs need human review, confidence scoring, and provenance tracking.
+That system doesn't exist. Not because it's impossible to build, but because nobody has built it yet. The AI companies are focused on foundation models. The enterprise software companies are bolting AI chat widgets onto their existing products. The workflow automation companies (Zapier, n8n, Make) are adding AI nodes to their platforms but treating AI as just another API call, missing the nuance that AI outputs need human review, confidence scoring, and provenance tracking.
 
-The workflow gap is not a product gap. It's an architectural gap. Filling it requires rethinking how AI systems are built from the ground up — not as chat interfaces with some workflow bolted on, but as workflow engines with AI capabilities built in.
+The workflow gap is not a product gap. It's an architectural gap. Filling it requires rethinking how AI systems are built from the ground up: not as chat interfaces with some workflow bolted on, but as workflow engines with AI capabilities built in.
 
 ---
 

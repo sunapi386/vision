@@ -12,14 +12,14 @@ We built two protocols to fill this gap.
 
 **The Agent Compute Protocol (ACP)** handles the compute substrate: how agents acquire, use, and release workers at runtime. When an agent needs five workers for ten minutes to index 100,000 documents, ACP is the request-allocate-release-report cycle that makes that happen atomically.
 
-Both are Apache 2.0 licensed. Both use schema-defined messages with JSON encoding. Both are protocols, not libraries — a deliberate strategic choice that this chapter explains in detail.
+Both are Apache 2.0 licensed. Both use schema-defined messages with JSON encoding. Both are protocols, not libraries, a deliberate strategic choice that this chapter explains in detail.
 
 The structural principle underlying both: **context flows down, results flow up.** When a root agent calls a sub-agent, budget limits, governance rules, and tracing context flow downward through the execution tree. Results, costs, citations, and audit trails flow upward. This is the same direction money and findings move in any consulting engagement. The protocol just makes it machine-readable.
 
 ---
 
-- [Why a Protocol](./01-why-a-protocol.mdx) — the management consulting analogy, and why we chose interoperability over integration
-- [AEP: Receipts](./02-aep-receipts.mdx) — cost accountability through recursive cost composition
-- [AEP: Footnotes](./03-aep-footnotes.mdx) — provenance chains and calibrated confidence scoring
-- [AEP: NDAs](./04-aep-ndas.mdx) — data governance that is checked at every handoff
-- [ACP: Compute](./05-acp-compute.mdx) — dynamic compute allocation with four messages
+- [Why a Protocol](./01-why-a-protocol.mdx): the management consulting analogy, and why we chose interoperability over integration
+- [AEP: Receipts](./02-aep-receipts.mdx): cost accountability through recursive cost composition
+- [AEP: Footnotes](./03-aep-footnotes.mdx): provenance chains and calibrated confidence scoring
+- [AEP: NDAs](./04-aep-ndas.mdx): data governance that is checked at every handoff
+- [ACP: Compute](./05-acp-compute.mdx): dynamic compute allocation with four messages

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analytics — Trust at Scale</title>
+<title>Analytics - Trust at Scale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -385,10 +385,10 @@ tr:hover td { background: var(--accent-dim); }
       var d = days[0], b = byDay[d];
       if (customSeries) {
         var cv = customSeries.map(function(s) { return (b[s.k] || 0); }).reduce(function(a, c) { return a + c; }, 0);
-        return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span> &mdash; ' + cv + '</div>';
+        return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span>: ' + cv + '</div>';
       }
       var total = (b.pageview || 0) + (b.play || 0) + (b.heartbeat || 0) + (b.other || 0);
-      return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span> &mdash; ' + total + ' events</div>';
+      return '<div style="text-align:center;padding:20px"><span class="mono" style="color:var(--dim)">' + d + '</span>: ' + total + ' events</div>';
     }
 
     var W = 800, H = 220;
@@ -744,7 +744,7 @@ tr:hover td { background: var(--accent-dim); }
             var v = mode === 'ip' ? Object.keys((hourIPs[dk] || {})[hr] || {}).length : ((hourPV[dk] || {})[hr] || 0);
             var opacity = hMax > 0 ? (v / hMax) : 0;
             var bg = v === 0 ? 'transparent' : 'rgba(106,174,252,' + (0.15 + opacity * 0.75).toFixed(2) + ')';
-            h += '<td class="hm-cell' + (v > 0 ? ' hm-click' : '') + '" style="background:' + bg + (v > 0 ? ';cursor:pointer' : '') + '" title="' + dk + ' ' + ('0' + hr).slice(-2) + ':00 — ' + v + (mode === 'ip' ? ' unique IPs' : ' pageviews') + '"' + (v > 0 ? ' onclick="window._showHourDetail(\'' + dk + '\',' + hr + ')"' : '') + '>' + (v || '') + '</td>';
+            h += '<td class="hm-cell' + (v > 0 ? ' hm-click' : '') + '" style="background:' + bg + (v > 0 ? ';cursor:pointer' : '') + '" title="' + dk + ' ' + ('0' + hr).slice(-2) + ':00 - ' + v + (mode === 'ip' ? ' unique IPs' : ' pageviews') + '"' + (v > 0 ? ' onclick="window._showHourDetail(\'' + dk + '\',' + hr + ')"' : '') + '>' + (v || '') + '</td>';
           }
           h += '</tr>';
         });

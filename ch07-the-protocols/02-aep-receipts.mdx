@@ -38,7 +38,7 @@ Cost tracking without enforcement is journalism, not governance. You find out wh
 
 AEP budgets flow downward through the execution tree. When the root caller initiates a workflow with a $50 budget, that budget limit is part of the execution context passed to the first agent. The first agent can allocate portions of that budget to its sub-agents. If it calls sub-agent A with a $30 budget and sub-agent B with a $15 budget, it keeps $5 of headroom for its own LLM calls.
 
-Budget enforcement happens at every level, not just at the root. When sub-agent A's $30 budget is exhausted, it cannot make additional calls — even if the root's $50 budget still has room. The budget was allocated. The allocation is binding. Sub-agent A does not get to reach into the root's remaining $5 of headroom.
+Budget enforcement happens at every level, not just at the root. When sub-agent A's $30 budget is exhausted, it cannot make additional calls, even if the root's $50 budget still has room. The budget was allocated. The allocation is binding. Sub-agent A does not get to reach into the root's remaining $5 of headroom.
 
 This is the same principle as expense account management in any large organization. The CFO sets a department budget. The department head allocates portions to project managers. A project manager does not get to spend the department's contingency fund because their own allocation ran out.
 
@@ -48,7 +48,7 @@ The enforcement mechanism uses pessimistic reservation. When an agent is about t
 
 Here is where cost tracking becomes genuinely hard, and genuinely valuable.
 
-When three organizations collaborate on a workflow — Organization A provides the orchestration, Organization B provides a specialized analysis agent, Organization C provides data access — the costs need to be settled across three separate billing systems that have no shared state.
+When three organizations collaborate on a workflow (Organization A provides the orchestration, Organization B provides a specialized analysis agent, Organization C provides data access), the costs need to be settled across three separate billing systems that have no shared state.
 
 In today's AI ecosystem, this does not work. Organization A pays for all the API calls because the calls go through their API key. They then try to reconstruct what Organization B's agent consumed, negotiate a manual invoice, and handle the settlement out of band. This is fragile, slow, and approximate.
 
@@ -70,7 +70,7 @@ This is what makes a marketplace viable. Without cost accountability across orga
 
 A detail that matters more than it should: all cost calculations in AEP use decimal arithmetic, not floating-point.
 
-This is the same reason financial systems use decimal. Floating-point arithmetic accumulates rounding errors. In a deeply nested execution tree with hundreds of cost records being composed recursively, floating-point errors can compound to meaningful discrepancies. When you are settling payments across organizations, a $0.03 discrepancy on a $500 workflow is not a rounding error — it is a billing dispute.
+This is the same reason financial systems use decimal. Floating-point arithmetic accumulates rounding errors. In a deeply nested execution tree with hundreds of cost records being composed recursively, floating-point errors can compound to meaningful discrepancies. When you are settling payments across organizations, a $0.03 discrepancy on a $500 workflow is not a rounding error; it is a billing dispute.
 
 The CostTracker implementation uses Python's `Decimal` type for all arithmetic. The serialization format preserves full precision. Cost records are exact, not approximate. This is a small technical decision that prevents a large class of operational problems.
 
@@ -90,4 +90,4 @@ This is what receipts look like when agents are the employees.
 
 ---
 
-[Next: AEP — Footnotes](./03-aep-footnotes.mdx)
+[Next: AEP Footnotes](./03-aep-footnotes.mdx)

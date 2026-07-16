@@ -264,7 +264,26 @@ def verify():
     if not stale_wavs and not temp_wavs:
         print("    no stale WAVs")
 
-    # 8. TTS paragraph extraction matches build.py
+    # 8. No em dashes in tracked sources (house style: never use em dashes)
+    print("  Checking for em dashes...")
+    tracked = subprocess.run(
+        ["git", "ls-files"], capture_output=True, text=True, cwd=str(VISION_DIR),
+    ).stdout.split()
+    dash_files = []
+    for rel in tracked:
+        try:
+            text = (VISION_DIR / rel).read_text()
+        except (UnicodeDecodeError, FileNotFoundError):
+            continue
+        n = text.count("\u2014") + text.count("&" + "mdash;")
+        if n:
+            dash_files.append(f"{rel} ({n})")
+    if dash_files:
+        errors.append(f"em dashes in {len(dash_files)} file(s): {', '.join(dash_files[:5])}")
+    else:
+        print("    no em dashes")
+
+    # 9. TTS paragraph extraction matches build.py
     print("  Checking TTS paragraph extraction...")
     result = subprocess.run(
         ["python3", str(VISION_DIR / "tts.py"), "verify"],

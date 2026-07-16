@@ -2,9 +2,9 @@
 
 Let me describe the deal you're making when you adopt a cloud AI platform.
 
-You send your data — your contracts, your customer conversations, your financial records, your internal documents — to someone else's servers. A model you don't control processes that data. You get a response. You pay per token. The model improves. You don't.
+You send your data (your contracts, your customer conversations, your financial records, your internal documents) to someone else's servers. A model you don't control processes that data. You get a response. You pay per token. The model improves. You don't.
 
-This is the deal. And right now, almost every organization in the world is taking it, because the alternative — not using AI — feels worse. But the terms of this deal are worth examining, because they're worse than most people realize.
+This is the deal. And right now, almost every organization in the world is taking it, because the alternative, not using AI, feels worse. But the terms of this deal are worth examining, because they're worse than most people realize.
 
 ## The Price Ratchet
 
@@ -14,7 +14,7 @@ But costs scale with usage. And usage scales with dependency.
 
 A mid-size law firm processing 5,000 contracts a year through an AI pipeline might spend $50,000-$100,000 annually on API calls. A consulting firm running financial analysis across hundreds of clients might spend $200,000. A customer support operation handling millions of interactions might spend $500,000 or more.
 
-And then the pricing changes. Not dramatically — that would trigger revolt. Incrementally. A few cents per thousand tokens here. A model deprecation that forces migration to a more expensive tier there. Usage caps that push you to enterprise plans.
+And then the pricing changes. Not dramatically; that would trigger revolt. Incrementally. A few cents per thousand tokens here. A model deprecation that forces migration to a more expensive tier there. Usage caps that push you to enterprise plans.
 
 This is the Netflix trajectory. Netflix started at $7.99 per month. Today it's $22.99 for the standard plan, $28.99 for premium. And they've added advertising to the lower tiers. The product got more expensive AND the terms got worse. But by the time the price doubled, you'd already built your evening routine around it. Your kids knew the interface. Your watch history was unshareable. Switching to Hulu meant starting over.
 
@@ -24,15 +24,15 @@ Per-token pricing is the cable bill of the 2020s. You don't notice it at first. 
 
 ## Your Data Is Not Your Data
 
-Read the terms of service for any major AI provider. I mean actually read them — not the marketing page about how they "respect your privacy."
+Read the terms of service for any major AI provider. I mean actually read them, not the marketing page about how they "respect your privacy."
 
 OpenAI's terms give them the right to use API inputs for model improvement unless you specifically opt out through enterprise agreements. Anthropic's terms are more restrictive about training, but your data still transits their servers. Google's Gemini integrates with your Workspace data in ways that blur the line between product and training data.
 
 Even with opt-outs, your data is being processed on hardware you don't control, in jurisdictions you may not have considered, by employees and contractors whose access policies you've never reviewed. The data is encrypted in transit, sure. But it's decrypted for processing. Someone has the keys. And that someone isn't you.
 
-Here's the part that should concern you most: subpoena risk. When the New York Times sued OpenAI for copyright infringement, they issued discovery requests for training data. When Italian regulators investigated ChatGPT, they demanded access to user interaction logs. When law enforcement investigates crimes, they subpoena communication platforms — and AI platforms are communication platforms now.
+Here's the part that should concern you most: subpoena risk. When the New York Times sued OpenAI for copyright infringement, they issued discovery requests for training data. When Italian regulators investigated ChatGPT, they demanded access to user interaction logs. When law enforcement investigates crimes, they subpoena communication platforms, and AI platforms are communication platforms now.
 
-Think about that for a moment. If you use WhatsApp, your messages are end-to-end encrypted. Not even Meta can read them. If someone subpoenas Meta for your WhatsApp messages, Meta literally cannot comply — they don't have the keys.
+Think about that for a moment. If you use WhatsApp, your messages are end-to-end encrypted. Not even Meta can read them. If someone subpoenas Meta for your WhatsApp messages, Meta literally cannot comply; they don't have the keys.
 
 If you use ChatGPT, every conversation is stored on OpenAI's servers. Every legal question you asked. Every contract you summarized. Every financial analysis you ran. Every HR scenario you explored. If someone subpoenas OpenAI for your conversation history, OpenAI can comply. They have the data. It's right there.
 
@@ -40,7 +40,7 @@ For a consumer, this might be acceptable. For a law firm processing privileged c
 
 ## Model Deprecation
 
-In March 2024, OpenAI deprecated GPT-4-32K. In June 2024, they deprecated the original GPT-4. Each deprecation forced customers to migrate to newer models — models with different behavior, different pricing, and different capabilities.
+In March 2024, OpenAI deprecated GPT-4-32K. In June 2024, they deprecated the original GPT-4. Each deprecation forced customers to migrate to newer models: models with different behavior, different pricing, and different capabilities.
 
 This isn't a bug. It's a business model. Deprecating old models pushes customers to newer, higher-priced tiers. It also eliminates the ability to do apples-to-apples comparisons. Your evaluation benchmarks from six months ago? Invalid. Your regression test suite? Needs updating. Your regulatory filings that reference a specific model version? Now describe software that no longer exists.
 
@@ -62,13 +62,13 @@ Here's what the dependency spiral looks like in practice:
 
 **Quarter 5:** OpenAI deprecates your model version. You spend two weeks migrating. Some outputs change in subtle ways. Your quality assurance catches most issues. Some slip through. A client notices. You explain.
 
-**Quarter 6:** A competitor builds the same capability using the same API. Your competitive advantage isn't your AI — it's the same AI everyone else has access to. Your advantage was supposed to be your data and your domain expertise. But your data is on someone else's servers and your domain expertise is encoded in prompts that run on someone else's infrastructure.
+**Quarter 6:** A competitor builds the same capability using the same API. Your competitive advantage isn't your AI; it's the same AI everyone else has access to. Your advantage was supposed to be your data and your domain expertise. But your data is on someone else's servers and your domain expertise is encoded in prompts that run on someone else's infrastructure.
 
-This is the trap. Not malicious — structural. The incentives of the AI provider and the incentives of the AI customer are fundamentally misaligned. The provider wants dependency. The customer needs independence. And the architecture of cloud AI makes dependency the default.
+This is the trap. Not malicious, structural. The incentives of the AI provider and the incentives of the AI customer are fundamentally misaligned. The provider wants dependency. The customer needs independence. And the architecture of cloud AI makes dependency the default.
 
 ## The Alternative Isn't Obvious
 
-The reason most organizations don't see this as a problem is that the alternative — running AI on your own infrastructure — has historically been impractical. You needed millions of dollars in GPUs, a team of ML engineers, and months of setup time. For most organizations, renting from OpenAI was the rational choice, even knowing the long-term costs.
+The reason most organizations don't see this as a problem is that the alternative, running AI on your own infrastructure, has historically been impractical. You needed millions of dollars in GPUs, a team of ML engineers, and months of setup time. For most organizations, renting from OpenAI was the rational choice, even knowing the long-term costs.
 
 But the economics are changing. And changing fast enough that the rational calculation is about to flip.
 

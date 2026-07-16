@@ -269,9 +269,9 @@ PULLQUOTES = {
 }
 
 ABSTRACT_PARAGRAPHS = [
-    '<strong>AI is reshaping who does work, not just where it happens.</strong> Agents draft contracts, triage patients, process invoices, write reports. The revolution is here. But when Agent A calls Agent B calls Agent C across three organizations &mdash; nobody can account for what happened, what it cost, or whether the data was handled correctly.',
-    'This is not a feature gap. It is a <strong>category gap</strong> &mdash; the same kind of gap that double-entry bookkeeping filled for commerce, that TLS filled for the internet, that container standards filled for software deployment.',
-    'Seven independent forces &mdash; regulatory, economic, safety, legal, environmental, geopolitical, enterprise &mdash; are converging on the same requirement: <strong>standardized agent accountability.</strong> None of them are coordinating. They all need the same infrastructure.',
+    '<strong>AI is reshaping who does work, not just where it happens.</strong> Agents draft contracts, triage patients, process invoices, write reports. The revolution is here. But when Agent A calls Agent B calls Agent C across three organizations, nobody can account for what happened, what it cost, or whether the data was handled correctly.',
+    'This is not a feature gap. It is a <strong>category gap</strong>: the same kind of gap that double-entry bookkeeping filled for commerce, that TLS filled for the internet, that container standards filled for software deployment.',
+    'Seven independent forces (regulatory, economic, safety, legal, environmental, geopolitical, enterprise) are converging on the same requirement: <strong>standardized agent accountability.</strong> None of them are coordinating. They all need the same infrastructure.',
     'The argument is simple: the agent economy needs the same kind of accountability infrastructure that every previous economic revolution eventually built. This book makes the case for what that infrastructure looks like, who needs it, and what happens if nobody builds it intentionally.',
     'The accountability layer will be built. If nobody designs it intentionally, it will be assembled from incompatible patches after the first catastrophes force the issue.',
 ]
@@ -406,7 +406,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
-<title>Trust at Scale — Jason Sun</title>
+<title>Trust at Scale - Jason Sun</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1563,9 +1563,9 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jason Sun — Trust at Scale</title>
+<title>Jason Sun - Trust at Scale</title>
 <meta name="description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. A thesis on agent accountability by Jason Sun.">
-<meta property="og:title" content="Trust at Scale — Jason Sun">
+<meta property="og:title" content="Trust at Scale - Jason Sun">
 <meta property="og:description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. Read the book or the essay.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jasonsun.org">

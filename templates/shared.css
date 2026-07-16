@@ -1,4 +1,4 @@
-/* shared.css — canonical source for styles used by both index and book pages */
+/* shared.css - canonical source for styles used by both index and book pages */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

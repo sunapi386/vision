@@ -2,7 +2,7 @@
 
 ## The Other Protocol
 
-AEP handles accountability — what happened, what it cost, where the data went. ACP handles the compute substrate — how agents acquire the workers that do the actual work.
+AEP handles accountability: what happened, what it cost, where the data went. ACP handles the compute substrate: how agents acquire the workers that do the actual work.
 
 The distinction matters because the compute layer has fundamentally different constraints than the accountability layer. Accountability is asynchronous: cost records and provenance chains can be assembled after execution completes. Compute allocation is synchronous and time-critical: when an agent needs workers, it needs them now, and double-booking a worker pool is a system failure, not a billing dispute.
 
@@ -14,7 +14,7 @@ The naive approach to compute for AI agents is static provisioning: decide how m
 
 Static provisioning fails in three predictable ways.
 
-**Over-provisioning.** You keep workers running for peak load, but peak load happens 10% of the time. The other 90% of the time, you are paying for idle compute. For GPU workers, this is ruinous — a single A100 GPU costs $3-4 per hour. A pool of 8 GPUs sitting idle overnight costs $24-32 for producing nothing.
+**Over-provisioning.** You keep workers running for peak load, but peak load happens 10% of the time. The other 90% of the time, you are paying for idle compute. For GPU workers, this is ruinous: a single A100 GPU costs $3-4 per hour. A pool of 8 GPUs sitting idle overnight costs $24-32 for producing nothing.
 
 **Under-provisioning.** You provision for average load, and then a large job arrives. The workflow needs 20 workers to index 100,000 documents in a reasonable time. You have 4. The job takes 5x longer, the user waits, and you cannot accept another large job until the first one finishes.
 
@@ -26,25 +26,25 @@ ACP solves these by making compute allocation dynamic. Agents request what they 
 
 ACP is deliberately simple. Four messages, one lifecycle.
 
-**`allocate`** — An agent requests workers. "I need 5 CPU workers for 10 minutes." The request specifies a capability type (`cpu-general`, `gpu-inference`, etc.), a count, an estimated duration, and optionally a budget limit.
+**`allocate`**: An agent requests workers. "I need 5 CPU workers for 10 minutes." The request specifies a capability type (`cpu-general`, `gpu-inference`, etc.), a count, an estimated duration, and optionally a budget limit.
 
-**`allocated`** — The Resource Broker responds. The response carries one of four statuses:
+**`allocated`**: The Resource Broker responds. The response carries one of four statuses:
 - `granted`: all requested workers are available and reserved.
 - `partial`: some workers are available; you asked for 5 but got 3.
 - `denied`: no workers are available, or the budget is insufficient.
 - `queued`: the request is accepted and will be fulfilled when capacity frees up.
 
-When the status is `granted` or `partial`, the response includes an allocation ID and a queue endpoint — a Redis Stream address where the agent can submit jobs. The broker also returns pricing information: cost per worker-minute and estimated total cost for the requested duration.
+When the status is `granted` or `partial`, the response includes an allocation ID and a queue endpoint, a Redis Stream address where the agent can submit jobs. The broker also returns pricing information: cost per worker-minute and estimated total cost for the requested duration.
 
-**`release`** — The agent is done. It sends a release message with the allocation ID and a reason (`completed`, `cancelled`, `error`). The broker restores the reserved capacity to the available pool.
+**`release`**: The agent is done. It sends a release message with the allocation ID and a reason (`completed`, `cancelled`, `error`). The broker restores the reserved capacity to the available pool.
 
-**`usage_report`** — The broker responds with actual usage: total duration, worker-seconds consumed, and final cost. This cost record feeds into the AEP cost tree — ACP allocation costs are composed into the overall execution cost, just like LLM call costs.
+**`usage_report`**: The broker responds with actual usage: total duration, worker-seconds consumed, and final cost. This cost record feeds into the AEP cost tree, where ACP allocation costs are composed into the overall execution cost, just like LLM call costs.
 
 That is the entire protocol. Four messages. One direction for requests (agent to broker), one direction for responses (broker to agent). No subscriptions, no callbacks, no streaming, no bidirectional channels. The simplicity is the point.
 
 ## Atomic Allocation via Redis Lua
 
-The hardest part of dynamic allocation is concurrency. When two agents simultaneously request workers from the same pool, you cannot have both check the available count, both see "5 available," and both allocate 5 — leaving the pool at negative 5.
+The hardest part of dynamic allocation is concurrency. When two agents simultaneously request workers from the same pool, you cannot have both check the available count, both see "5 available," and both allocate 5, leaving the pool at negative 5.
 
 ACP handles this with a Redis Lua script that runs atomically on the server:
 
@@ -61,7 +61,7 @@ return granted
 
 This script executes as a single operation on the Redis server. No interleaving. No race conditions. No retry loops. Two concurrent requests hit the same pool: one gets its workers, the other gets what remains or gets denied. The state is always consistent.
 
-We chose Redis Lua scripts over `MULTI/EXEC` (Redis transactions) because `MULTI/EXEC` uses optimistic concurrency — it can fail under contention and requires the caller to retry. Lua scripts are pessimistic — they hold the Redis server for the duration of the script (microseconds) and cannot be interrupted. Under high concurrency, the Lua approach is simpler and correct by construction.
+We chose Redis Lua scripts over `MULTI/EXEC` (Redis transactions) because `MULTI/EXEC` uses optimistic concurrency: it can fail under contention and requires the caller to retry. Lua scripts are pessimistic: they hold the Redis server for the duration of the script (microseconds) and cannot be interrupted. Under high concurrency, the Lua approach is simpler and correct by construction.
 
 ## Worker Self-Registration
 
@@ -71,7 +71,7 @@ When a worker connects to the system, it increments the capacity counter for its
 
 This means adding capacity is zero-configuration. Start a new worker, point it at Redis, and it appears in the broker's capacity pool. Stop a worker, and it disappears. No manifest files, no deployment configurations, no restarts of the broker.
 
-For the Sovereign Compute Fabric, this is essential. When a user plugs in a new compute node — a desktop, a server, a GPU box — and runs the Citadel CLI, that node's workers self-register through the VPN mesh and become available for allocation. The user does not configure anything on the platform side. The capacity just appears.
+For the Sovereign Compute Fabric, this is essential. When a user plugs in a new compute node (a desktop, a server, a GPU box) and runs the Citadel CLI, that node's workers self-register through the VPN mesh and become available for allocation. The user does not configure anything on the platform side. The capacity just appears.
 
 ## The Three-Level Scaling Roadmap
 
@@ -79,7 +79,7 @@ ACP is designed as a three-level system. Each level adds capability without chan
 
 **Level 1: Static Pool + Redis.** Workers self-register capacity on connect. The broker checks and reserves atomically via Lua scripts. This is what exists today. It handles the common case: a known set of workers, deterministic capacity, fast allocation. The limitation is that when capacity runs out, the answer is "denied." There is no mechanism to create more capacity.
 
-**Level 2: KEDA Autoscaling.** When capacity hits zero, KEDA (Kubernetes Event-Driven Autoscaler) scales up new worker pods based on Redis queue depth. The agent's request might return `queued` instead of `denied`, and a new worker spins up to handle it within minutes. The four messages are unchanged — the agent still sends `allocate` and gets `allocated`. The difference is that "denied" becomes rare because the system creates capacity on demand.
+**Level 2: KEDA Autoscaling.** When capacity hits zero, KEDA (Kubernetes Event-Driven Autoscaler) scales up new worker pods based on Redis queue depth. The agent's request might return `queued` instead of `denied`, and a new worker spins up to handle it within minutes. The four messages are unchanged: the agent still sends `allocate` and gets `allocated`. The difference is that "denied" becomes rare because the system creates capacity on demand.
 
 **Level 3: KAI GPU Scheduling.** GPU-aware scheduling for heterogeneous hardware. An allocation request for GPU inference needs to consider not just "is a GPU available?" but "which GPU?" An A100 is different from an H100 is different from an RTX 3090. KAI (Kubernetes AI Scheduler) handles GPU topology, memory requirements, multi-GPU allocation, and preemption. The four messages are still unchanged. The broker just gets smarter about how it fulfills requests.
 

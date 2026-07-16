@@ -7,9 +7,9 @@
 (see the jasonsun.org vhost in `sunapi386/nginx`).
 
 NOT tracked (runtime data / secrets, live only on the server):
-- `analytics.jsonl` — the append-only event log
-- `geo-cache.json` — IP→geo cache
-- `.htpasswd` — basic-auth for the protected `/dir` path
+- `analytics.jsonl`: the append-only event log
+- `geo-cache.json`: IP→geo cache
+- `.htpasswd`: basic-auth for the protected `/dir` path
 
 Deploy: `track.py` ships with the site via `release.py` (DEPLOY_PATH=/var/www/jasonsun.org/);
 after changing it, `sudo systemctl restart jasonsun-tracker` on ocean.
