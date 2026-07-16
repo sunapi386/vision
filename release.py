@@ -59,6 +59,10 @@ DEPLOY_DIRS = [
 
 NUM_CHAPTERS = 6
 
+# Chinese paragraphs the TTS never narrated (a five-character line and the
+# "back to contents" link); they have no timestamps and stay un-highlighted.
+ZH_UNVOICED = {1: [143], 6: [197]}
+
 
 def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
     print(f"  $ {' '.join(cmd)}")
@@ -252,7 +256,81 @@ def verify():
         if ts_data and isinstance(ts_data[0], dict):
             errors.append(f"{label}: timestamps still in old Whisper format")
 
-    # 7. No stale WAVs
+    # 7. Chinese book: paragraph IDs, alignment data, audio, timestamps
+    print("  Checking book-zh.html paragraph IDs...")
+    book_zh = VISION_DIR / "book-zh.html"
+    zh_para_counts = {}
+    if not book_zh.exists():
+        errors.append("book-zh.html not found (run build first)")
+    else:
+        html_zh = book_zh.read_text()
+        for ch in range(0, NUM_CHAPTERS + 1):
+            label = "fm" if ch == 0 else f"ch{ch}"
+            ids = [int(x) for x in re.findall(rf'id="ab-{ch}-(\d+)"', html_zh)]
+            if not ids:
+                errors.append(f"zh {label}: no ab- paragraph IDs found")
+                continue
+            expected = list(range(max(ids) + 1))
+            missing = set(expected) - set(ids)
+            if missing:
+                errors.append(f"zh {label}: missing paragraph IDs: {sorted(missing)[:5]}...")
+            zh_para_counts[ch] = len(ids)
+            print(f"    {label}: {len(ids)} paragraphs (ab-{ch}-0 .. ab-{ch}-{max(ids)})")
+
+        print("  Checking book-zh.html alignment data...")
+        m = re.search(r"var apAlignments = ({.*?});", html_zh, re.DOTALL)
+        if not m:
+            errors.append("no apAlignments found in book-zh.html")
+        else:
+            alignments = json.loads(m.group(1))
+            for ch in range(1, NUM_CHAPTERS + 1):
+                key = str(ch)
+                if key not in alignments:
+                    errors.append(f"zh ch{ch}: no alignment data")
+                    continue
+                timings = alignments[key]
+                nulls = [i for i, t in enumerate(timings) if t is None]
+                n_para = zh_para_counts.get(ch, 0)
+                if len(timings) != n_para:
+                    errors.append(f"zh ch{ch}: {len(timings)} timestamps vs {n_para} paragraph IDs")
+                if nulls != ZH_UNVOICED.get(ch, []):
+                    errors.append(f"zh ch{ch}: unexpected paragraphs with no audio: {nulls[:5]}")
+                print(f"    ch{ch}: {len(timings)} timestamps, {len(timings) - len(nulls)} with audio")
+
+        print("  Checking Chinese audio files...")
+        audio_zh_dir = VISION_DIR / "audio-zh"
+        manifest_zh_path = audio_zh_dir / "manifest-zh.json"
+        if not manifest_zh_path.exists():
+            errors.append("audio-zh/manifest-zh.json not found")
+        else:
+            zh_durations = json.loads(manifest_zh_path.read_text()).get("durations", {})
+            total = 0
+            for ch in range(1, NUM_CHAPTERS + 1):
+                mp3 = audio_zh_dir / f"{slugs[ch]}.mp3"
+                dur = zh_durations.get(str(ch), 0)
+                if not mp3.exists():
+                    errors.append(f"audio-zh/{slugs[ch]}.mp3 missing")
+                else:
+                    size_mb = mp3.stat().st_size / 1024 / 1024
+                    print(f"    {slugs[ch]}.mp3: {size_mb:.1f} MB, {dur:.0f}s")
+                    total += dur
+            print(f"    total: {total:.0f}s ({total/3600:.1f} hours)")
+
+        print("  Checking Chinese timestamp files...")
+        ts_zh_dir = VISION_DIR / "timestamps-zh"
+        for ch in range(1, NUM_CHAPTERS + 1):
+            ts_file = ts_zh_dir / f"{slugs[ch]}.json"
+            if not ts_file.exists():
+                errors.append(f"timestamps-zh/{slugs[ch]}.json missing")
+                continue
+            ts_data = json.loads(ts_file.read_text())
+            # Chinese timestamps are narration units (headings + paragraphs),
+            # so there must be at least as many units as voiced paragraphs.
+            n_voiced = zh_para_counts.get(ch, 0) - len(ZH_UNVOICED.get(ch, []))
+            if len(ts_data) < n_voiced:
+                errors.append(f"zh ch{ch}: {len(ts_data)} narration units < {n_voiced} voiced paragraphs")
+
+    # 8. No stale WAVs
     print("  Checking for stale WAVs...")
     cache_dir = VISION_DIR / "audio-cache"
     stale_wavs = list(cache_dir.glob("*.wav")) if cache_dir.exists() else []
@@ -264,13 +342,13 @@ def verify():
     if not stale_wavs and not temp_wavs:
         print("    no stale WAVs")
 
-    # 8. No em dashes in tracked sources (house style: never use em dashes)
+    # 9. No em dashes in tracked sources (house style: never use em dashes)
     print("  Checking for em dashes...")
     tracked = subprocess.run(
         ["git", "ls-files"], capture_output=True, text=True, cwd=str(VISION_DIR),
     ).stdout.split()
     dash_files = []
-    for rel in tracked:
+    for rel in tracked + ["book.html", "book-zh.html"]:
         try:
             text = (VISION_DIR / rel).read_text()
         except (UnicodeDecodeError, FileNotFoundError):
@@ -283,7 +361,7 @@ def verify():
     else:
         print("    no em dashes")
 
-    # 9. TTS paragraph extraction matches build.py
+    # 10. TTS paragraph extraction matches build.py
     print("  Checking TTS paragraph extraction...")
     result = subprocess.run(
         ["python3", str(VISION_DIR / "tts.py"), "verify"],
@@ -307,7 +385,8 @@ def verify():
         sys.exit(1)
     else:
         total_paras = sum(para_counts.values())
-        print(f"  OK: {total_paras} paragraphs, all tagged, all with timestamps, audio sync wired")
+        total_zh = sum(zh_para_counts.values())
+        print(f"  OK: {total_paras} EN + {total_zh} ZH paragraphs, all tagged, all with timestamps, audio sync wired")
 
 
 def build():
