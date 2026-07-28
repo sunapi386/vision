@@ -10,10 +10,13 @@ Usage:
 """
 
 import re
+import io
+import os
 import json
 import hashlib
 import html as htmllib
 import subprocess
+import urllib.request
 import numpy as np
 import soundfile as sf
 import markdown
@@ -23,6 +26,25 @@ VISION_DIR = Path(__file__).parent
 AUDIO_OUT = VISION_DIR / "audio"
 CACHE_DIR = VISION_DIR / "audio-cache"
 TS_OUT = VISION_DIR / "timestamps"
+
+# Synthesis backend. "local" runs the in-process Kokoro KPipeline (the default,
+# unchanged behaviour). "fabric" synthesizes on a Citadel fabric node via the
+# OpenAI-compatible kokoro service, keeping its output in audio-fabric/ so it
+# never overwrites the local version and the site (which reads audio/ and
+# timestamps/) is untouched. Select with `python3 tts.py --fabric` or
+# TTS_BACKEND=fabric. Same VOICE and SAMPLE_RATE, so the two are comparable.
+BACKEND = "local"
+FABRIC_URL = os.environ.get("TTS_FABRIC_URL", "http://localhost:8211")
+
+
+def apply_backend(backend: str):
+    """Point the module output dirs at the local or fabric version."""
+    global BACKEND, AUDIO_OUT, CACHE_DIR, TS_OUT
+    BACKEND = backend
+    if backend == "fabric":
+        AUDIO_OUT = VISION_DIR / "audio-fabric"
+        CACHE_DIR = VISION_DIR / "audio-cache-fabric"
+        TS_OUT = VISION_DIR / "timestamps-fabric"
 
 VOICE = "am_michael"
 SAMPLE_RATE = 24000
@@ -175,6 +197,34 @@ def extract_front_matter_units() -> tuple[list[dict], list[str]]:
     return units, para_texts
 
 
+def fabric_synthesize(text: str) -> np.ndarray | None:
+    """Synthesize one unit on the fabric kokoro service. Returns numpy audio.
+
+    Requests opus, which is content-addressed and cached server side, so a
+    paragraph already synthesized on the node comes back without recompute.
+    The service serves 24000 Hz mono, matching SAMPLE_RATE.
+    """
+    body = json.dumps(
+        {"input": text, "voice": VOICE, "response_format": "opus"}
+    ).encode()
+    req = urllib.request.Request(
+        FABRIC_URL + "/v1/audio/speech",
+        data=body,
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            raw = resp.read()
+        audio, sr = sf.read(io.BytesIO(raw), dtype="float32")
+    except Exception as e:
+        print(f"    WARN: fabric TTS failed [{text[:60]}]: {e}")
+        return None
+    if sr != SAMPLE_RATE:
+        print(f"    WARN: fabric returned {sr} Hz, expected {SAMPLE_RATE}")
+        return None
+    return audio
+
+
 def synthesize_unit(pipeline, text: str) -> np.ndarray | None:
     """Synthesize a single text unit, using cache. Returns numpy audio array."""
     h = cache_key(text)
@@ -189,19 +239,23 @@ def synthesize_unit(pipeline, text: str) -> np.ndarray | None:
         cached_wav.unlink()
         return audio
 
-    chunks = []
-    try:
-        for _gs, _ps, audio in pipeline(text, voice=VOICE):
-            if audio is not None:
-                chunks.append(audio.numpy() if hasattr(audio, "numpy") else np.array(audio))
-    except Exception as e:
-        print(f"    WARN: TTS failed [{text[:60]}]: {e}")
-        return None
+    if BACKEND == "fabric":
+        combined = fabric_synthesize(text)
+        if combined is None:
+            return None
+    else:
+        chunks = []
+        try:
+            for _gs, _ps, audio in pipeline(text, voice=VOICE):
+                if audio is not None:
+                    chunks.append(audio.numpy() if hasattr(audio, "numpy") else np.array(audio))
+        except Exception as e:
+            print(f"    WARN: TTS failed [{text[:60]}]: {e}")
+            return None
+        if not chunks:
+            return None
+        combined = np.concatenate(chunks)
 
-    if not chunks:
-        return None
-
-    combined = np.concatenate(chunks)
     sf.write(str(cached_ogg), combined, SAMPLE_RATE, format="OGG", subtype="VORBIS")
     return combined
 
@@ -354,7 +408,6 @@ def synthesize_and_export(pipeline, part_num: int, slug_key: str, label: str, un
 
 def generate_audio():
     """Generate TTS audio with hash-based caching and per-paragraph timestamps."""
-    from kokoro import KPipeline
     import sys
 
     AUDIO_OUT.mkdir(exist_ok=True)
@@ -369,8 +422,14 @@ def generate_audio():
     _, _, build_fm_paras = build_front_matter()
     build_chapter_paras[0] = build_fm_paras
 
-    print("\nLoading Kokoro English pipeline...")
-    pipeline = KPipeline(lang_code="a")
+    if BACKEND == "fabric":
+        pipeline = None
+        print(f"\nUsing fabric TTS backend at {FABRIC_URL} (output -> {AUDIO_OUT.name}/)")
+    else:
+        from kokoro import KPipeline
+
+        print("\nLoading Kokoro English pipeline...")
+        pipeline = KPipeline(lang_code="a")
 
     durations = {}
     all_timings = {}
@@ -441,9 +500,14 @@ def generate_audio():
 def main():
     import sys
 
-    if len(sys.argv) > 1 and sys.argv[1] == "verify":
+    args = sys.argv[1:]
+
+    if "verify" in args:
         verify_extraction()
         return
+
+    if "--fabric" in args or os.environ.get("TTS_BACKEND") == "fabric":
+        apply_backend("fabric")
 
     generate_audio()
 
