@@ -110,6 +110,35 @@ body {
   font-size: 14px; transition: all 0.2s;
 }
 .nav-theme:hover { border-color: var(--border-strong); color: var(--text); }
+.nav-dropdown { position: relative; }
+.nav-dropdown-toggle {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; background: none; border: none;
+  display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.nav-dropdown-toggle:hover { color: var(--text); background: var(--bg-elevated); }
+.nav-dropdown-toggle::after {
+  content: ''; display: inline-block; width: 0; height: 0;
+  border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor; margin-top: 1px;
+}
+.nav-dropdown-menu {
+  position: absolute; top: 100%; right: 0; min-width: 140px; padding: 6px 0;
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  border-radius: 8px; box-shadow: var(--shadow); z-index: 400;
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.nav-dropdown-menu a {
+  display: block; font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); text-decoration: none; padding: 6px 16px; transition: all 0.15s;
+}
+.nav-dropdown-menu a:hover { color: var(--text); background: var(--bg-elevated); text-decoration: none; }
 
 #progress {
   position: fixed; top: var(--nav-height); left: 0; z-index: 299;
@@ -203,6 +232,13 @@ body {
 @media (max-width: 600px) {
   .hero { padding-top: calc(var(--nav-height) + 32px); }
   .slide-item { border-radius: 4px; margin-bottom: 20px; }
+  .site-nav-inner { padding: 0 12px; }
+  .nav-links { gap: 2px; }
+  .nav-link { font-size: 12px; padding: 5px 6px; }
+  .nav-brand { font-size: 13px; }
+  .nav-dropdown-toggle { font-size: 12px; padding: 5px 6px; }
+  .nav-dropdown-menu { min-width: 120px; }
+  .nav-dropdown-menu a { font-size: 12px; padding: 6px 14px; }
 }
 </style>
 </head>
