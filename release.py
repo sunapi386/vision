@@ -11,6 +11,11 @@ Usage:
     python3 release.py print        # build + generate print-ready PDF for KDP
     python3 release.py setup        # install dependencies with uv
     python3 release.py clean        # convert stale WAVs to OGG, remove temp files
+
+PDF generation needs weasyprint (pango/cairo system libs), which has no clean
+pip path. For default/release/print modes, this script auto-sources it via nix
+(re-execs under `nix-shell -p 'python3.withPackages (ps: [ps.weasyprint ps.markdown])'`).
+Requires nix installed. Set VISION_NO_NIX=1 to skip the re-exec.
 """
 
 import json
@@ -22,6 +27,33 @@ import sys
 from pathlib import Path
 
 VISION_DIR = Path(__file__).parent
+
+
+def _ensure_nix_env():
+    """Re-exec inside a nix shell that provides markdown + weasyprint.
+
+    System python3 has markdown but not weasyprint, and there is no clean pip
+    path (weasyprint needs pango/cairo/gdk-pixbuf system libs). nix bundles all
+    of it. If the deps are missing and nix-shell is available, re-exec the whole
+    script (and its python3 subprocesses, which inherit PATH) inside that env.
+    Set VISION_NO_NIX=1 to skip.
+    """
+    import importlib.util
+    missing = [m for m in ("markdown", "weasyprint") if importlib.util.find_spec(m) is None]
+    if not missing or os.environ.get("VISION_NIX_REEXEC") or os.environ.get("VISION_NO_NIX"):
+        return
+    nix_shell = shutil.which("nix-shell")
+    if not nix_shell:
+        return  # let the normal ModuleNotFoundError surface with its own message
+    print(f"  sourcing nix (missing: {', '.join(missing)})...", flush=True)
+    env = {**os.environ, "VISION_NIX_REEXEC": "1"}
+    inner = "python3 " + " ".join(f"'{a}'" for a in [str(Path(__file__).resolve()), *sys.argv[1:]])
+    os.execvpe(
+        nix_shell,
+        [nix_shell, "-p", "python3.withPackages (ps: [ps.weasyprint ps.markdown])", "--run", inner],
+        env,
+    )
+
 
 DEPLOY_HOSTS = ["ocean", "192.168.2.244"]
 DEPLOY_PATH = "/var/www/jasonsun.org/"
@@ -651,6 +683,10 @@ def deploy():
 def main():
     args = sys.argv[1:]
     mode = args[0] if args else "default"
+
+    # PDF generation (print/default modes) needs weasyprint; source it via nix.
+    if mode in ("default", "release", "print"):
+        _ensure_nix_env()
 
     if mode == "build":
         build()
