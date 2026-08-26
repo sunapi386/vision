@@ -79,6 +79,7 @@ DEPLOY_FILES = [
     "hamilton.html",
     "compute.html",
     "compute-zh.html",
+    "future-of-work.html",
     "sw.js",
     "sw-zh.js",
 ]
