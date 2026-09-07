@@ -87,6 +87,7 @@ DEPLOY_DIRS = [
     "audio",
     "audio-zh",
     "slides",
+    "blackhole",
 ]
 
 NUM_CHAPTERS = 6
