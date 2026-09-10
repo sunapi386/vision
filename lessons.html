@@ -295,7 +295,7 @@ footer a:hover { text-decoration: underline; }
   <span class="lesson-number">03</span>
   <h3>65% accuracy is good enough.</h3>
   <p>A brand strategist was manually scanning long interview transcripts to extract units of meaning (brand philosophy, mission, taglines). It took days and was unscalable because the expertise lived in his head alone. He told me that even 65% extraction accuracy would save him days, because the remaining human review becomes dramatically faster when AI surfaces candidates and leaves behind what is irrelevant.</p>
-  <p>Perfection is the enemy of adoption. Good enough with confidence scores beats perfect without them.</p>
+  <p>Perfection is the enemy of adoption. Useful assistance needs a review process matched to the task, not just an impressive confidence score.</p>
 </div>
 
 <div class="lesson-card">
@@ -354,14 +354,14 @@ footer a:hover { text-decoration: underline; }
   <span class="lesson-number">11</span>
   <h3>The three legs: people, policy, architecture.</h3>
   <p>Institutional AI adoption rests on three legs. People means training and certifications so staff know what they are governing. Policy means compliance checklists (SOC 2, FedRAMP, PIPEDA) so the legal framework is satisfied. Architecture means sovereign software that enforces trust by design, not by promise.</p>
-  <p>Most vendors offer one or two legs. Almost nobody offers three. The architecture leg is the one that actually matters, because it moves trust from a contractual obligation to a structural guarantee. If the platform is designed so that data cannot leave the organization's infrastructure, you do not need to trust a vendor's privacy policy.</p>
+  <p>People, policy, and architecture reinforce one another. A technical boundary can enforce a defined restriction, while trained staff and accountable institutions decide whether the restriction is appropriate and what to do when it fails. None of the three replaces the others.</p>
 </div>
 
 <div class="lesson-card">
   <span class="lesson-number">12</span>
   <h3>Enforced by protocol, not by promise.</h3>
-  <p>If governance boundaries are enforced at the protocol level, violations become impossible, not merely detectable. The system makes bad behavior structurally unachievable rather than relying on good behavior.</p>
-  <p>This is the difference between "we have a privacy policy" and "our architecture makes it physically impossible for data to leave your infrastructure." One is a document. The other is engineering.</p>
+  <p>Protocol enforcement can block actions that violate explicit permissions within a defined system boundary. Learned judgments about meaning or harm remain fallible, and even a correctly enforced rule can be a bad rule. The system needs evidence, review, and a way to correct both decisions and policies.</p>
+  <p>A useful guarantee identifies what is prevented, which mechanism prevents it, and which assumptions it depends on. Saying that a network path is blocked is a narrower and more testable claim than saying that all data misuse is impossible.</p>
 </div>
 
 <div class="lesson-card">
@@ -373,9 +373,9 @@ footer a:hover { text-decoration: underline; }
 
 <div class="lesson-card">
   <span class="lesson-number">14</span>
-  <h3>Zero-shot humans match LLMs on structured extraction. Both need receipts.</h3>
-  <p>Humans without task-specific training achieve around 34% F1 on entity extraction. LLMs without fine-tuning land in the same range. The assumption that a human reviewer is inherently more reliable than the AI is wrong. Both are guessing without calibration.</p>
-  <p>The implication: human-in-the-loop is not a safety net. It is a second guesser with the same error rate. The safety net is the receipt that shows confidence scores, source citations, and a traceable chain so that whoever reviews the output knows where to look.</p>
+  <h3>Human reviewers need evidence and evaluation too.</h3>
+  <p>The extraction comparisons described in this work show why untrained reviewers should not be assumed to provide a reliable baseline. Performance depends on the task, instructions, expertise, and evaluation method. Reviewers need evidence and feedback, and their own errors must be measured.</p>
+  <p>Human review becomes more useful when source citations, uncertainty, and a traceable record help the reviewer inspect the right evidence. A receipt supports that judgment; it does not guarantee that either the model or reviewer is correct.</p>
 </div>
 
 <h2>Education</h2>

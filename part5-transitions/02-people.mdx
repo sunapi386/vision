@@ -12,11 +12,11 @@ Now consider the alternative. The officer speaks into a device during or after t
 
 The officer did not disappear. The work changed. The officer moved from executing the documentation (typing, formatting, looking up codes, structuring narratives) to governing the AI's output: reviewing, correcting, approving. The cognitive work shifted from production to quality assurance. The officer's domain expertise becomes more valuable, not less: knowing what matters in an incident, recognizing when a detail sounds wrong, understanding which elements have legal significance. It is the judgment that matters, not the typing.
 
-This is the workforce transformation that most commentary about AI gets wrong. The story is "humans move from execution to governance," not "AI replaces humans." And that shift changes everything about what people need to know, how they are trained, and what careers look like.
+One important workforce transition is from producing routine outputs to evaluating and governing assisted work. It is neither universal nor guaranteed to preserve every job. The outcome depends on how tasks are reorganized, who retains decision authority, and how organizations use the capacity they recover.
 
 ## The Governor, Not the Executor
 
-The police example is vivid, but the pattern is universal.
+The police example illustrates a pattern that can apply to parts of many professions. These are possible workflow designs, not claims that every organization has adopted them or that professional judgment is beyond automation.
 
 An accountant does not disappear. The accountant stops manually processing invoices (matching purchase orders to receipts, coding expenses to accounts, calculating tax withholdings, reconciling bank statements) and starts reviewing AI-processed invoices. The AI handles the mechanical work: data extraction, matching, coding, calculation. The accountant handles the judgment work: is this expense categorized correctly? Does this vendor's pattern look unusual? Is this tax treatment consistent with the latest guidance? The accountant's value shifts from speed of processing to quality of judgment.
 
@@ -28,19 +28,19 @@ In every case, the human's role changes from doing the work to governing the wor
 
 But here is the part that the "human in the loop" advocates rarely address: the human governor cannot review everything. The accountant reviewing AI-processed invoices cannot examine every one of the 10,000 invoices the system processed overnight. The radiologist cannot re-read every scan the AI marked as normal. The lawyer cannot re-draft every contract the AI produced. If the human must review everything, the AI saved no time. The entire value proposition of AI-augmented work depends on the human reviewing *selectively*, focusing attention where it is most needed.
 
-This means the governor needs a signal. Not a binary "the AI did this" but a calibrated indication: "the AI is 95% confident in this invoice classification, but only 60% confident in this one: review this one first." Without that signal, the human governor is either rubber-stamping everything (dangerous) or spot-checking randomly (inefficient) or reviewing everything (pointless). The confidence signal is what makes governance scalable. It is the routing layer between AI execution and human judgment.
+Selective review needs several signals: uncertainty, potential consequences, unusual inputs, and evidence of systematic errors. Confidence can help prioritize attention when it is evaluated for the task. Periodic sampling of apparently easy cases and an effective appeal path can reveal problems the confidence model misses.
 
 This changes what workforce development has to produce. The governance skill is domain expertise plus the ability to interpret and act on uncertainty signals, a step beyond AI literacy. The accountant needs to understand what a 60% confidence score means for an expense classification in the specific context of their organization's chart of accounts, their materiality thresholds, and their audit requirements. The physician needs to understand what it means when the AI is 70% confident in a blood pressure medication recommendation: what the number means clinically, for this patient, with this history, beyond what it means statistically. Calibrated confidence becomes a professional skill, as fundamental to the AI-augmented professional as reading financial statements is to the traditional accountant.
 
 ## The Education Gap
 
-This is where the current education system fails spectacularly.
+The transition exposes a gap between learning to perform a task and learning to supervise systems that perform it. Both require deliberate teaching.
 
 Universities and professional schools are training people to execute work that AI will increasingly do. Law schools teach students to draft contracts. Accounting programs teach students to process transactions. Medical schools teach students to identify pathologies in images. Nursing programs teach students to document patient encounters. Engineering programs teach students to write code.
 
 None of this training is wasted. You cannot govern what you do not understand, and understanding requires the ability to do. A lawyer who has never drafted a contract cannot effectively review an AI-drafted one. A radiologist who has never read a scan cannot evaluate an AI's findings. The foundational skills remain essential.
 
-But the education system stops at execution. It does not teach governance. It does not teach students to evaluate AI output for correctness, completeness, bias, or appropriateness. It does not teach students to design AI workflows: to specify what the AI should do, what data it needs, what quality thresholds are acceptable, what happens when the AI is uncertain, and when a human must intervene. It does not teach students to measure AI performance: to define metrics, track quality over time, identify degradation, and decide when to retrain or replace a system.
+Education needs to connect foundational practice with explicit governance: evaluating output for correctness and appropriateness, defining a workflow's purpose, measuring performance, and deciding when to intervene. The gap varies by institution. The workshops described here show the needs I encountered, rather than establish that every program neglects these skills.
 
 The gap is not about "AI literacy" in the shallow sense (using ChatGPT, writing prompts, understanding what a large language model is). That level of literacy is necessary but radically insufficient. The gap is about operational governance: the ability to design, deploy, monitor, and maintain AI systems that produce reliable work at scale.
 
@@ -78,7 +78,7 @@ The talent pipeline for AI Operators is currently empty. Universities are not pr
 
 The certification gap matters because it shapes procurement. Government buyers default to incumbent vendors out of fear, not preference. They lack the vocabulary to evaluate AI vendors, so they buy from the name they recognize. Whoever teaches them the evaluation framework shapes the procurement criteria. A structured certification (AI Operator, AI Architect, AI Manager) trains individuals, but its larger effect is a shared language that procurement officers, CIOs, and evaluation committees can use to compare vendors and assess proposals. The emotional unlock matters as much as the technical skills. The first step is "believe you can do this." "Learn these tools" comes after.
 
-The education channel is the distribution network, not a side business. Every student who completes a workshop and builds a working workflow becomes a potential operator, a potential customer, and a potential evangelist. The graduates carry the platform into the organizations that hire them. The curriculum is the product. The certification is the brand. The network of trained operators is the moat that no competitor can replicate with marketing spend alone.
+Education can introduce people to the platform while giving them skills they can use elsewhere. A credible curriculum should teach transferable concepts, compare alternatives, and distinguish a vendor's implementation from the underlying standard. The commercial relationship is stronger when graduates can choose the tools they use.
 
 The organizations that figure out how to train, hire, and retain AI Operators will have an enormous advantage. They will be the ones that move past the chatbot stage. They will be the ones that close the pilot-to-production gap. They will be the ones whose AI investments produce measurable returns.
 
@@ -116,9 +116,9 @@ In the new model, the progression is from governance to architecture. You start 
 
 This is a significant cultural change. In most organizations, credibility comes from having done the work yourself. The senior lawyer has drafted thousands of contracts. The senior accountant has processed thousands of tax returns. The senior doctor has treated thousands of patients. The implicit authority that comes from this experience ("I know what good looks like because I've produced good work for twenty years") is the foundation of professional hierarchies.
 
-AI compresses the experience cycle. A junior professional working with AI systems encounters as many edge cases in their first year of governance work as a traditional junior professional encounters in five years of execution work. The AI processes thousands of documents per week, and the human reviewer sees the full distribution of outcomes: the easy cases, the hard cases, the edge cases, the failures. The learning is faster because the exposure is denser.
+AI-assisted work can expose learners to more cases, but exposure is not the same as understanding. Reviewing a polished answer may conceal the reasoning required to produce it. Training should include independent attempts, explanation, feedback, and exercises where the automated answer is deliberately withheld.
 
-But organizations do not yet value this accelerated learning path. Promotion criteria still assume the old model: years of experience, volume of work produced, demonstrated execution skill. A junior lawyer who has reviewed 10,000 AI-drafted contracts in two years may have deeper judgment than a traditional lawyer who drafted 500 contracts in five years. But the traditional lawyer "has more experience" by the metrics that matter for promotion.
+Promotion should reflect demonstrated judgment rather than document volume alone. A reviewer who has seen thousands of outputs needs to show that they can recognize unfamiliar failures, explain a decision, and work when the automated system is unavailable. More cases create an opportunity to learn; they do not establish that learning occurred.
 
 The organizations that update their career progression models (valuing governance capability, evaluation judgment, system design thinking, and exception handling expertise) will attract and retain the best talent. The organizations that continue to measure credibility by years of execution experience will find themselves promoting people whose primary skill is becoming less relevant.
 
@@ -126,7 +126,7 @@ The organizations that update their career progression models (valuing governanc
 
 Any honest discussion of workforce transformation must address the fear. People are afraid that AI will take their jobs. This fear is not irrational. AI is already performing tasks that employed people. The displacement is real, it is ongoing, and dismissing it with platitudes about "AI creating new jobs" is dishonest.
 
-But the fear is also imprecise. What AI eliminates is not jobs but tasks. A job is a bundle of tasks, and AI automates some tasks in the bundle while leaving others untouched or even amplified. The accountant's job includes processing invoices (automatable), advising clients on tax strategy (not automatable), reviewing financial statements for anomalies (partially automatable), and building relationships with clients (not automatable). AI changes the composition of the job. It does not eliminate the job.
+Jobs are bundles of tasks. Automating some tasks can change a role, reduce the number of people needed, expand demand for the service, or eliminate the role. Task-level capability alone cannot tell us which outcome will occur. Workers need a voice in that redesign and practical support when their livelihood changes.
 
 The honest assessment is this: the transition will be painful for people whose jobs are primarily composed of automatable tasks. Data entry clerks, basic bookkeepers, first-level customer support agents, routine document processors: these roles are genuinely at risk because the task bundle is dominated by execution work that AI can do faster, cheaper, and more consistently.
 
@@ -136,4 +136,4 @@ The painful part is that the people most at risk are often the least prepared. E
 
 The problem here is policy, education, and ultimately political will, not technology. The technology transition is happening regardless. The question is whether the workforce transition is managed or endured: whether organizations, educators, and governments invest in moving people from execution to governance, or whether they let the market sort it out and accept the consequences.
 
-The next two sections address the government and economic dimensions of this question. But the human dimension deserves the last word in this section: the transition from execution to governance is a promotion, not a demotion. Governance is harder than execution. It requires deeper expertise, better judgment, and more accountability. The people who make this transition successfully will be more valuable, not less. The challenge is ensuring that enough people have the opportunity to make it.
+The transition can give people more meaningful work and more time, but those gains have to be designed and shared. Paid learning time, opportunities to practice, participation in workflow decisions, and support during displacement belong in the plan. Governance is one valuable human activity; care, craft, relationships, and curiosity deserve room too.

@@ -2,17 +2,17 @@
 
 <p>AI agents are doing real work. Not as demos. In production. Contracts are being reviewed, medical records triaged, incident reports drafted, invoices processed, code written, research synthesized. The shift from &ldquo;AI as tool&rdquo; to &ldquo;AI as worker&rdquo; is structural, and it is happening faster than the infrastructure can keep up.</p>
 
-<p>When a human consulting firm works on a project, every transaction has paperwork. Engagement letters, subcontracts, NDAs, invoices, deliverable specifications. If the client questions the analysis, the firm traces the chain: the conclusion came from the specialist&rsquo;s report, which was based on the sub-contractor&rsquo;s research, which used the data analyst&rsquo;s findings, which were derived from a licensed dataset. Every step is documented. Every cost is attributable. Every participant is identifiable.</p>
+<p>A consulting engagement has agreements about scope, subcontractors, data access, payment, and acceptance. When work is challenged, those records help the parties reconstruct what happened. They are imperfect, but they give responsibility a structure. Agent workflows need an equivalent structure that survives delegation across services and organizations.</p>
 
 <p>Now do the same thing with AI agents.</p>
 
-<p>An orchestrator agent calls a document processing agent. The document processing agent calls an extraction model. The extraction model calls a classification service. The classification service queries an embedding database. How much did this cost? Nobody knows. Where did the data come from? Nobody knows. Who saw the data? Nobody knows.</p>
+<p>An orchestrator may call a document agent, which calls an extraction model, which queries another service. Each component may have its own logs and controls. The difficult questions span the whole chain: what was authorized, what did it cost, which evidence supports the result, and who can respond when it is wrong?</p>
 
 <p><strong>The agent economy is running without paperwork.</strong></p>
 
-<p>This is not a temporary gap that the market will resolve on its own. It is a structural absence in the infrastructure: the same kind of absence that existed before double-entry bookkeeping standardized commerce, before SWIFT standardized international banking, before TLS made the internet safe for transactions, before container standards made software deployment reproducible.</p>
+<p>The gap is in how existing capabilities compose. Billing, access control, audit logs, and evaluation already exist. The proposal is to connect them through shared records and enforceable contracts, so a handoff does not lose the constraints or evidence that made the work trustworthy.</p>
 
-<p>Every major technological revolution produces an accountability layer. The accountability layer always comes second. And the accountability layer always outlasts the revolution that created the need for it. We still use double-entry bookkeeping five centuries after Pacioli. SWIFT processes 46 million messages daily, fifty years after its founding. TLS protects every financial transaction on the internet, three decades after Netscape created SSL.</p>
+<p>Historical standards such as accounting conventions and secure communication protocols show how common rules can support activity across institutional boundaries. They offer useful precedents, not a guarantee that one architecture will inevitably win or serve the public interest.</p>
 
 <p>The agent economy has its revolution. It is waiting for its ledger.</p>
 
@@ -24,19 +24,19 @@
 
 <h3>Cost Attribution</h3>
 
-<p>When an AI system processes a workflow, the cost is either a single number on a monthly invoice (aggregating millions of API calls) or invisible entirely, buried in infrastructure expenses that nobody attributes to specific work. Which API calls served which client? Which steps consumed the most tokens? Which prompts are inefficient? Organizations running AI operations cannot reconstruct the cost tree for a complex workflow from the raw materials available to them.</p>
+<p>A monthly invoice may aggregate costs across many clients and workflows. Per-call logs help, but organizations also need a way to combine them into an attributable execution history across providers. That history should distinguish measured costs, estimates, and commitments that have not yet settled.</p>
 
 <p>The consequence is already visible: six-figure surprise bills, pricing done by guesswork, and no ability to distinguish between a $0.50 analysis and a $15.00 one until the monthly invoice arrives.</p>
 
 <h3>Data Provenance</h3>
 
-<p>Provenance answers three questions: where did this data come from, what happened to it along the way, and who had access at each step? AI systems have no built-in provenance. A model reads a document, processes it, and produces output. Was the document the original or a modified copy? Did the model access other data during processing? Was the output cached, logged, or transmitted to third-party systems?</p>
+<p>Provenance records where data came from, what operations used it, and which sources are offered in support of a conclusion. It helps a reviewer investigate a claim. It does not establish that the source is true, that it supports the inference, or that every influence on the model has been captured.</p>
 
 <p>The Mata v. Avianca case, in which an attorney&rsquo;s brief contained six fictitious case citations generated by ChatGPT, demonstrated that AI-generated citations have no inherent relationship to reality. The text looks authoritative. The formatting is perfect. The content is invented.</p>
 
 <h3>Governance Boundaries</h3>
 
-<p>When a consulting firm shares client data with a sub-contractor, there is an NDA. When a hospital shares patient data with a specialist, there is a Business Associate Agreement. When an AI agent passes data to another AI agent, there is nothing. No contract. No access control. No boundary definition. Data flows from agent to agent, potentially from organization to organization, with no framework for controlling, tracking, or auditing the flow.</p>
+<p>A delegation needs a purpose, bounded permissions, and evidence of the authority to grant them. Those restrictions must remain effective when another agent or organization joins the work. Creating a child agent must not expand the parent's authority, and required protections must not disappear when a peer lacks support for them.</p>
 
 <h3>Calibrated Confidence</h3>
 
@@ -46,29 +46,23 @@
 
 <p>When an AI system produces work, it communicates with uniform certainty. Every statement carries the same typographic weight, the same authoritative tone. A fact drawn from a source document looks identical to a hallucinated statistic. The output is a wall of equal-weight assertions, and the human reviewer has no signal about where to focus attention.</p>
 
-<p>Research on ensemble-based confidence estimation reveals a consistent pattern: models are <strong>systematically overconfident</strong>. They express 95% certainty on outputs that are correct only 50% of the time. Naive confidence scores (the kind you get from asking a model &ldquo;how sure are you?&rdquo;) are worse than useless. They are actively misleading.</p>
+<p>A model's stated confidence may differ substantially from its measured accuracy. The gap depends on the task and deployment. Confidence scores need independent evaluation before they can support decisions about which work to review.</p>
 
-<p>Genuine calibration, where a stated 80% confidence means the output is correct 80% of the time, requires infrastructure that does not exist: diverse verification ensembles, historical accuracy tracking, domain-specific thresholds, and systems that learn from human corrections. Without this infrastructure, <strong>human-in-the-loop governance is theater</strong>. The human is reviewing everything or reviewing nothing, because the system provides no guidance about where attention is most needed.</p>
+<p>Calibration asks whether comparable predictions with a score of 80% are correct about 80% of the time under the evaluation conditions. Ensembles and other scorers can help estimate this, but agreement alone is insufficient. Monitor changing inputs, shared blind spots, and the quality of human labels.</p>
 
-<p>Calibrated confidence is the routing signal that makes human governance scalable. It tells the accountant which of the 10,000 overnight invoices to review first. It tells the physician how much to trust the model&rsquo;s 73% probability. It tells the lawyer which contract clause the AI is guessing about. Without it, the other three voids are useful to fill but insufficient.</p>
+<p>Confidence is one routing signal. The stakes, reversibility, and accumulated consequences of a workflow also matter. Review needs time, evidence, and authority to stop the action, including ways to challenge decisions after they have been made.</p>
 
 <h3>What This Looks Like in Healthcare</h3>
 
-<p>The four voids are most visible, and most consequential, in healthcare, where the stakes are measured in lives.</p>
+<p>Consider a system assembling a patient's history for clinical review. The clinician needs to distinguish a statement copied from a record, a possible inconsistency between records, and an inference that requires checking. A useful summary preserves access to the underlying evidence and makes missing information visible.</p>
 
-<p>A physician prescribing blood pressure medication faces extraordinary complexity. Blood pressure fluctuates naturally: sometimes the fluctuation is benign, sometimes it signals a genuine condition. The physician must decide: medicate (risking unnecessary side effects) or wait (risking a cardiac event). The number of available medications is enormous, they belong to overlapping drug classes, and a patient who reacted badly to one medication in a class should not be prescribed another from the same class, a constraint that spans years of history across multiple records.</p>
-
-<p>AI can help. Models can identify which fluctuations are dangerous, cross-reference medication histories, surface relevant studies. But a model that says &ldquo;73% probability of requiring intervention&rdquo; is only useful if that 73% is calibrated, if the physician knows whether it actually means 73%, or whether the model is systematically overconfident. The physician also needs to know what the model doesn&rsquo;t know: is this probability based on a patient population that resembles this patient?</p>
-
-<p>Without calibrated confidence, the physician either trusts the number uncritically (dangerous) or ignores it entirely (wasteful). Human error in medicine is not a technology problem. It is a systems problem. A patient arrives for kidney surgery and receives heart surgery because a label was transposed. A medication is prescribed that interacts fatally with a drug the patient took three years ago, recorded in a different system. These failures demand the same accountability infrastructure the rest of the economy needs.</p>
-
-<p>The data access problem makes it worse. Health systems that hold population-level data across all providers sit on uniquely valuable training sets, but they default to refusal because no trust protocols exist to manage access. The innovators get their data elsewhere, build their products, and the jurisdiction that held the most valuable dataset gains nothing. This is a trust infrastructure failure, not a privacy failure: the data was sensitive enough to require accountability protocols for access, and those protocols did not exist.</p>
+<p>The institution also needs to control access, document decisions, and respond to corrections. Permission to process a record does not by itself make every use of it appropriate. Patients and clinicians need ways to question the result, and the organization needs someone responsible for resolving the problem. The technical controls support those responsibilities.</p>
 
 <hr>
 
 <h2 id="the-stack">The Stack</h2>
 
-<p>The accountability infrastructure is a stack of seven layers, each building on the one below, each solving a distinct problem.</p>
+<p>The proposed architecture organizes seven responsibilities. The numbering makes the framework easier to discuss; it is not a strict build order. Identity, authorization, and evidence are needed throughout the system.</p>
 
 <div class="layer-diagram">
   <div class="layer-item"><span class="layer-num">7</span><span class="layer-name">Marketplace</span><span class="layer-desc">Agent-to-agent commerce</span></div>
@@ -80,15 +74,15 @@
   <div class="layer-item"><span class="layer-num">1</span><span class="layer-name">Accountability</span><span class="layer-desc">Cost, provenance, governance</span></div>
 </div>
 
-<p>The foundation, Layer 1 (Accountability), solves the receipt problem. Every agent operation produces a structured envelope: cost records forming a tree that mirrors the execution tree, provenance chains linking every conclusion to its source data, and governance labels that travel with data through every organizational boundary. Context flows down, results flow up. The envelope is the permanent record of what happened.</p>
+<p>Layer 1 (Accountability) provides a shared record of actions, costs, sources, and applied rules. Context flows down and results flow up. The record needs access controls, retention limits, and a correction history. Traceability should enable investigation without becoming unlimited collection.</p>
 
 <p>Layer 2 (Compute) sits above accountability because every compute operation generates costs and governance events. Dynamic allocation (request, allocate, release, report) replaces static provisioning and feeds directly into the cost tree. Worker self-registration means adding capacity is zero-configuration: start a node, point it at the broker, and it appears in the pool.</p>
 
 <p>Layer 3 (Exchange) is the least mature and one of the most important. When multiple organizations collaborate on a workflow, someone needs to settle the bill. Today this happens through monthly invoices, manual estimates, and disputes that take weeks. The exchange layer automates reconciliation from the exact cost trees that Layer 1 already produces.</p>
 
-<p>Layer 4 (Trust) is the agent economy&rsquo;s credit bureau, a structured record of accuracy, reliability, compliance, and safety across thousands or millions of transactions rather than a single score. A trust score from 100 transactions is marginal. From 1,000,000, it is authoritative. The value compounds with participation, creating a network effect.</p>
+<p>Layer 4 (Trust) records performance in context: the task, versions, evaluation method, uncertainty, and disputed outcomes. A million transactions do not establish authority if the outcomes were never checked or the deployment has changed. Reputation needs independent verification and a route to correction.</p>
 
-<p>Layer 5 (Enforcement) goes beyond &ldquo;is this output safe?&rdquo; to &ldquo;should this operation proceed, given cost anomalies, data sensitivity, confidence scores, and historical behavior?&rdquo; The critical innovation is calibrated judgment: diverse ensembles of judge models producing confidence scores where 0.7 actually means correct 70% of the time. Bayesian calibrators on internal model representations distinguish between genuine ambiguity and knowledge gaps. Active learning selectively requests human verification where information gain is highest. The enforcement layer is not a metal detector at an airport. It is a security operations center.</p>
+<p>Layer 5 (Enforcement) checks whether an operation may proceed. Explicit permissions and required approvals can be enforced outside the acting agent. Judgments about meaning, harm, and evidence remain fallible. The system must state those limits, monitor its reviewers, and route consequential uncertainty to people able to act.</p>
 
 <p>Layer 6 (Agency) solves identity. Today most agents authenticate with shared API keys. The agency layer gives every agent a unique cryptographic identity, explicit authorization chains (who authorized this agent to do this thing), capability-based permissions, and consent management at every organizational boundary.</p>
 
@@ -102,17 +96,17 @@
 
 <p>The officer did not disappear. The work changed. <strong>The human moved from execution to governance.</strong></p>
 
-<p>This pattern is universal. The accountant stops processing invoices and starts reviewing AI-processed invoices. The lawyer stops drafting contracts and starts evaluating AI drafts. The radiologist stops scanning hundreds of X-rays and starts reviewing AI-flagged images. In every case, the skills required change from procedural knowledge (how to do the work) to evaluative knowledge (how to assess whether the AI did the work correctly).</p>
+<p>This pattern can change parts of many professions. It can also reduce staffing, create new work, or shift authority away from employees. The division between execution and judgment will keep moving as AI capabilities change. The outcome depends on how institutions redesign work and share its gains.</p>
 
 <p>But here is the part that &ldquo;human in the loop&rdquo; advocates rarely address: <strong>the human governor cannot review everything.</strong> The accountant cannot examine every one of the 10,000 invoices the system processed overnight. If the human must review everything, the AI saved no time.</p>
 
-<p>This is where the confidence void becomes a workforce problem, not just an infrastructure problem. Without calibrated confidence (a signal that says &ldquo;the AI is 95% sure about this invoice but only 60% sure about that one, review that one first&rdquo;), the human governor is either rubber-stamping everything (dangerous), spot-checking randomly (inefficient), or reviewing everything (pointless).</p>
+<p>Selective review needs more than a confidence threshold. It needs task-specific evaluation, sampling of apparently easy cases, attention to consequences, and a reviewer who can investigate. A queue that forces rapid approval can preserve the appearance of oversight while exhausting the person expected to provide it.</p>
 
 <p>Interpreting calibrated uncertainty becomes a professional skill, as fundamental to the AI-augmented professional as reading financial statements is to the traditional accountant. The physician needs to understand what it means when the AI is 70% confident in a medication recommendation: what the number says statistically, and what it means clinically, for this patient, with this history.</p>
 
-<p>The education system is not preparing people for this shift. Universities teach students to execute work that AI will increasingly do. Law schools teach contract drafting. Accounting programs teach transaction processing. Medical schools teach scan interpretation. The foundational skills remain essential; you cannot govern what you do not understand. But education stops at execution. It does not teach governance: evaluating AI output, designing AI workflows, measuring AI performance, deciding when to intervene.</p>
+<p>Education must teach both practice and evaluation. Learners need to attempt problems, explain their reasoning, compare with automated answers, and receive feedback. Automating the apprenticeship work creates a responsibility to replace the learning opportunities it provided.</p>
 
-<p>The transition from execution to governance is not a demotion. It is a promotion. Governance is harder. It requires deeper expertise, better judgment, and more accountability. The challenge is ensuring enough people have the opportunity to make the transition.</p>
+<p>Governance can be meaningful work, but it is not the whole purpose of human life. Better service, affordable access, time for care and creativity, and the freedom to learn should count alongside productivity. Those gains require choices about training, ownership, and participation.</p>
 
 <hr>
 
@@ -120,13 +114,13 @@
 
 <p>Seven independent forces are converging on the same requirement, and none of them are coordinating.</p>
 
-<p><strong>Regulatory.</strong> The EU AI Act, NIST AI frameworks, Canada&rsquo;s Bill C-27: every jurisdiction is developing requirements for AI transparency, auditability, and governance. These requirements are unmet because the infrastructure to meet them does not exist.</p>
+<p>Regulatory and institutional. Legislation, procurement requirements, and voluntary frameworks create different obligations and expectations. They need evidence appropriate to their context; a protocol alone does not establish compliance.</p>
 
 <p><strong>Economic.</strong> CFOs discovering six-figure AI bills with no cost attribution. Organizations unable to price their AI-assisted services because they cannot calculate per-workflow costs. The 72% of AI projects that stall at pilot because the integration infrastructure is missing.</p>
 
 <p><strong>Safety.</strong> Models making consequential decisions (clinical, legal, financial) without calibrated confidence. Hallucinated citations in court filings. PII leaking across organizational boundaries.</p>
 
-<p><strong>Legal.</strong> No liability framework for multi-agent workflows. When Agent A calls Agent B and the output causes harm, who is responsible? Current law has no answer because the audit trail to assign responsibility does not exist.</p>
+<p>Responsibility. When a workflow causes harm, the relevant people need evidence about authorization, actions, and outcomes. A record can support investigation, but institutions must still decide responsibility and provide remedies.</p>
 
 <p><strong>Environmental.</strong> Carbon reporting requirements that cannot be met when compute consumption is unmetered. Organizations required to report environmental impact with no way to attribute energy usage to specific AI operations.</p>
 
@@ -136,7 +130,7 @@
 
 <p>These forces do not need to coordinate. They are all demanding the same thing: a way to account for what AI agents do. Cost attribution, data provenance, governance enforcement, and calibrated confidence are not features of a product. They are infrastructure, the same way TCP/IP, HTTPS, and double-entry bookkeeping are infrastructure.</p>
 
-<p>The infrastructure will be built. Someone will build it. The question is whether it will be designed intentionally as a coherent stack, or cobbled together from incompatible patches, each serving a different vendor&rsquo;s interest, none serving the public interest.</p>
+<p>These needs create a strong reason to build compatible infrastructure. The design should be tested through independent implementations, useful deployments, and the ability to change vendors without losing essential records.</p>
 
 <p>That is the design problem of the decade.</p>
 
@@ -144,24 +138,17 @@
 
 <h2 id="the-architecture-question">The Architecture Question</h2>
 
-<p>The trajectory of AI infrastructure points toward centralization on a scale that has no precedent. The Stargate Project: $500 billion. Microsoft&rsquo;s data center spend: $80 billion in a single year. The assumption embedded in these investments is that AI compute must be centralized: that scale is the only path to capability, and the future of intelligence belongs to whoever builds the biggest machine.</p>
+<p>My preference is an architecture that gives organizations real choices about where work runs, who controls the keys, and how they can leave a provider. Local compute can strengthen that control. Cloud services may remain useful for particular capabilities, burst capacity, and operational support. The right mix depends on the workload and the organization.</p>
 
-<p>This assumption confuses training with inference. Training frontier models genuinely requires enormous clusters. But training happens once. Inference, running the trained model, happens billions of times. And inference is where the economic value lives. Every contract reviewed, every report drafted, every invoice processed. All inference.</p>
+<p>Distributed hardware does not automatically distribute power. A shared control plane, identity provider, marketplace, or reputation system can still become a gatekeeper. Sovereignty therefore includes usable exports, independent implementations, clear policy authority, and a tested ability to revoke access and recover from failures.</p>
 
-<p>Inference does not require a $30 billion data center. A $5,000 workstation already runs models that would have required a data center five years ago. GPU performance per dollar improves roughly 40% annually. By 2030, the hardware for a full enterprise AI stack will cost less than a high-end laptop. In ten years, inference-capable hardware is as ubiquitous as Wi-Fi routers.</p>
+<p>A compact summary, a small model, or a shared protocol can reduce the burden of doing work. Each must preserve the evidence and uncertainty needed to question the result. Efficiency is valuable when it increases people's options, rather than quietly removing them.</p>
 
-<p>A critical acceleration: multiple independent groups have converged on the same architectural insight: you can distill a large model&rsquo;s capabilities into tiny specialized programs that run on sub-billion-parameter models locally. A natural language specification gets compiled into compact weights that execute with no API call, no internet connection, no per-token fee. These compiled programs can be versioned, shared, and composed like software libraries. The convergence is structural, not coordinated. The economics of sending every request to a cloud API are unsustainable at scale.</p>
+<p>Affected people need a voice too. Someone denied a service should be able to understand the relevant reasons, correct information, and reach a reviewer with authority to change the outcome. The organization paying for the workflow is not always the only party whose interests matter.</p>
 
-<p>When every organization can run its own AI on its own hardware, the sovereignty question answers itself. Canadian data stays on Canadian hardware. Patient records never leave the hospital. Defense workloads run air-gapped. Not because of a cloud provider&rsquo;s contractual promise, but because the data physically never leaves the building. Distribution makes sovereignty a physical reality rather than a legal abstraction.</p>
+<p>This is the direction I want AceTeam to support: bounded delegation, useful records, fallible judgments made visible, and a practical ability to challenge, leave, and repair the system. The architecture is a proposal to build and test. The final section of the book, <a href="book.html#what-comes-next--the-future-we-choose">The Future We Choose</a>, connects it to a walk with my son and the human purposes I want it to serve.</p>
 
-<p>The distributed architecture (sovereign nodes connected by encrypted mesh, coordinated by protocol) is how the accountability stack gets deployed, as infrastructure that each organization owns rather than a cloud service that concentrates control. The accountability layer, the compute layer, the enforcement layer: all running locally, interoperating through standards. The same architecture that made the internet resilient makes AI infrastructure resilient.</p>
-
-<p>A centralized architecture concentrates power: control over the machines that do cognitive work for the entire economy. A distributed architecture distributes that power to the organizations and communities that use it. These are not equivalent options.</p>
-
-<p>This is the infrastructure AceTeam is building. Not another agent framework or model wrapper, but the accountability layer that sits beneath all of them: distributed, sovereign, designed for a world where AI agents do real work and someone has to account for what happened. The seven-layer stack described above is the architecture. The team, the trust gradient, the human-in-the-loop checkpoints, the calibrated confidence: these are what make it work.</p>
-
-<div class="cta-block">
-  <h3>The Complete Argument</h3>
+<h3>The Complete Argument</h3>
   <p>This essay is the short version. The book traces the full arc: the structural shift, the accountability void, the historical pattern, the seven-layer stack, the transitions, and what comes next. Available with inline audio.</p>
   <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
     <a href="/book.html" class="cta-link">Read the book</a>
