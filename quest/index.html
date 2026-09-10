@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Triangle Quest</title>
+<meta name="description" content="A father-son quest: from playing games to building the machine that draws them. Start by drawing one triangle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+<style>
+  :root{
+    --bg:#101317; --bg-elev:#171b21; --bg-surface:#1c2129; --border:#2a313c;
+    --text:#eef1f5; --text-dim:#9aa4b2; --gold:#ffc800; --amber:#ff8a3d;
+    --accent:#5ac8fa; --good:#5fd08a;
+    --nav-h:56px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,.mono{font-family:'Spline Sans Mono',ui-monospace,monospace}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+
+  /* hero */
+  header.hero{padding:72px 0 40px;text-align:center;
+    background:radial-gradient(120% 90% at 50% 0%, #1b2029 0%, var(--bg) 60%)}
+  .eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;margin-bottom:14px}
+  h1{font-size:clamp(38px,8vw,68px);line-height:1.02;margin:0 0 18px;font-weight:700;
+    letter-spacing:-.02em}
+  h1 .sum{color:var(--gold)}
+  .lede{font-size:clamp(17px,2.4vw,20px);color:var(--text-dim);max-width:620px;
+    margin:0 auto 10px}
+  .quote{margin:26px auto 0;max-width:600px;font-size:18px;color:var(--text);
+    border-left:3px solid var(--gold);padding:6px 0 6px 18px;text-align:left}
+  .quote cite{display:block;margin-top:6px;color:var(--text-dim);font-style:normal;
+    font-size:14px}
+
+  section{padding:44px 0}
+  h2{font-size:clamp(24px,4vw,32px);margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--text-dim);margin:0 0 24px;font-size:15px}
+
+  /* playground */
+  .play{background:var(--bg-surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .canvas-holder{border-radius:12px;overflow:hidden;background:#0c0e11;
+    display:flex;justify-content:center}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+  button.q{font-family:inherit;font-size:14px;font-weight:600;color:#101317;
+    background:var(--gold);border:none;border-radius:9px;padding:9px 16px;cursor:pointer;
+    touch-action:manipulation;
+    transition:transform .1s ease, filter .15s}
+  button.q:hover{filter:brightness(1.08)}
+  button.q:active{transform:translateY(1px)}
+  button.q.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+  button.q.ghost:hover{background:var(--bg-elev)}
+  .readout{margin-left:auto;font-size:13px;color:var(--text-dim)}
+  .readout b{color:var(--gold);font-weight:600}
+  .hint{font-size:14px;color:var(--text-dim);margin-top:14px}
+  .hint b{color:var(--text)}
+
+  /* why */
+  .why p{font-size:16px}
+  .why .big{font-size:19px;color:var(--text)}
+
+  /* ladder */
+  .ladder{display:grid;gap:12px;margin-top:8px}
+  .rank{display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start;
+    background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
+    padding:16px 18px}
+  .rank .n{font-size:22px;font-weight:700;color:var(--gold);
+    font-family:'Spline Sans Mono',monospace}
+  .rank.here{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+  .rank h3{margin:0 0 3px;font-size:17px}
+  .rank .age{color:var(--text-dim);font-weight:400;font-size:13px}
+  .rank .ship{margin:6px 0 0;font-size:14px;color:var(--text-dim)}
+  .rank .ship b{color:var(--good);font-weight:600}
+  .rank .train{margin:8px 0 0;font-size:13px;color:var(--text-dim)}
+  .rank .train b{color:var(--accent);font-weight:600}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--gold);border:1px solid var(--gold);border-radius:100px;padding:2px 9px;
+    margin-left:8px;vertical-align:middle}
+
+  footer{padding:48px 0 70px;color:var(--text-dim);font-size:14px;text-align:center;
+    border-top:1px solid var(--border);margin-top:20px}
+  footer .rs{color:var(--amber)}
+
+  @media (max-width:600px){
+    header.hero{padding:52px 0 30px}
+    .readout{margin-left:0;width:100%}
+    .rank{grid-template-columns:40px 1fr;gap:12px;padding:14px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">A father and son build the machine that draws his games</div>
+    <h1>The <span class="sum">Triangle</span> Quest</h1>
+    <p class="lede">Every game you play is millions of triangles and little dots of light,
+      sixty times a second. This quest ends where you can build the machine that draws
+      them. It starts tonight, with one triangle.</p>
+    <blockquote class="quote">
+      In 3D graphics, once you can draw a triangle, you can do anything.
+      <cite>Alyssa Rosenzweig, who reverse-engineered the Apple M1 GPU and wrote its driver. She drew her first triangle a few weeks in. She started in high school.</cite>
+    </blockquote>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Draw one. Right now.</h2>
+    <p class="sub">Drag the three corners. Each corner is just an address on the grid:
+      how far across, how far down. Three addresses make a triangle. That is the smallest
+      flat shape there is, and it is what your whole game world is built from.</p>
+
+    <div class="play">
+      <div class="canvas-holder" id="holder"></div>
+      <div class="controls">
+        <button class="q" id="launch">Launch it</button>
+        <button class="q ghost" id="follow">Aim mode: off</button>
+        <button class="q ghost" id="reset">Reset</button>
+        <span class="readout" id="readout"></span>
+      </div>
+      <p class="hint"><b>Try:</b> drag a corner to make it point down like a DRG drill.
+        Hit <b>Launch it</b> and it slides across the screen, the way every moving thing in
+        every game is really just a triangle whose numbers change each frame. Turn on
+        <b>Aim mode</b> and the top corner tracks your mouse like a reticle.</p>
+    </div>
+  </div>
+</section>
+
+<section class="why">
+  <div class="wrap">
+    <h2>Why a triangle?</h2>
+    <p class="big">Because three points is the smallest, simplest flat piece a computer can
+      shade, and any shape at all can be built out of them. Master Chief's helmet. A whole
+      Deep Rock cave. It is all triangles, stitched together and colored in by a chip
+      called the GPU, whose one job is turning <em>math</em> into <em>which lights are on</em>.</p>
+    <p>You did not memorize that. You just <b>dragged</b> it. That is the whole game:
+      figure the thing out and build it, instead of being told to remember it. Alyssa
+      figured out a GPU that came with no instructions at all. So can you. We have ten
+      years and a couple of real graphics cards in the house.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The whole quest</h2>
+    <p class="sub">Seven ranks, roughly one layer of the curtain per year. Each rank ends
+      with something you <b>built</b>, not a test you passed. You are here, at the bottom,
+      exactly where Alyssa was.</p>
+
+    <div class="ladder">
+      <div class="rank here">
+        <div class="n">1</div>
+        <div>
+          <h3>Recruit <span class="age">· now</span><span class="tag">you are here</span></h3>
+          <div class="ship"><b>Ship:</b> three dots you place become a glowing triangle that moves. Done, above.</div>
+        </div>
+      </div>
+      <div class="rank">
+        <div class="n">2</div>
+        <div>
+          <h3>Marine <span class="age">· command the pixels</span></h3>
+          <div class="ship"><b>Ship:</b> a tiny game of your own. Aim, move, and hit things. (Aiming is a <em>vector</em>. Every FPS is.)</div>
+          <div class="train"><b>Train here:</b> <a href="https://jasonsun.org/dad-math/gl01-game-loop.html">Make a Game from Scratch</a> · <a href="https://jasonsun.org/dad-math/gl06-hitboxes.html">Aiming and Hitboxes</a></div>
+        </div>
+      </div>
+      <div class="rank">
+        <div class="n">3</div>
+        <div>
+          <h3>Engineer <span class="age">· how the picture is made</span></h3>
+          <div class="ship"><b>Ship:</b> a triangle drawn by pure math, no game engine helping you. This is the real first step Alyssa took.</div>
+          <div class="train"><b>Train here:</b> <a href="https://jasonsun.org/dad-math/sk01-flatten.html">Flattening Space</a> · <a href="https://jasonsun.org/dad-math/sk04-hatching.html">Shading with Lines</a></div>
+        </div>
+      </div>
+      <div class="rank">
+        <div class="n">4</div>
+        <div>
+          <h3>Driller <span class="age">· talk to the GPU</span></h3>
+          <div class="ship"><b>Ship:</b> a shader running on a real graphics card, making a cave wall get darker as it faces away from a light.</div>
+          <div class="train"><b>Train here:</b> <a href="https://jasonsun.org/dad-math/gl04-worlds.html">Random Worlds</a> · <a href="https://jasonsun.org/dad-math/gl07-minecraft-worlds.html">Minecraft Worlds</a></div>
+        </div>
+      </div>
+      <div class="rank">
+        <div class="n">5</div>
+        <div>
+          <h3>Driver <span class="age">· understand the machine</span></h3>
+          <div class="ship"><b>Ship:</b> one small fix accepted into a real open-source graphics driver that thousands of people use.</div>
+          <div class="train"><b>Train here:</b> <a href="https://jasonsun.org/dad-math/cs01-binary.html">Binary: How Computers Count</a> · <a href="https://jasonsun.org/dad-math/cs07-circuits.html">Circuits: The Adding Machine</a></div>
+        </div>
+      </div>
+      <div class="rank">
+        <div class="n">6</div>
+        <div>
+          <h3>Reverse Engineer <span class="age">· read the black box</span></h3>
+          <div class="ship"><b>Ship:</b> figure out a piece of a chip that came with no manual, by poking it and testing your guesses. The rarest skill there is.</div>
+          <div class="train"><b>Train here:</b> <a href="https://jasonsun.org/dad-math/ai01-how-ai-learns.html">How a Machine Learns</a> · <a href="https://jasonsun.org/dad-math/gm01-winning-games.html">Out-think a Robot</a> · <a href="https://jasonsun.org/dad-math/st02-twenty-questions.html">Twenty Questions vs the Universe</a></div>
+        </div>
+      </div>
+      <div class="rank">
+        <div class="n">7</div>
+        <div>
+          <h3>Ship it <span class="age">· the Alyssa move</span></h3>
+          <div class="ship"><b>Ship:</b> draw a triangle on hardware nobody documented. Make a game run on a machine that was never meant to run it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Where you train between ranks</h2>
+    <p class="sub">The quest is the map. The training ground is the
+      <a href="https://jasonsun.org/dad-math/">dad-math lab</a>: dozens of short, playable
+      lessons that each take apart one gear inside the games you already play. Newest is the
+      <a href="https://jasonsun.org/dad-math/#ai">AI Lab</a>, written from a walk we took, on
+      what an agent really is and how a machine learns by guessing, measuring, and adjusting.
+      Every "Train here" link above drops you straight into one.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    AI is going to write ordinary code better than anyone by the time you are 14. So we are
+    not building a coder. We are building the person who can point a swarm of AIs at a
+    machine no one understands, tell whether the answer is actually right, and stay on it
+    for years. That person wins.<br><br>
+    Made at the kitchen table with my kid. <span class="rs">Rock and Stone.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const SIZE = 440;
+  let pts, drag = -1, launching = false, aim = false, launchX = 0;
+  const gold = [255,200,0];
+
+  function base(){
+    return [
+      {x:220, y:70},
+      {x:110, y:350},
+      {x:330, y:350}
+    ];
+  }
+  pts = base();
+
+  const sketch = (p) => {
+    p.setup = function(){
+      const c = p.createCanvas(SIZE, SIZE);
+      c.parent('holder');
+      c.style('touch-action','none');   // let a finger drag a corner instead of scrolling the page
+      p.textFont('Spline Sans Mono');
+    };
+    p.draw = function(){
+      p.background(12,14,17);
+      drawGrid(p);
+
+      let poly = pts.map(pt => ({x:pt.x, y:pt.y}));
+      if (aim && !launching){ poly[0] = {x:p.constrain(p.mouseX,0,SIZE), y:p.constrain(p.mouseY,0,SIZE)}; }
+      if (launching){
+        launchX += 3;
+        const dx = launchX;
+        poly = pts.map(pt => ({x:pt.x + dx, y:pt.y}));
+        if (Math.min(...poly.map(q=>q.x)) > SIZE){ launchX = -Math.max(...pts.map(q=>q.x)) - 40; }
+      }
+
+      // triangle
+      p.noStroke();
+      p.fill(gold[0],gold[1],gold[2], 235);
+      p.triangle(poly[0].x,poly[0].y, poly[1].x,poly[1].y, poly[2].x,poly[2].y);
+      // edges glow
+      p.noFill(); p.stroke(255,220,120,90); p.strokeWeight(2);
+      p.triangle(poly[0].x,poly[0].y, poly[1].x,poly[1].y, poly[2].x,poly[2].y);
+
+      // handles (only when editable)
+      if (!launching){
+        for (let i=0;i<3;i++){
+          const pt = poly[i];
+          const over = dist(p.mouseX,p.mouseY,pt.x,pt.y) < 16;
+          p.noStroke(); p.fill(over || drag===i ? 255 : 20, over||drag===i?138:22, over||drag===i?61:26);
+          if (!(aim && i===0)){
+            p.stroke(255,200,0); p.strokeWeight(2); p.fill(20,24,30);
+            p.circle(pt.x,pt.y,16);
+          }
+        }
+      }
+      updateReadout(poly);
+    };
+
+    // shared press/move/release so mouse and touch behave identically. 22px hit
+    // radius so a fingertip can grab a corner, not just a mouse pointer.
+    function grab(){
+      if (launching) return false;
+      if (p.mouseX<0||p.mouseX>SIZE||p.mouseY<0||p.mouseY>SIZE) return false;
+      for (let i=0;i<3;i++){
+        if (aim && i===0) continue;
+        if (dist(p.mouseX,p.mouseY,pts[i].x,pts[i].y) < 22){ drag = i; return true; }
+      }
+      return false;
+    }
+    function moveTo(){
+      if (drag<0) return false;
+      pts[drag].x = p.constrain(p.mouseX,0,SIZE);
+      pts[drag].y = p.constrain(p.mouseY,0,SIZE);
+      return true;
+    }
+    function letGo(){ drag = -1; }
+
+    p.mousePressed  = function(){ grab(); };
+    p.mouseDragged  = function(){ moveTo(); };
+    p.mouseReleased = function(){ letGo(); };
+    // touch: same logic. Return false only while actually dragging a corner, so
+    // the page can still scroll when a finger lands off the handles.
+    p.touchStarted  = function(){ return !grab(); };
+    p.touchMoved    = function(){ return !moveTo(); };
+    p.touchEnded    = function(){ letGo(); return true; };
+
+    function dist(a,b,c,d){ return Math.hypot(a-c,b-d); }
+  };
+
+  function drawGrid(p){
+    p.stroke(255,255,255,10); p.strokeWeight(1);
+    for (let g=0; g<=SIZE; g+=44){ p.line(g,0,g,SIZE); p.line(0,g,SIZE,g); }
+  }
+
+  const readout = document.getElementById('readout');
+  function updateReadout(poly){
+    const f = poly.map(q=>`(${Math.round(q.x)}, ${Math.round(q.y)})`).join('  ');
+    readout.innerHTML = 'corners <b>'+f+'</b>';
+  }
+
+  new p5(sketch);
+
+  document.getElementById('launch').onclick = function(){
+    launching = !launching;
+    this.textContent = launching ? 'Stop' : 'Launch it';
+    if (launching){ launchX = 0; }
+  };
+  document.getElementById('follow').onclick = function(){
+    aim = !aim; drag = -1;
+    this.textContent = 'Aim mode: ' + (aim ? 'on' : 'off');
+  };
+  document.getElementById('reset').onclick = function(){
+    pts = base(); launching = false; aim = false; launchX = 0;
+    document.getElementById('launch').textContent = 'Launch it';
+    document.getElementById('follow').textContent = 'Aim mode: off';
+  };
+})();
+</script>
+</body>
+</html>
