@@ -1744,9 +1744,9 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jason Sun - Trust at Scale</title>
-<meta name="description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. A thesis on agent accountability by Jason Sun.">
+<meta name="description" content="AI agents are doing real work. Accountability needs to travel with it. A thesis on agent accountability by Jason Sun.">
 <meta property="og:title" content="Trust at Scale - Jason Sun">
-<meta property="og:description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. Read the book or the essay.">
+<meta property="og:description" content="AI agents are doing real work. Accountability needs to travel with it. Read the book or the essay.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jasonsun.org">
 <meta name="twitter:card" content="summary_large_image">
@@ -1871,7 +1871,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <div class="hero">
   <div class="hero-eyebrow">Jason Sun</div>
   <h1 class="hero-title">Trust at Scale</h1>
-  <p class="hero-subtitle">AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet.</p>
+  <p class="hero-subtitle">AI agents are doing real work. Accountability needs to travel with it.</p>
   <p class="hero-author">May 2026</p>
   <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
     <a href="/book.html" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">Read the book</a>

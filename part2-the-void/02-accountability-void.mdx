@@ -86,27 +86,19 @@ The tools don't exist. Even organizations that recognize the accountability gap 
 
 ## The Confidence Void
 
-There is a fourth missing piece that cuts across the other three, and it is the hardest to see: calibrated confidence.
+There is a fourth missing piece that cuts across the other three: knowing how much weight to put on an answer.
 
-When a human professional produces work, they communicate uncertainty naturally. "I'm fairly confident in this analysis, but the data on the Southeast Asian market is thin; I'd want to verify those numbers before we present to the board." The consumer of that work knows where to focus their review. The uncertainty is part of the deliverable.
+A professional can say, "The Southeast Asian market data is thin; check those numbers before the board meeting." An AI summary may present a sourced fact and a guessed statistic in the same authoritative voice. A system that is certain and wrong can be more dangerous than one that admits uncertainty: it steers attention away from the mistake.
 
-When an AI system produces work, it communicates with uniform certainty. Every statement is presented with the same typographic weight, the same authoritative tone, the same absence of hedging. A fact drawn directly from a source document looks identical to a hallucinated statistic. A high-confidence extraction looks identical to a guess. The output is a wall of equal-weight assertions, and the human reviewer has no signal about where to focus attention.
+The problem is measurable. In Liu et al.'s [ICLR 2025 study of guard-model calibration](https://proceedings.iclr.cc/paper_files/paper/2025/file/a99f732df9b668284b449da0214a3286-Paper-Conference.pdf), even the best average prompt-classification ECE among the evaluated models was 14.4%. That is an aggregate calibration error in that evaluation, not an error bound for each answer.
 
-This is a structural failure in the accountability infrastructure, not a minor UX problem. Without calibrated confidence (a reliable signal that says "this claim is 92% likely correct" versus "this claim is 55% likely correct, you should check it"), human-in-the-loop governance is theater. The human is reviewing everything or reviewing nothing, because the system provides no guidance about where human attention is most needed.
+Calibration asks whether comparable predictions scored at 80% turn out correct about 80% of the time under the evaluation conditions. Several models agreeing is evidence to investigate, not a calibrated probability by itself. Shared blind spots, changing inputs, and mistaken labels all matter. Human reviewers need measured performance and feedback too; being human does not make their judgments the ground truth.
 
-The assumption that humans are the reliable baseline makes this worse. Zero-shot humans achieve only around 34% F1 on entity extraction tasks, roughly matching what LLMs produce without fine-tuning. The notion that a human reviewer naturally catches what the AI misses is wrong. Both need calibration infrastructure to become reliable.
+Confidence can help the accountant decide where to begin among 10,000 overnight invoices. The amount at stake, reversibility, and possible cumulative loss also belong in that decision. Sampling apparently easy cases helps discover errors that the score failed to flag.
 
-The problem is measurable. Research on ensemble-based confidence estimation for AI systems reveals a consistent pattern: when you ask multiple independent models to verify the same AI output, they agree that incorrect outputs are wrong, but they also overwhelmingly agree that correct outputs are correct, producing confidence scores clustered near 100% even for outputs that are only right half the time. The models are systematically overconfident. They express certainty they do not possess.
+**When the reviewer has neither time to investigate nor authority to intervene, human-in-the-loop governance is theater.** A review queue needs evidence the person can inspect, room to disagree, and a way to stop or correct the work. A better score cannot supply those powers.
 
-This overconfidence means that naive confidence scores (the kind you get from asking a model "how sure are you?") are worse than useless. They are actively misleading. An organization that trusts a 95% confidence score from a single model is making decisions based on a number that has no meaningful relationship to the actual probability of correctness. The score is a reflection of the model's training to sound authoritative, not a measurement of the output's reliability.
-
-Genuine calibration, where a stated 80% confidence means the output is correct 80% of the time, requires infrastructure that does not exist in the current AI stack. It requires diverse verification (multiple models with different architectures and training data, not just one model asked to grade itself). It requires historical tracking (was this type of output actually correct 80% of the time in the past?). It requires domain-specific thresholds (80% confidence on an email classification is fine; 80% confidence on a medical diagnosis requires human review). And it requires the ability to learn from corrections. When a human reviewer overrides an AI output, the confidence system should update its beliefs about similar outputs in the future.
-
-None of this exists by default. Every AI platform ships outputs without confidence. Every agent framework executes actions without expressing uncertainty. The entire agent economy is making decisions at machine speed with no mechanism for distinguishing between outputs the system is genuinely sure about and outputs the system is guessing at.
-
-The confidence void is the reason that human-in-the-loop governance fails to scale. If you cannot tell the human *where to look*, requiring human review becomes a bottleneck that negates the speed advantage of AI. If you *can* tell the human where to look, flagging only the 15% of outputs where the system is genuinely uncertain, then human governance scales with the system. The human reviews the hard cases. The system handles the easy ones. The confidence score is the routing signal that makes this possible.
-
-Building that routing signal (calibrated, domain-specific, adaptive, and trustworthy) is as fundamental to accountability infrastructure as cost tracking and data provenance. It is the fourth pillar, and without it, the other three are useful but insufficient.
+The tools for evaluation and calibration exist. The work is to connect them to everyday operations: record the task and model version, check predictions against outcomes, retain disagreements and corrections, and re-evaluate when the setting changes. The routing signal earns trust through those measurements.
 
 ## What the Void Looks Like in Practice
 

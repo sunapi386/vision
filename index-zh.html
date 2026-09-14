@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>孙派 - 规模化信任</title>
-<meta name="description" content="AI 智能体正在从事真正的工作。让这些工作可信赖的基础设施尚不存在。孙派关于智能体问责的论述。">
+<meta name="description" content="AI 智能体正在从事真正的工作。问责需要伴随工作一路传递。孙派关于智能体问责的论述。">
 <meta property="og:title" content="规模化信任 - 孙派">
-<meta property="og:description" content="AI 智能体正在从事真正的工作。让这些工作可信赖的基础设施尚不存在。阅读书籍或文章。">
+<meta property="og:description" content="AI 智能体正在从事真正的工作。问责需要伴随工作一路传递。阅读书籍或文章。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jasonsun.org">
 <meta name="twitter:card" content="summary_large_image">
@@ -419,7 +419,7 @@ pre code { background: none; padding: 0; color: var(--text); }
 <div class="hero">
   <div class="hero-eyebrow">孙派</div>
   <h1 class="hero-title">规模化信任</h1>
-  <p class="hero-subtitle">AI 智能体正在从事真正的工作。让这些工作可信赖的基础设施尚不存在。</p>
+  <p class="hero-subtitle">AI 智能体正在从事真正的工作。问责需要伴随工作一路传递。</p>
   <p class="hero-author">2026年5月</p>
   <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
     <a href="/book-zh.html" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">阅读全书</a>
@@ -488,15 +488,17 @@ pre code { background: none; padding: 0; color: var(--text); }
 
 <p>当 AI 系统完成工作时，它以一致的确定性进行表达。每个陈述都带着相同的版面权重、相同的权威语调。从源文档中提取的事实与捏造的统计数据看起来毫无二致。输出是一堵由等权重断言砌成的墙，人类审查者没有任何信号知道该把注意力集中在哪里。</p>
 
-<p>模型表达的信心可能与实际准确率有明显差异，差距取决于任务与部署。置信度用于决定审查哪些工作前，需要独立评估。</p>
+<p>模型表达的信心可能与实际准确率有明显差异，差距取决于任务与部署。置信度用于决定审查哪些工作前，需要独立评估。<strong>一个笃定却出错的系统，可能比承认不确定的系统更危险：它让人把注意力从错误上移开。</strong></p>
 
 <p>校准要问：在评估条件下，分数80%的可比预测是否约有80%正确。集成和其他评分器可以帮助估计，但共识本身不足够。需要监测输入变化、共同盲点和人工标注质量。</p>
 
-<p>置信度是路由信号之一。利害关系、可逆性和工作流的累计后果同样重要。审查需要时间、证据和停止行动的权限，也包括决策作出之后的质疑途径。</p>
+<p>置信度是路由信号之一。利害关系、可逆性和工作流的累计后果同样重要。审查需要时间、证据和停止行动的权限，也包括决策作出之后的质疑途径。<strong>当审查者既没有时间调查，也没有权力干预时，人工在环治理就是一场表演。</strong></p>
 
 <h3>在医疗健康中的表现</h3>
 
-<p>设想一个为临床审查整理患者历史的系统。临床人员需要区分直接来自病历的陈述、记录之间可能存在的矛盾，以及需要检查的推断。有用摘要应保留对底层证据的访问，并展示缺失信息。</p>
+<p>设想一位医生正在查看患者的血压记录。诊所系统里有一份用药清单，另一个系统里记着患者过去的一次不良反应。AI 整理了摘要，提出下一步建议，并标注“73% 的置信度”。医生需要的远不止一句自信的建议。</p>
+
+<p>73% 指的是什么？是在类似案例中，这项建议被判断为适当的比例，还是模型生成这些词的概率？它读过哪些记录？有没有找到那条不良反应记录？有用的系统应让这些问题能够得到回答。即使分数经过良好校准，临床决定仍应由医生和患者共同作出。</p>
 
 <p>机构还需要控制访问、记录决策，并回应更正。获准处理病历，不等于每种用途都适当。患者和临床人员需要质疑结果的途径，组织也需要有人负责解决问题。技术控制支持这些责任。</p>
 
@@ -586,7 +588,9 @@ pre code { background: none; padding: 0; color: var(--text); }
 
 <h2 id="the-architecture-question">架构问题</h2>
 
-<p>我倾向的架构，应让组织真正选择工作在哪里运行、谁控制密钥，以及如何离开供应商。本地算力可以增强控制，云服务也可能为特定能力、突发容量和运营支持提供价值。适当组合取决于工作负载和组织。</p>
+<p>我所押注的未来，是组织拥有更多自己赖以运作的能力。<strong>主权意味着能够说“不”，并继续工作。</strong>这需要组织控制关键工作在哪里运行、谁持有密钥、接受哪些更新，以及如何带着可用记录离开供应商。对于适合的工作负载，本地算力让这种独立成为可能。外部服务应是组织主动选择、能够替换的依赖。</p>
+
+<p>2025 年 1 月，OpenAI 及其合作伙伴宣布 Stargate，<a href="https://openai.com/index/announcing-the-stargate-project/">计划在四年内投资 5000 亿美元</a>建设美国的 AI 基础设施。这是宣布的计划，并非已经完成的支出。它让一个问题变得具体：所有人赖以运作的能力，将由谁拥有？</p>
 
 <p>硬件分布并不自动分散权力。共享控制平面、身份供应商、市场或声誉系统仍可能成为关口。主权因此包括可用导出、独立实现、明确的策略权限，以及经过检验的撤销访问与故障恢复能力。</p>
 
@@ -594,7 +598,7 @@ pre code { background: none; padding: 0; color: var(--text); }
 
 <p>受影响的人也需要表达意见。被拒绝服务的人，应能理解相关理由、更正信息，并联系有权改变结果的审查者。为工作流付款的组织，未必是唯一利益相关方。</p>
 
-<p>这是我希望AceTeam支持的方向：有限委托、可用记录、展示可能出错的判断，以及实际质疑、退出和修复系统的能力。架构是一项需要建设与检验的提案。全书最后一节<a href="book-zh.html#未来展望--我们选择的未来">《我们选择的未来》</a>，将它与我和儿子的散步，以及我希望它服务的人类目的连接起来。</p>
+<p>这是我希望 AceTeam 支持的方向：有限委托、可用记录、展示可能出错的判断，以及实际质疑、退出和修复系统的能力。我们要通过测试来赢得信心：工作跨越边界、权限发生变化、事情出错时，系统究竟如何表现。全书最后一节<a href="book-zh.html#未来展望--我们选择的未来">《我们选择的未来》</a>，将它与我和儿子的散步，以及我希望它服务的人类目的连接起来。也可以从一个简单故事开始：<a href="https://aceteam.ai/p/who-painted-the-room-black-VGzPKaZ7F9eKpTzgYY0ubR">《谁把房间漆黑了？》（英文）</a>。</p>
 
 
 

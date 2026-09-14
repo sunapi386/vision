@@ -319,11 +319,11 @@ body {
 
 <p>The extraction experiments summarized here reported large gaps between self-reported confidence and observed correctness. Those figures describe particular experimental conditions, not a universal error rate for language models. Reproducible comparisons need the dataset split, model and prompt versions, labeling rules, and evaluation code.</p>
 
-<p>Published guard models are no better. Llama Guard, Shield Guard, and Wild Guard, the standard open-source safety classifiers, have Expected Calibration Error (ECE) of 14-28% [2]. ECE measures the average gap between predicted confidence and observed accuracy. An ECE of 20% means the model's confidence is, on average, 20 points away from reality:</p>
+<p>Liu et al.'s ICLR 2025 study evaluated nine guard models across twelve benchmarks [2]. WildGuard had the lowest average prompt-classification Expected Calibration Error (ECE), at 14.4%. ECE is a weighted average gap between confidence and accuracy across bins; it does not bound the error of an individual prediction:</p>
 
 $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b)|$$
 
-<p>A poorly calibrated score makes a numerical threshold difficult to interpret. It may still rank some outputs usefully, which is a separate property to measure. Evaluation should check both ranking quality and calibration, including errors the model makes with high confidence.</p>
+<p>A poorly calibrated score makes a numerical threshold difficult to interpret. It may still rank some outputs usefully, which is a separate property to measure. Evaluation should check both ranking quality and calibration, including errors the model makes with high confidence. <strong>A system that is certain and wrong can steer attention away from the very mistake a reviewer needs to catch.</strong></p>
 
 <p>There is also a selection bias that compounds the problem. Extraction models do an implicit top-K filtering before confidence is ever estimated: they only output entities they believe are correct. The confidence model never sees clearly wrong extractions. It evaluates a pre-filtered distribution where most inputs are plausible. A perfect extractor paired with a perfect confidence model would just output "correct" for everything, trivially calibrated but completely uninformative. The practical consequence: precision can be improved after the fact through calibration, but recall cannot. If the extraction model suppresses uncertain outputs before they reach the confidence estimator, those potential corrections are lost permanently.</p>
 
@@ -353,7 +353,7 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
   <div class="stack-num">03</div>
   <div class="stack-body">
     <h4>White-box: Linear Probes</h4>
-    <p>Train a linear probe on the LLM's hidden representations, roughly a 4000-dimensional vector per token at each layer [4]. On MMLU Pro, probes achieve ECE of approximately 0.02. That is a low measured average error in that evaluation, not a guarantee for other tasks or every subset of predictions. The key discovery: prompting the LLM to verbalize its uncertainty ("How confident are you?") improves the probe's performance even though the verbalized number is not used as a feature. The act of introspecting changes the hidden state in ways that make the probe's job easier. This is "latent feature engineering": you modify the model's internal representations by changing the prompt, then read off the improved signal.</p>
+    <p>Train a small probe on an LLM judge's hidden activations to estimate how reliable its verdict is. Radharapu et al. [4] report better calibration and approximately tenfold computational savings over multi-generation methods in their evaluation. Results vary across models and tasks. Access to hidden states makes this approach possible; independent evaluation establishes whether its estimates are useful for the intended deployment.</p>
   </div>
 </div>
 
@@ -505,9 +505,9 @@ $$\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n} |\text{acc}(B_b) - \text{conf}(B_b
 
 <ol>
 <li>Xu, J. et al. "AdaIE: Guidelines for Universal Information Extraction." Anonymous ACL submission, 2026. 15 datasets, 497 entity types, 747 relation types, CEAF-based evaluation metrics.</li>
-<li>"On the Calibration of LLM-based Guard Models for Content Moderation." 2026. Llama Guard, Shield Guard, Wild Guard ECE of 14-28%.</li>
+<li>Liu, H. et al. <a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/a99f732df9b668284b449da0214a3286-Paper-Conference.pdf">"On Calibration of LLM-based Guard Models for Reliable Content Moderation."</a> ICLR 2025. Table 1 reports calibration by model, task, and dataset.</li>
 <li>R-Judge benchmark. ~500 human-annotated instances, 5 categories (finance, IoT, software, web, program), 27 risk scenarios.</li>
-<li>"Calibrating LLM Judges: A Linear Probe for Fast Reliable Uncertainty Estimation." Linear probe achieving ~0.02 ECE on MMLU Pro.</li>
+<li>Radharapu, B. et al. <a href="https://arxiv.org/html/2512.22245v1">"Calibrating LLM Judges: Linear Probes for Fast and Reliable Uncertainty Estimation."</a> December 2025. Probe-based calibration evaluated across models and judging tasks.</li>
 <li>OpenAI. "GPT-4 Technical Report." 2023. Documents calibration degradation after RLHF.</li>
 <li>Schellhammer &amp; Blazer, Vector Institute. "Asymmetric Viewless Sidekicks Improve Uncertainty."</li>
 <li>Luo, X. "On Coreference Resolution Performance Metrics." 2005. CEAF metric used in AdaIE evaluation.</li>
