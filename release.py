@@ -5,7 +5,7 @@ Usage:
     python3 release.py              # build + verify + deploy
     python3 release.py build        # build only
     python3 release.py deploy       # deploy only
-    python3 release.py tts          # regenerate audio + build + verify + deploy
+    python3 release.py tts          # regenerate both audiobooks + build + verify + deploy
     python3 release.py verify       # check paragraph IDs, timestamps, audio sync
     python3 release.py stats        # fetch and summarize analytics
     python3 release.py print        # build + generate print-ready PDF for KDP
@@ -129,7 +129,7 @@ def setup():
         print("uv not found. Install it: curl -LsSf https://astral.sh/uv/install.sh | sh")
         sys.exit(1)
 
-    run([uv, "pip", "install", "-e", ".[tts]", "--break-system-packages"],
+    run([uv, "pip", "install", "-e", ".[tts,tts-zh]", "--break-system-packages"],
         cwd=str(VISION_DIR))
 
     # spacy model (Kokoro dependency) - install if missing
@@ -164,6 +164,7 @@ def clean():
     print("\n--- Clean ---")
     cache_dir = VISION_DIR / "audio-cache"
     audio_dir = VISION_DIR / "audio"
+    audio_zh_dir = VISION_DIR / "audio-zh"
 
     wavs = list(cache_dir.glob("*.wav")) if cache_dir.exists() else []
     if wavs:
@@ -179,6 +180,7 @@ def clean():
         print(f"  Converted {len(wavs)} files")
 
     temp_wavs = list(audio_dir.glob("*.wav")) if audio_dir.exists() else []
+    temp_wavs += list(audio_zh_dir.glob("*.wav")) if audio_zh_dir.exists() else []
     for wav in temp_wavs:
         wav.unlink()
         print(f"  Removed {wav.name}")
@@ -410,6 +412,16 @@ def verify():
     else:
         print("    extraction matches build.py")
 
+    result = subprocess.run(
+        ["python3", str(VISION_DIR / "tts_zh.py"), "verify"],
+        capture_output=True, text=True, timeout=60,
+    )
+    if result.returncode != 0:
+        errors.append("tts_zh.py verify failed")
+        print(f"    {result.stdout.strip() or result.stderr.strip()}")
+    else:
+        print("    Chinese extraction matches build.py")
+
     # Summary
     print()
     if errors:
@@ -434,7 +446,12 @@ def build():
 def tts():
     print("\n--- TTS ---")
     env = {**os.environ, "PYTHONUNBUFFERED": "1"}
+    # A shared GPU can exhaust VRAM mid-book; use CPU unless explicitly chosen.
+    env.setdefault("CUDA_VISIBLE_DEVICES", "-1")
+    print("  Regenerating English narration...")
     run(["python3", str(VISION_DIR / "tts.py")], timeout=7200, env=env)
+    print("  Regenerating Chinese narration...")
+    run(["python3", str(VISION_DIR / "tts_zh.py")], timeout=14400, env=env)
     clean()
 
 
