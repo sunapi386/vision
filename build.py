@@ -132,7 +132,7 @@ INTERSTITIALS = {
       <text x="130" y="458" fill="var(--accent)" font-family="Space Grotesk,sans-serif" font-size="12" font-weight="700">A</text>
       <text x="160" y="458" fill="var(--accent)" font-family="Space Grotesk,sans-serif" font-size="12" font-weight="500">ACCOUNTABILITY</text>
       <text x="440" y="458" fill="var(--text-dimmer)" font-size="10">Cost, provenance, governance</text>
-      <text x="350" y="520" text-anchor="middle" fill="var(--text-dimmer)" font-family="Space Grotesk,sans-serif" font-size="11" font-style="italic">Each layer builds on the one below</text>
+      <text x="350" y="520" text-anchor="middle" fill="var(--text-dimmer)" font-family="Space Grotesk,sans-serif" font-size="11" font-style="italic">Seven responsibilities connected by shared contracts</text>
     </svg>
   </div>
 </div>""",
@@ -147,9 +147,9 @@ INTERSTITIALS = {
 </div>""",
     6: """
 <div class="visual-break cta-section">
-  <div class="cta-line fade-in">The revolution always comes first.</div>
-  <div class="cta-line fade-in">The accountability layer always comes second.</div>
-  <div class="cta-line fade-in">The accountability layer always outlasts the revolution.</div>
+  <div class="cta-line fade-in">Capability is advancing.</div>
+  <div class="cta-line fade-in">Accountability needs deliberate design.</div>
+  <div class="cta-line fade-in">Its rules must remain open to question.</div>
   <div class="cta-divider"></div>
   <div class="cta-accent fade-in">The revolution is here. The bookkeeping is not.</div>
 </div>""",
@@ -261,10 +261,10 @@ SECTION_VISUALS = {
 
 PULLQUOTES = {
     2: ("The agent economy is running without paperwork.", "On the void"),
-    3: ("Every revolution eventually produces an accountability layer. The accountability layer always outlasts the revolution.", "On the pattern"),
+    3: ("Shared standards can make new forms of work more dependable. Their value has to be demonstrated.", "On the pattern"),
     4: ("The missing layer is not more hardware or better models. It is the infrastructure to account for what agents do.", "On the stack"),
     5: ("Models are commodities. Trust infrastructure is the moat.", "On the transitions"),
-    6: ("The question is not whether this infrastructure gets built. It is whether it gets designed.", "On what comes next"),
+    6: ("The design should give people more ability to understand, challenge, and change the systems they depend on.", "On what comes next"),
 }
 
 ABSTRACT_PARAGRAPHS = [
@@ -272,7 +272,7 @@ ABSTRACT_PARAGRAPHS = [
     'This is not a feature gap. It is a <strong>category gap</strong>: the same kind of gap that double-entry bookkeeping filled for commerce, that TLS filled for the internet, that container standards filled for software deployment.',
     'Seven independent forces (regulatory, economic, safety, legal, environmental, geopolitical, enterprise) are converging on the same requirement: <strong>standardized agent accountability.</strong> None of them are coordinating. They all need the same infrastructure.',
     'The argument is simple: the agent economy needs the same kind of accountability infrastructure that every previous economic revolution eventually built. This book makes the case for what that infrastructure looks like, who needs it, and what happens if nobody builds it intentionally.',
-    'The accountability layer will be built. If nobody designs it intentionally, it will be assembled from incompatible patches after the first catastrophes force the issue.',
+    'The proposal should be judged by its implementations: what they enforce, what remains uncertain, and whether people can investigate, recover, and leave.',
 ]
 
 AUDIO_SLUGS = {
@@ -311,8 +311,8 @@ ABSTRACT_PARAGRAPHS_ZH = [
     '<strong>AI 正在重塑谁来完成工作，而不仅仅是工作在哪里发生。</strong>智能体起草合同、分诊患者、处理发票、撰写报告。革命已经到来。但当智能体 A 调用智能体 B 再调用智能体 C，跨越三个组织时，没有人能说清发生了什么、花费了多少、数据是否被正确处理。',
     '这不是一个功能缺口，而是一个<strong>品类缺口</strong>：与复式记账法之于商业、TLS 之于互联网、容器标准之于软件部署同类的缺口。',
     '七股独立的力量（监管、经济、安全、法律、环境、地缘政治、企业）正在汇聚到同一个需求：<strong>标准化的智能体问责。</strong>它们之间并无协调，但都需要同样的基础设施。',
-    '本书追溯这一规律：世界已经改变，基础设施中存在空白，历史表明这种空白总会被填补，而智能体经济需要的是一个特定的七层技术栈。它审视必须同步发生的转型（组织、人才、政府、经济），并展望当基础设施就位后工作将呈现的面貌。',
-    '问责层终将被建成。问题在于，它是作为一个连贯的技术栈被有意设计，还是由互不兼容的补丁拼凑而成。',
+    '本书从智能体工作的增长出发，分析问责缺口和历史先例，提出一个包含七项职责的架构。它探讨组织、人才、政府与经济的转型，并以能够理解、质疑和改变系统的人为设计目标。',
+    '提案应通过实现接受检验：它执行了什么，哪些问题仍不确定，以及人们能否调查、恢复和离开。',
 ]
 
 BACK_MATTER_FILES_ZH = [
@@ -1744,9 +1744,9 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jason Sun - Trust at Scale</title>
-<meta name="description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. A thesis on agent accountability by Jason Sun.">
+<meta name="description" content="AI agents are doing real work. Accountability needs to travel with it. A thesis on agent accountability by Jason Sun.">
 <meta property="og:title" content="Trust at Scale - Jason Sun">
-<meta property="og:description" content="AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet. Read the book or the essay.">
+<meta property="og:description" content="AI agents are doing real work. Accountability needs to travel with it. Read the book or the essay.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jasonsun.org">
 <meta name="twitter:card" content="summary_large_image">
@@ -1871,7 +1871,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <div class="hero">
   <div class="hero-eyebrow">Jason Sun</div>
   <h1 class="hero-title">Trust at Scale</h1>
-  <p class="hero-subtitle">AI agents are doing real work. The infrastructure to make that trustworthy doesn't exist yet.</p>
+  <p class="hero-subtitle">AI agents are doing real work. Accountability needs to travel with it.</p>
   <p class="hero-author">May 2026</p>
   <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative;">
     <a href="/book.html" style="display: inline-block; padding: 12px 28px; background: var(--accent); color: var(--bg); text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; border-radius: 8px; transition: opacity 0.2s;">Read the book</a>

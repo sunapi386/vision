@@ -4,9 +4,9 @@ title: "The Seven Layers"
 
 # The Seven Layers
 
-No single protocol can carry the accountability infrastructure for the agent economy. It takes a stack of seven layers, each building on the one below, each solving a distinct problem that no other layer can solve. Together, they form the complete infrastructure that must exist for autonomous AI systems to operate across organizational boundaries at scale.
+The proposed architecture organizes seven responsibilities: accountability, compute, exchange, trust, enforcement, agency, and marketplace. They need shared interfaces, but they are not a strict dependency ladder. Identity and authorization are needed from the first accountable operation; records, enforcement, and review interact throughout execution.
 
-Each layer maps directly to a problem that exists today: unsolved, generating friction, producing failures. Some of these layers have early implementations. Others exist only as requirements. All of them are inevitable, because the agent economy cannot function without them.
+Some capabilities described here have implementations; others are design requirements. The seven-part model is a way to organize the work, not a claim that this is the only possible architecture or that the complete system already exists.
 
 ## Layer 1: Accountability
 
@@ -32,11 +32,11 @@ Each organization sees its own portion. The root caller sees everything. The cos
 
 **Provenance chains.** Every conclusion carries a citation back to the data, model, and prompt that produced it. When a strategy agent says "the drug pipeline is promising," the provenance chain traces that conclusion through the research agent's analysis, through the data agent's retrieval, down to the specific clinical trial records retrieved from the FDA database on a specific date. The chain is recursive, each node in the execution tree recording what it consumed and what it produced, and the chain composes across organizational boundaries just as the cost tree does.
 
-Provenance is what makes agent outputs auditable. Without it, an agent's conclusion is an assertion. With it, the conclusion is a verifiable claim that can be checked, challenged, and traced. In regulated industries (healthcare, financial services, government), provenance is a legal requirement for any system that produces conclusions used in consequential decisions.
+Provenance gives a reviewer evidence to inspect: which inputs were available, which operations ran, and which sources are cited for a claim. A citation does not prove that the source supports the conclusion, and an execution trace does not reveal every cause of a model's output. Source matching, factual verification, and judgment remain separate tasks.
 
 **Data governance.** Data carries classification labels (public, confidential, protected health information, personally identifiable information), and those labels travel with the data through the entire execution tree. At every organizational boundary, a consent check verifies that the receiving organization is authorized to process data of that classification. Violations are blocked in real time, not discovered after the fact.
 
-The structural principle is the same across all three: context flows down, results flow up. When the root caller initiates a workflow, budget limits, governance rules, and tracing context flow downward through the execution tree. When the agents complete their work, costs, citations, and audit trails flow upward. The accountability layer is the envelope that carries this information: a structured container that accompanies every piece of work as it moves through the system.
+The structural principle is that context flows down and results flow up. Budgets, authorized purposes, and permissions accompany each delegation. Costs, evidence, and enforcement records return with the result. Records need access controls, retention periods, and correction histories so accountability does not become unrestricted surveillance.
 
 Think of it as the receipt layer. Every agent interaction produces an envelope. Costs flow up. Citations flow up. Governance enforces at every boundary. The envelope is the permanent record of what happened, produced as a natural byproduct of execution rather than reconstructed forensically after the fact.
 
@@ -80,7 +80,7 @@ Level 3 adds hardware-aware scheduling. A GPU allocation request needs to consid
 
 The exchange layer handles settlement between parties. When multiple organizations collaborate on a workflow, someone needs to settle the bill.
 
-This layer does not exist yet, anywhere.
+Cross-organizational billing and payment systems already exist. The proposed exchange layer would connect them to agent work through interoperable terms, execution records, acceptance criteria, and settlement instructions.
 
 When Organization A's agent uses Organization B's compute to produce results for Organization C, three organizations have incurred costs and produced value. The accountability layer tracks what each organization spent. The compute layer tracks what resources each organization consumed. But neither layer handles the actual transfer of value between them.
 
@@ -88,7 +88,7 @@ Today, cross-organizational AI settlement happens manually. Organization A recei
 
 This is how professional services billing works. It is slow, approximate, and generates friction proportional to the number of organizational boundaries in the workflow. For an agent economy where cross-organizational workflows are the norm rather than the exception, manual settlement is a bottleneck that prevents the market from functioning.
 
-The exchange layer requires several capabilities that do not exist in current infrastructure.
+The exchange layer needs to combine existing payment capabilities with agent-specific execution records and acceptance rules.
 
 **Multi-denomination settlement.** Not every transaction settles in the same currency, or even the same unit. Compute costs are measured in GPU-hours or worker-minutes. LLM costs are measured in tokens. Data access costs are measured in queries or records. A settlement protocol must handle multiple denominations and convert between them at agreed-upon rates.
 
@@ -106,9 +106,9 @@ Trust here means reputation built from historical transactions: which agents and
 
 If an agent has processed 10,000 legal documents with 99.2% accuracy, that track record should be discoverable by any organization considering whether to use it. If an organization has participated in 500 cross-organizational workflows without a single governance violation, that compliance history should be a verifiable credential.
 
-This layer does not exist yet either.
+The requirement is a portable, independently verifiable performance history across participating systems. Existing evaluations and vendor dashboards provide pieces of this; they do not by themselves establish a shared reputation system.
 
-Today, trust in AI agents is binary: either you use an agent (because a human decided to try it) or you do not. There is no reputation infrastructure that aggregates historical performance, compliance records, and reliability metrics into a discoverable, verifiable trust score.
+Teams already use benchmarks, evaluations, and vendor histories to assess agents. A shared trust layer would make suitable evidence portable and independently verifiable while preserving its scope and limitations.
 
 The trust layer is the agent economy's equivalent of a credit bureau. A single score would be reductive; what it holds is a structured record of historical performance across multiple dimensions:
 
@@ -120,7 +120,7 @@ The trust layer is the agent economy's equivalent of a credit bureau. A single s
 
 **Safety.** How often has the agent produced outputs that were flagged by safety systems? What was the nature of the flags? Were they false positives or genuine safety concerns? The safety data from millions of agent executions, aggregated and anonymized, creates a collective intelligence about agent behavior: a safety data network that benefits every participant.
 
-The trust layer's value compounds with scale. A trust score derived from 100 transactions is marginally useful. A trust score derived from 10,000 transactions is reliable. A trust score derived from 1,000,000 transactions is authoritative. This creates a network effect: the more organizations that participate, the more valuable the trust infrastructure becomes, which attracts more participants.
+A larger history can improve an estimate when the observations are relevant and the outcomes are independently checked. Volume alone does not confer authority. Reputation should identify the task, model and policy versions, evaluation method, sample size, uncertainty, and disputed outcomes. Changes in deployment context can make an old record less informative.
 
 Building a trust layer raises significant design challenges: Sybil resistance (preventing inflated reputation through fake transactions), privacy (proving reputation without revealing transaction details), and fairness (ensuring new entrants can build reputation). These are hard problems, but solvable ones. Credit bureaus, privacy-preserving cryptographic systems, and fair scoring mechanisms in economics have addressed analogous challenges. The work is adapting those solutions to the agent economy's specific requirements.
 
@@ -142,21 +142,17 @@ The enforcement layer operates on a three-phase cycle:
 
 **Judgment.** The findings from multiple detectors are aggregated and evaluated against the organization's enforcement policy. This judgment phase is where the enforcement layer moves beyond simple rule-matching into genuinely calibrated assessment.
 
-The naive approach, asking a single model "is this safe?", fails in practice because models are systematically overconfident. They express 95% certainty on outputs that are correct only 50% of the time. The calibration gap between stated confidence and actual accuracy is a structural deficiency, not a minor imprecision, and it makes threshold-based decisions meaningless: if "95% confident" does not actually mean "correct 95% of the time," then any threshold set against that score is arbitrary.
+A judge can be wrong, including when it is confident. The enforcement layer should therefore separate three questions: is the operation authorized, how reliable is the evidence, and are the consequences acceptable under the applicable policy?
 
-The numbers are worse than the intuition suggests. In entity extraction tasks, single models assign maximum confidence scores to 86% of entities, yet only 40% of those entities are actually correct. The model is not uncertain and wrong. It is certain and wrong, which is far more dangerous. Published guard models designed specifically for safety exhibit Expected Calibration Error between 14% and 28%, as documented in "On the Calibration of LLM-based Guard Models for Content Moderation" (2026). These are purpose-built safety tools, not general-purpose models being misused, and they cannot reliably distinguish their own accuracy from their own confidence.
+Explicit permissions, budget reservations, and required approval steps can be checked by mechanisms outside the acting agent's control. Semantic judgments, such as whether an output is misleading or a disclosure is harmful, remain fallible. The system must describe the boundary of each guarantee instead of treating every safety decision as a mechanically provable rule.
 
-The architecture that addresses this separates prediction from scoring. A large model performs the primary task: generation, extraction, analysis. A smaller, cheaper model independently estimates the probability that each output is correct. The scoring model has no access to the primary model's internal confidence. It evaluates the output cold, the way a human reviewer would. This separation prevents the systematic overconfidence of the primary model from contaminating the confidence estimate.
+Ensembles, feature-based scorers, and probes of model representations are candidate ways to estimate uncertainty. Agreement between models is evidence to evaluate, not proof of independent judgment or calibrated correctness. Calibration must be measured on held-out examples relevant to the deployment, with ongoing checks for changing inputs, model updates, and systematic errors.
 
-The solution is an ensemble of judge models, diverse in model family, model size, and prompting strategy, that produces a calibrated confidence score through aggregation. Diversity is the key variable. A panel of ten identical models, asked the same question ten times, will make correlated errors: they will all get the same things wrong, in the same way, and agree with each other's mistakes. But a panel that includes models with different training data, different architectures, and different prompting approaches will disagree productively. When a diverse ensemble agrees unanimously, that agreement is meaningful. When it disagrees, the disagreement is a genuine signal of uncertainty.
+A score of 0.8 is useful when comparable predictions are correct about 80% of the time under the evaluation conditions. That still leaves errors. Routing must also consider the severity and reversibility of the action, the quality of human review, and the accumulated exposure of the workflow. An illustrative threshold for document tagging cannot be reused as a general permission to make consequential decisions.
 
-Early research in this direction demonstrates that even small ensembles of open-weight models (each under a billion parameters, running locally on commodity hardware) can match frontier model recall on safety benchmarks like R-Judge, while achieving calibration error below 10%. AUC scores improved from 58% to 68% through ensemble diversity alone, by adding different models rather than larger ones. The ensemble's value comes not from scale but from perspective: each model brings a different lens, and the points where those lenses disagree are precisely the points that need human attention.
+Human feedback can improve these estimates, but reviewers also disagree and make mistakes. Record their reasoning and later corrections, preserve an appeal path, and sample high-confidence outputs as well as flagged ones. A reviewer must have time, relevant evidence, and authority to stop the work; otherwise the checkpoint may only record a rubber stamp.
 
-Beyond static ensembles, there is a deeper approach: treating confidence estimation as a learning problem. Rather than aggregating binary yes/no votes from judge models, a Bayesian calibrator can be trained on the internal representations of the model itself: the hidden state activations that encode, in a compressed form, what the model "knows" and what it is uncertain about. This gray-box approach reads the model's internal state to produce a confidence distribution, not just a point estimate. The distribution captures two distinct types of uncertainty: inherent randomness in the task (some inputs are genuinely ambiguous) and lack of knowledge (the model has not seen enough similar cases to form a reliable opinion). Distinguishing between these two types is critical because they demand different responses: inherent ambiguity requires policy decisions ("what do we do when the answer is genuinely unclear?") while knowledge gaps require data ("show me more examples like this one").
-
-The Bayesian approach also enables adaptive calibration through active learning. When the system encounters an input where its epistemic uncertainty (its uncertainty about its own knowledge) is high, it can selectively request human verification. Each human response updates the calibrator's posterior, improving confidence estimates not only for that specific input but for all similar inputs in the future. The system learns where its blindspots are and fills them efficiently, requesting human input only where it provides the most information gain.
-
-The calibrated confidence score, whether from ensemble aggregation or Bayesian probing, enables threshold-based decisions: block below 0.4, flag for human review between 0.4 and 0.8, auto-approve above 0.8. The thresholds are configurable per organization, per workflow, and per agent. Critically, the confidence score is calibrated (a score of 0.7 means the output is correct approximately 70% of the time, not that the model feels 70% sure), which makes the thresholds meaningful rather than arbitrary.
+For the methods and their limitations, see the [research companion](https://jasonsun.org/research.html).
 
 **Action.** Based on the judgment, the enforcement layer takes one of four actions: allow the operation to proceed, flag it for human review, modify the output (redact sensitive content, add warnings), or block the operation entirely. The action is recorded in the accountability layer's audit trail, creating a permanent record of every enforcement decision.
 
@@ -174,7 +170,7 @@ The agency layer requires agent identity as a first-class infrastructure concern
 
 **Unique identity.** Every agent instance has a unique identifier that persists across invocations. The identifier is a key pair, cryptographically bound to the agent's deployment, that the agent uses to sign its outputs. This means an agent's outputs can be verified as authentic, and a forged output can be detected.
 
-**Authorization chains.** When Agent A calls Agent B, the authorization chain is explicit: Agent A was authorized by Organization X to perform function Y, and Agent A authorized Agent B to perform function Z on its behalf. This delegation chain is recorded in the accountability layer. If Agent B exceeds its authorization by accessing data it was not authorized to touch or spending more than its delegated budget, the violation is traceable to the specific delegation in the chain.
+**Authorization chains.** A delegation records who authorized the work, its purpose, capabilities, budget, expiry, and any restrictions on further delegation. A child cannot acquire greater authority merely by being created. Additional authority requires a separate grant by a party entitled to provide it. Revocation must reach outstanding work, and the record must identify the organization responsible for responding when something goes wrong.
 
 **Capability-based permissions.** Rather than role-based access control (this agent has the "analyst" role, which grants a bundle of permissions), the agency layer supports capability-based permissions (this agent can read from this data source, can call these models, can spend up to this budget). Capabilities are more granular than roles and compose better across organizational boundaries, because they do not require a shared role hierarchy.
 
@@ -218,7 +214,7 @@ The same visibility applies across all policy types. A PII detection fires on an
 
 ## How the Layers Compose
 
-The seven layers work as a stack rather than as independent modules, and the stack property matters. Each layer provides services that the layers above it consume, and each layer generates data that the layers below it record.
+The seven responsibilities compose through shared records and explicit interfaces. Some provide services to others, while identity, governance, and evidence cross their boundaries. The numbered diagram organizes the explanation; it is not an implementation sequence.
 
 The composition is best understood through a concrete example. An organization's planning agent needs pharmaceutical patent analysis. It discovers a provider agent in the marketplace (Layer 7). It checks the provider's trust score (Layer 4). It verifies the provider's identity and authorization (Layer 6). It negotiates terms (Layer 3). The provider allocates compute resources (Layer 2). The enforcement layer monitors execution (Layer 5). The accountability layer records everything (Layer 1).
 
@@ -226,8 +222,8 @@ At every step, data flows both up and down. The planning agent's budget flows do
 
 This is what accountability infrastructure looks like when it is designed as a coherent system rather than assembled from incompatible patches. Each layer solves one problem cleanly. The layers compose through well-defined interfaces. And the system as a whole provides guarantees that no individual layer could provide on its own.
 
-The stack will not be built all at once. The accountability and compute layers are the foundation; they must exist first, because every other layer depends on them. The exchange and agency layers come next, enabling cross-organizational workflows. The trust and enforcement layers follow, enabling quality and safety at scale. The marketplace layer is the last to mature, because it requires all six layers below it to function.
+The architecture will be built incrementally. A useful first implementation combines identity, bounded permissions, execution records, and enforcement for one real workflow. Exchange and reputation can expand its reach across organizations once those boundaries are tested. A marketplace then makes compatible services discoverable.
 
-This ordering follows the same dependency chain that every infrastructure stack follows: you build from the bottom up, because each layer needs the one below it to be stable before it can function. The organizations that build the lower layers first will have a structural advantage, because they will be the foundation on which everything else is built.
+The implementation test is whether a complete workflow preserves its permissions and evidence through every handoff, including failure and recovery. Adding a nominal layer is less useful than demonstrating that property end to end.
 
 One government team demonstrated this principle by canceling a procurement and building their own AI tools internally instead. The canceled procurement was a signal, not a rejection of the technology: the protocol layer matters more than any single platform. When the stack is open, even organizations that never become customers validate the architecture by building on it. The protocol outlasts the vendor.
