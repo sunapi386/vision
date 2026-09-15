@@ -13,14 +13,14 @@ Requires Python 3.10+ and [uv](https://docs.astral.sh/uv/). Also needs `ffmpeg` 
 python3 release.py setup
 
 # Or manually:
-uv pip install -e ".[tts]" --break-system-packages
+uv pip install -e ".[tts,tts-zh]" --break-system-packages
 ```
 
 ## Quick start
 
 ```bash
 python3 release.py              # build + verify + deploy
-python3 release.py tts          # regenerate audio + build + verify + deploy
+python3 release.py tts          # regenerate both audiobooks + build + verify + deploy
 python3 release.py build        # build only
 python3 release.py verify       # check everything without deploying
 python3 release.py deploy       # deploy only
@@ -31,10 +31,11 @@ python3 release.py clean        # convert stale WAVs to OGG
 
 ```
 .
-├── build.py                 # Main build script (book.html + index.html)
+├── build.py                 # Shared English and Chinese book builder
 ├── tts.py                   # English TTS with per-paragraph caching
+├── tts_zh.py                # Chinese TTS with per-paragraph caching
 ├── release.py               # Build + deploy to jasonsun.org
-├── pyproject.toml           # Python dependencies (use: uv pip install -e ".[tts]")
+├── pyproject.toml           # Python dependencies (use: uv pip install -e ".[tts,tts-zh]")
 ├── index-content.html       # Essay page content (jasonsun.org landing)
 ├── templates/
 │   ├── shared.css           # Shared styles (book + essay)
@@ -56,8 +57,10 @@ python3 release.py clean        # convert stale WAVs to OGG
 ├── zh/                      # Chinese translation source
 ├── audio/                   # Generated English MP3s (gitignored)
 ├── audio-zh/                # Generated Chinese MP3s (gitignored)
-├── audio-cache/             # Per-paragraph TTS cache (gitignored)
-├── timestamps/              # Per-paragraph timing data (gitignored)
+├── audio-cache/             # English narration cache (gitignored)
+├── audio-cache-zh/          # Chinese narration cache (gitignored)
+├── timestamps/              # English paragraph timings (gitignored)
+├── timestamps-zh/           # Chinese paragraph timings (gitignored)
 ├── sw.js                    # Service worker (offline support)
 ├── align.py                 # Legacy Whisper alignment (replaced by tts.py)
 └── docs/                    # Build and workflow documentation
@@ -69,14 +72,14 @@ Each chapter directory contains an `index.mdx` (intro) and numbered section file
 
 See [docs/build-pipeline.md](docs/build-pipeline.md) for details.
 
-1. `build.py` reads MDX sources, converts to HTML via Python-Markdown, tags paragraphs with `ab-{chapter}-{index}` IDs, loads per-paragraph timestamps from `timestamps/`, and produces `book.html` and `index.html`.
-2. `tts.py` generates audiobook audio using Kokoro TTS (voice `am_michael`). It caches per-paragraph OGG files by content hash so only changed paragraphs are re-synthesized on subsequent runs. Outputs chapter MP3s and timestamp JSON.
+1. `build.py` reads English and Chinese MDX, tags paragraphs with `ab-{chapter}-{index}` IDs, loads their timestamps, and produces `book.html`, `book-zh.html`, and the English `index.html`.
+2. `tts.py` generates English audio with Kokoro voice `am_michael`; `tts_zh.py` generates Chinese audio with voice `zm_yunjian`. Both cache each narration unit by content hash and write chapter MP3s and positional paragraph timestamps.
 
 ## Audio workflow
 
 See [docs/audio.md](docs/audio.md) for details.
 
-The audiobook uses a delta-safe pipeline: each paragraph and heading is synthesized individually, cached as OGG by a hash of its text + voice parameters, then concatenated into chapter MP3s. Editing a single paragraph only regenerates that paragraph's audio on the next `tts.py` run.
+Both audiobooks cache each paragraph and heading as OGG by text and voice parameters. Editing one paragraph only re-synthesizes that unit on the next `release.py tts` run.
 
 ## Verification
 
