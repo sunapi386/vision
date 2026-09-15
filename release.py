@@ -95,7 +95,7 @@ NUM_CHAPTERS = 6
 
 # Chinese paragraphs the TTS never narrated (a five-character line and the
 # "back to contents" link); they have no timestamps and stay un-highlighted.
-ZH_UNVOICED = {1: [143], 6: [197]}
+ZH_UNVOICED = {1: [143], 6: [194]}
 
 
 def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
