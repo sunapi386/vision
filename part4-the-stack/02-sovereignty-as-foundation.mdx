@@ -16,7 +16,7 @@ For this architecture, sovereignty has three practical requirements. Each should
 
 **Physical control over data and compute.** The organization knows where its data is: not "somewhere in us-east-1," but physically, on hardware it can identify. It controls who has physical access to that hardware. It controls the network that connects it.
 
-Physical custody can reduce dependence on an external operator. It still relies on secure software, key management, administrators, and controlled data paths. Each deployment should identify those dependencies and state which protections it can actually verify.
+Custody is a start, not the finish. The hardware still depends on secure software, key management, administrators and controlled data paths.
 
 **Operational independence from any single vendor.** Essential local workflows must keep running when the provider or internet connection is unavailable. A workflow that needs an external service must declare that dependency and what happens when it cannot be reached. Disconnecting the system is how we discover whether independence is real.
 
@@ -24,15 +24,15 @@ This is the independence test applied to compute. Can you reject new prices or d
 
 **Enforceable limits on the platform operator's access.** Dedicated servers and a private-cloud label do not establish those limits. If the provider controls the root account, encryption keys, and software updates, it may still control access to the data. The design must identify which powers stay with the organization and how the provider is prevented from bypassing them.
 
-Encryption and organization-controlled keys can restrict a provider's access, but the complete system matters. Plaintext may be exposed through execution, support access, logs, or software updates. A claim that the provider cannot read content needs a threat model covering these paths, including the authority of the control plane.
+Here is the test. Your provider announces a new privacy policy you don't like. If it lacks your keys and can't silently change the software, it has few ways to override your privacy commitment. If it can push an update that reads the plaintext, your encryption hasn't removed its power. You need control over the update path too.
 
-The distinction matters when a policy changes. An operator who lacks the necessary keys and cannot silently alter the software has fewer ways to override a privacy commitment. If the same operator can install new code that reads the plaintext, encryption alone has not removed its authority. The organization needs control over that update path too.
+Any claim that a provider cannot read your content needs a threat model that covers execution, support access, logs, updates and the control plane.
 
 The same standard must apply to AI infrastructure. Privacy as architecture, not policy.
 
 ## The Regulatory Tide
 
-Legal requirements vary by jurisdiction, data, purpose, and sector. The examples below explain why organizations ask about control and evidence. They are not a universal requirement to own hardware, and current obligations need to be established for each deployment.
+The rules differ by jurisdiction, data, purpose and sector, and they do not add up to a universal requirement to own hardware. They explain why buyers keep asking about control and evidence.
 
 **GDPR (European Union).** The General Data Protection Regulation requires organizations to know where personal data is processed, have a lawful basis for processing, maintain records of processing activities, and honor data subject rights. When a European company sends customer data to an AI API hosted in the United States, it creates a cross-border data transfer requiring Standard Contractual Clauses, a Transfer Impact Assessment, and documented adequate safeguards. Meta was fined 1.2 billion euros in 2023 for transferring European user data to the US. Amazon was fined 746 million euros for advertising-related data practices. Fines scale to 4% of global annual turnover.
 
@@ -96,13 +96,13 @@ These calculations ignore the additional costs of owned hardware: power, cooling
 
 The trend line reinforces the ownership case. GPU costs are declining as each generation delivers more compute per dollar. The H100 delivers roughly 3x the inference throughput of the A100 at roughly 2x the cost. The B200 will deliver another step change. Each generation makes owned hardware more capable relative to its cost, while cloud pricing adjusts more slowly because cloud providers must amortize their existing fleets.
 
-Where an organization requires local or disconnected processing, the design must support it. That requirement does not apply uniformly to every hospital, government agency, or financial institution. Operational viability includes maintenance, incident response, and the personnel needed to run the system responsibly.
+Not every hospital, government agency or financial institution needs local or disconnected processing. Where one does, the design must support it, including the maintenance, incident response and staff to run it responsibly.
 
 ## Air-Gapped Deployments
 
 At the extreme end of sovereignty are air-gapped deployments: systems with no network connection to the outside world.
 
-Disconnecting a system from external networks removes those network paths. Removable media, physical access, maintenance, and supply-chain changes still need controls. An air gap is a bounded protection, not proof that no information can ever leave.
+Unplugging a system removes its network paths. It does not stop a USB stick, someone with physical access, a maintenance visit or a tampered part. An air gap is a bounded protection.
 
 For AI infrastructure, air-gapped deployment requires that every component of the stack operates without external network access. The models must be locally installed. The orchestration layer must run locally. The accountability layer must record locally. The mesh, in this case, is a local network with no external connectivity.
 

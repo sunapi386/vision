@@ -4,9 +4,11 @@ title: "The Seven Layers"
 
 # The Seven Layers
 
+Picture one agent hiring another. Before any work happens, someone has to know who the hired agent is, what it's allowed to touch and how much it may spend. When the work comes back, someone has to know what it cost, where its claims came from and whether any rule was broken. Every one of those questions belongs to a layer.
+
 The proposed architecture organizes seven responsibilities: accountability, compute, exchange, trust, enforcement, agency, and marketplace. They need shared interfaces, but they are not a strict dependency ladder. Identity and authorization are needed from the first accountable operation; records, enforcement, and review interact throughout execution.
 
-Some capabilities described here have implementations; others are design requirements. The seven-part model is a way to organize the work, not a claim that this is the only possible architecture or that the complete system already exists.
+Some of this exists in code today. Some of it is still a design requirement, and the complete system does not exist yet.
 
 ## Layer 1: Accountability
 
@@ -32,7 +34,7 @@ Each organization sees its own portion. The root caller sees everything. The cos
 
 **Provenance chains.** Every conclusion carries a citation back to the data, model, and prompt that produced it. When a strategy agent says "the drug pipeline is promising," the provenance chain traces that conclusion through the research agent's analysis, through the data agent's retrieval, down to the specific clinical trial records retrieved from the FDA database on a specific date. The chain is recursive, each node in the execution tree recording what it consumed and what it produced, and the chain composes across organizational boundaries just as the cost tree does.
 
-Provenance gives a reviewer evidence to inspect: which inputs were available, which operations ran, and which sources are cited for a claim. A citation does not prove that the source supports the conclusion, and an execution trace does not reveal every cause of a model's output. Source matching, factual verification, and judgment remain separate tasks.
+Provenance is evidence to inspect, not proof. A citation shows where to look. Whether the source actually supports the claim is still a separate check.
 
 **Data governance.** Data carries classification labels (public, confidential, protected health information, personally identifiable information), and those labels travel with the data through the entire execution tree. At every organizational boundary, a consent check verifies that the receiving organization is authorized to process data of that classification. Violations are blocked in real time, not discovered after the fact.
 
@@ -106,9 +108,7 @@ Trust here means reputation built from historical transactions: which agents and
 
 If an agent has processed 10,000 legal documents with 99.2% accuracy, that track record should be discoverable by any organization considering whether to use it. If an organization has participated in 500 cross-organizational workflows without a single governance violation, that compliance history should be a verifiable credential.
 
-The requirement is a portable, independently verifiable performance history across participating systems. Existing evaluations and vendor dashboards provide pieces of this; they do not by themselves establish a shared reputation system.
-
-Teams already use benchmarks, evaluations, and vendor histories to assess agents. A shared trust layer would make suitable evidence portable and independently verifiable while preserving its scope and limitations.
+Pieces of this exist today. Teams already judge agents by benchmarks, evaluations and vendor dashboards. What's missing is a shared performance history that is portable, independently verifiable and still carries its scope and limits.
 
 The trust layer is the agent economy's equivalent of a credit bureau. A single score would be reductive; what it holds is a structured record of historical performance across multiple dimensions:
 
@@ -120,7 +120,7 @@ The trust layer is the agent economy's equivalent of a credit bureau. A single s
 
 **Safety.** How often has the agent produced outputs that were flagged by safety systems? What was the nature of the flags? Were they false positives or genuine safety concerns? The safety data from millions of agent executions, aggregated and anonymized, creates a collective intelligence about agent behavior: a safety data network that benefits every participant.
 
-A larger history can improve an estimate when the observations are relevant and the outcomes are independently checked. Volume alone does not confer authority. Reputation should identify the task, model and policy versions, evaluation method, sample size, uncertainty, and disputed outcomes. Changes in deployment context can make an old record less informative.
+Volume alone does not confer authority. Ten thousand checked legal documents say something about legal documents. They say little about the next task, the next model version or a changed deployment, so a reputation record has to name what it was measured on.
 
 Building a trust layer raises significant design challenges: Sybil resistance (preventing inflated reputation through fake transactions), privacy (proving reputation without revealing transaction details), and fairness (ensuring new entrants can build reputation). These are hard problems, but solvable ones. Credit bureaus, privacy-preserving cryptographic systems, and fair scoring mechanisms in economics have addressed analogous challenges. The work is adapting those solutions to the agent economy's specific requirements.
 
@@ -142,15 +142,13 @@ The enforcement layer operates on a three-phase cycle:
 
 **Judgment.** The findings from multiple detectors are aggregated and evaluated against the organization's enforcement policy. This judgment phase is where the enforcement layer moves beyond simple rule-matching into genuinely calibrated assessment.
 
-A judge can be wrong, including when it is confident. The enforcement layer should therefore separate three questions: is the operation authorized, how reliable is the evidence, and are the consequences acceptable under the applicable policy?
+A judge can be wrong, including when it is confident. So the enforcement layer keeps three questions apart. Is the operation authorized? How reliable is the evidence? Are the consequences acceptable under the policy?
 
-Explicit permissions, budget reservations, and required approval steps can be checked by mechanisms outside the acting agent's control. Semantic judgments, such as whether an output is misleading or a disclosure is harmful, remain fallible. The system must describe the boundary of each guarantee instead of treating every safety decision as a mechanically provable rule.
+The first question can be answered mechanically. Explicit permissions, budget reservations and required approval steps can be checked by something outside the acting agent's control. The other two can't. Whether an output is misleading is a judgment, and judgments fail. The system has to say which kind of guarantee it is giving.
 
-Ensembles, feature-based scorers, and probes of model representations are candidate ways to estimate uncertainty. Agreement between models is evidence to evaluate, not proof of independent judgment or calibrated correctness. Calibration must be measured on held-out examples relevant to the deployment, with ongoing checks for changing inputs, model updates, and systematic errors.
+Ensembles, feature-based scorers and probes of model internals are candidate ways to estimate uncertainty. A score of 0.8 is useful when comparable predictions are correct about 80% of the time under the evaluation conditions. That still leaves errors. So routing also weighs how severe and reversible the action is, how good the human review is, and how much the workflow has already committed.
 
-A score of 0.8 is useful when comparable predictions are correct about 80% of the time under the evaluation conditions. That still leaves errors. Routing must also consider the severity and reversibility of the action, the quality of human review, and the accumulated exposure of the workflow. An illustrative threshold for document tagging cannot be reused as a general permission to make consequential decisions.
-
-Human feedback can improve these estimates, but reviewers also disagree and make mistakes. Record their reasoning and later corrections, preserve an appeal path, and sample high-confidence outputs as well as flagged ones. A reviewer must have time, relevant evidence, and authority to stop the work; otherwise the checkpoint may only record a rubber stamp.
+Reviewers need time, relevant evidence and the authority to stop the work. Without those, the checkpoint only records a rubber stamp.
 
 For the methods and their limitations, see the [research companion](https://jasonsun.org/research.html).
 
