@@ -206,6 +206,26 @@ def extract_front_matter_units() -> tuple[list[dict], list[str]]:
             para_texts.append(raw_plain)
             para_idx += 1
 
+    # Prelude (front-matter/prelude.mdx): same conversion as build.py's
+    # build_prelude_raw(), narrated after the preface in the same track.
+    from build import build_prelude_raw
+    prelude_title, prelude_html = build_prelude_raw()
+    if prelude_html:
+        units.append({"kind": "heading", "text": "Prelude"})
+        if prelude_title:
+            units.append({"kind": "heading", "text": htmllib.unescape(strip_md(prelude_title))})
+        for m in re.finditer(r"<(h[1-6]|p)\b[^>]*>(.*?)</\1>", prelude_html, re.DOTALL):
+            raw_plain = re.sub(r"<[^>]+>", "", m.group(2)).strip()
+            tts_text = htmllib.unescape(raw_plain)
+            if not raw_plain or len(raw_plain) < 3:
+                continue
+            if m.group(1).startswith("h"):
+                units.append({"kind": "heading", "text": tts_text})
+            else:
+                units.append({"kind": "para", "text": tts_text, "para_idx": para_idx})
+                para_texts.append(raw_plain)
+                para_idx += 1
+
     return units, para_texts
 
 
@@ -346,7 +366,7 @@ def verify_extraction():
 
     print("Running build_content() + build_front_matter() for verification...")
     _, _, build_chapter_paras = build_content()
-    _, _, build_fm_paras = build_front_matter()
+    build_fm_paras = build_front_matter()[2]
     build_chapter_paras[0] = build_fm_paras
 
     ok = True
@@ -431,7 +451,7 @@ def generate_audio():
 
     print("Verifying paragraph extraction against build.py...")
     _, _, build_chapter_paras = build_content()
-    _, _, build_fm_paras = build_front_matter()
+    build_fm_paras = build_front_matter()[2]
     build_chapter_paras[0] = build_fm_paras
 
     if BACKEND == "fabric":
@@ -447,7 +467,7 @@ def generate_audio():
     all_timings = {}
     total_parts = len(CHAPTERS) + 1
 
-    print(f"\n[1/{total_parts}] front-matter (abstract + preface)")
+    print(f"\n[1/{total_parts}] front-matter (abstract + preface + prelude)")
     fm_units, fm_paras = extract_front_matter_units()
     build_paras = build_chapter_paras.get(0, [])
     if len(fm_paras) != len(build_paras):
