@@ -24,7 +24,7 @@ The agent economy is running without paperwork.
 
 ## The Three Missing Pieces
 
-The accountability void has three components, and all three need solutions simultaneously. Solving one without the others leaves the system fundamentally ungoverned.
+The accountability void has three components, and all three need solutions simultaneously. Solving one without the others leaves the system ungoverned.
 
 ### Cost Attribution
 
@@ -32,7 +32,7 @@ When a human team works on a project, every hour is tracked. Time sheets, billin
 
 When an AI system processes a workflow, the cost is either a single number on a monthly invoice (aggregating thousands or millions of individual API calls) or it's invisible entirely, buried in infrastructure expenses that nobody attributes to specific work products.
 
-Which API calls served which client? Which steps consumed the most tokens? Which prompts are inefficient? Where is the workflow burning budget on unnecessary processing? These questions are answerable in principle, since the data exists somewhere in API logs and billing dashboards, but in practice, no organization can reconstruct the cost tree for a complex multi-agent workflow from the raw materials available to them.
+Which API calls served which client? Which steps consumed the most tokens? Which prompts are inefficient? Where is the workflow burning budget on unnecessary processing? These questions are answerable in principle, since the data exists somewhere in API logs and billing dashboards, but no organization can reconstruct the cost tree for a complex multi-agent workflow from the raw materials available to them.
 
 The problem compounds in multi-agent systems. When an orchestrator delegates to a research agent that calls an extraction model that queries a vector database, the cost is distributed across multiple services, APIs, and potentially multiple organizations. Each service has its own billing model. Some charge per token, some per query, some per second of compute time, and some charge nothing but consume internal resources that have an amortized cost. Assembling a complete cost picture requires reconciling billing data across every service involved, a task that's impractical manually and for which no automated tooling exists.
 

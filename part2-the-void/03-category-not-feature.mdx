@@ -18,7 +18,7 @@ An agent control server sits outside the agent workflow. When an agent is about 
 
 This model has clear value. It prevents agents from executing disallowed actions. It provides a centralized point of control. It gives operators a dashboard where they can see what their agents are doing and define what they're allowed to do.
 
-But the model has fundamental limitations that become apparent in multi-agent, multi-organizational workflows.
+But the model has hard limits that show up in multi-agent, multi-organizational workflows.
 
 The control server is scoped to one organization. It sees the agents it manages. It doesn't see agents operated by other organizations. When a consulting firm's agent calls a research firm's agent, the consulting firm's control server evaluates the outbound call, and the research firm's control server evaluates the inbound request, but neither server has visibility into the other's evaluation. There's no shared context. The consulting firm doesn't know what the research firm's agent did with its data. The research firm doesn't know why the consulting firm's agent made the request.
 
@@ -64,7 +64,7 @@ Agent accountability requires the same pattern. The receipt must travel with the
 
 In a multi-agent workflow, costs nest. The orchestrator incurs costs. The research agent it calls incurs costs. The extraction model the research agent calls incurs costs. The embedding queries the extraction model makes incur costs.
 
-To produce a complete cost breakdown for the workflow, costs must flow upward through the entire call tree. Each agent reports its own costs, and the parent aggregates children's costs into its own cost record. This recursive composition is a fundamental architectural requirement; it can't be approximated by top-level monitoring.
+To produce a complete cost breakdown for the workflow, costs must flow upward through the entire call tree. Each agent reports its own costs, and the parent aggregates children's costs into its own cost record. This recursive composition is an architectural requirement. Top-level monitoring can't approximate it.
 
 A control plane sees the orchestrator's costs (the API calls it makes) but doesn't see the costs incurred by sub-agents within their own infrastructure. Even if it could query those costs, assembling them into a coherent tree requires a shared format for cost records that all agents, across all organizations, produce consistently. That's a protocol requirement, not a feature of any single platform.
 
@@ -88,7 +88,7 @@ Double-entry bookkeeping solved this by imposing a structural constraint: every 
 
 The agent economy needs its equivalent. Not a narrative log of what happened, which is the current approach of API call logs and billing dashboards. A structural format for accountability records that composes recursively, travels with the data, enforces constraints at every boundary, and produces artifacts that any party can audit independently.
 
-This does not bolt onto an existing agent framework, and it is not a dashboard beside the workflow or a monitoring service watching from outside. It is a category of infrastructure, as fundamental to the agent economy as double-entry bookkeeping is to the financial economy.
+This does not bolt onto an existing agent framework, and it is not a dashboard beside the workflow or a monitoring service watching from outside. It is a category of infrastructure, as basic to the agent economy as double-entry bookkeeping is to the financial economy.
 
 ## What the Category Looks Like
 

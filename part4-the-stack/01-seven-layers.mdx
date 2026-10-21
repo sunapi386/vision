@@ -50,7 +50,7 @@ The problem here is resource allocation: how agents acquire, use, and release co
 
 The compute layer sits directly above accountability because every compute operation generates costs, provenance records, and governance events that the accountability layer must track.
 
-The fundamental problem is that agents need compute resources dynamically. An indexing workflow needs twenty workers for fifteen minutes. An analysis pipeline needs three GPU instances for an hour. A research agent needs to spin up a cluster, process a corpus, and release the resources when done. Static provisioning, deciding how many workers to run and keeping them running permanently, wastes money during idle periods and constrains throughput during peak demand.
+The core problem is that agents need compute resources dynamically. An indexing workflow needs twenty workers for fifteen minutes. An analysis pipeline needs three GPU instances for an hour. A research agent needs to spin up a cluster, process a corpus, and release the resources when done. Static provisioning, deciding how many workers to run and keeping them running permanently, wastes money during idle periods and constrains throughput during peak demand.
 
 Dynamic compute allocation requires four operations that form a complete lifecycle:
 
