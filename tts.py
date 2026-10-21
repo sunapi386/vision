@@ -116,15 +116,27 @@ def extract_narration_units(chapter_num: int, chapter_slug: str, chapter_title: 
 
     def process_html(html: str):
         nonlocal para_idx
-        for m in re.finditer(r"<(h[1-6]|p)\b[^>]*>(.*?)</\1>", html, re.DOTALL):
+        for m in re.finditer(r"<(h[1-6]|p|li|tr)\b[^>]*>(.*?)</\1>", html, re.DOTALL):
             tag = m.group(1)
             content = m.group(2)
+            if tag == "li" and "<p" in content:
+                # Loose list item: its <p> children are tagged paragraphs in build.py.
+                process_html(content)
+                continue
+            if tag == "tr":
+                # Table row: read the cells in order, skipping cells with no words.
+                cells = [re.sub(r"<[^>]+>", "", c).strip()
+                         for c in re.findall(r"<t[hd]\b[^>]*>(.*?)</t[hd]>", content, re.DOTALL)]
+                content = ". ".join(c for c in cells if re.search(r"\w", c))
             raw_plain = re.sub(r"<[^>]+>", "", content).strip()
             tts_text = htmllib.unescape(raw_plain)
             if not raw_plain or len(raw_plain) < 3:
                 continue
             if tag.startswith("h"):
                 units.append({"kind": "heading", "text": tts_text})
+            elif tag in ("li", "tr"):
+                # Narrated, but not a tagged <p>, so no paragraph timestamp.
+                units.append({"kind": "item", "text": tts_text})
             else:
                 units.append({"kind": "para", "text": tts_text, "para_idx": para_idx})
                 para_texts.append(raw_plain)
