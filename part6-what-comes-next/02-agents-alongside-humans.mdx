@@ -4,59 +4,71 @@ title: "Agents Alongside Humans"
 
 # Agents Alongside Humans
 
-The preceding examples describe a useful form of collaboration: agents handle portions of a workflow, people evaluate consequential decisions, and the system preserves the evidence connecting them. This arrangement can recover time and improve consistency. Its value depends on how well the work, authority, and responsibility are assigned.
+Go back to the office manager from the last chapter. After two weeks of calibration, her invoice workflow clears 85% of invoices without her. That is a real track record.
 
-A team needs more than a collection of capable participants. Each participant needs a clear task, bounded authority, and a way to ask for help. The organization needs to know who can stop the work and who will respond if the result harms someone. These responsibilities remain even when much of the execution is automated.
+Now suppose someone proposes letting the same workflow negotiate payment terms with her suppliers. Has it earned that?
 
-This is the collaboration model AceTeam is building toward. It is a design commitment, not a claim that any current system can guarantee good judgment.
+No. It has earned trust for one task: reading invoices under her rules. That is the idea behind this chapter. Agents can take on more of the work, people decide the consequential parts, and the system keeps the evidence that connects the two. The arrangement saves time and makes work more consistent, but only if the work, the authority and the responsibility are assigned well.
+
+A team needs more than capable members. Each member needs a clear task, bounded authority and a way to ask for help. Someone has to be able to stop the work. Someone has to answer if the result harms a person. Automating most of the execution removes none of those jobs.
+
+This is the collaboration model AceTeam is building toward. No system, ours included, can guarantee good judgment.
 
 ## Trust Is Earned for a Particular Task
 
-Trust should grow from relevant evidence. A new workflow might begin with closely supervised trials on representative cases. Review can become more selective as the organization measures accuracy, missed errors, review quality, and outcomes. The appropriate starting review rate depends on the task and its consequences; human review itself needs validation.
+Think about how you treat a new hire. For the first few weeks you check everything. As the work holds up, you check less. You don't hand them the company's contracts because they were good at expense reports.
 
-The evidence must stay attached to its context. A model that performs well on routine invoices has not thereby earned authority to negotiate contracts. A change in model, policy, data source, or operating conditions can invalidate earlier assumptions. Oversight should tighten when those conditions change, rather than decrease automatically with age or transaction count.
+Agents deserve the same treatment. Start a new workflow on closely supervised trials with representative cases. Make review more selective as you measure accuracy, missed errors, review quality and outcomes. The right starting review rate depends on the task and what a mistake costs. And the review itself needs checking.
 
-Records make this adjustment possible. They should identify the task, the deployed versions, the evaluation method, and the known limits. Trust then becomes a revisable judgment about a specific use, supported by evidence that another party can examine.
+Trust also expires. A new model, policy, data source or operating condition can void what you learned. Oversight should tighten when those things change. It should not loosen just because a workflow is old or has run many times.
+
+Records make this possible. They should name the task, the deployed versions, the evaluation method and the known limits. Then trust becomes a revisable judgment about a specific use, backed by evidence someone else can examine.
 
 ## Put Review Where It Can Change the Outcome
 
-A review step is useful only if the reviewer can understand the decision and act before the relevant harm occurs. That requires time, appropriate expertise, source evidence, and authority to approve, change, or stop the work. An overloaded reviewer clicking through a queue is not meaningful oversight merely because the system records a human signature.
+Imagine you are the accountant from Part V, facing 10,000 invoices the system processed overnight. If the queue only asks you to click "approve," your name goes on every one. That is a signature. It is not oversight.
 
-Some checkpoints follow explicit rules: a payment above a threshold needs an authorized approver; access to a protected source requires a valid grant. Other checkpoints respond to uncertainty, unusual inputs, or consequences that are difficult to reverse. Confidence is one routing signal among several.
+A review step is useful only if the reviewer can understand the decision and act before the harm happens. That takes time, the right expertise, the source evidence and the authority to approve, change or stop the work.
 
-The interface should show the proposed action, the evidence supporting it, important uncertainty, and the available alternatives. Details should remain accessible behind that summary. A fluent explanation must not erase disagreement or conceal the fact that a source is missing.
+Some checkpoints follow explicit rules. A payment above a threshold needs an authorized approver. Access to a protected source needs a valid grant. Other checkpoints respond to uncertainty, unusual inputs or consequences that are hard to reverse. Confidence is one routing signal among several.
 
-Review also needs a path after a decision has been made. People affected by an outcome should be able to correct information and reach someone with authority to reconsider it. Internal task acceptance and an affected person's appeal serve different purposes; a workflow may need both.
+The screen should show the proposed action, the evidence for it, the important uncertainty and the alternatives, with the detail one step behind that summary. A fluent explanation must not erase a disagreement or hide that a source is missing.
+
+Review also needs a path after the decision. People affected by an outcome should be able to correct their information and reach someone with authority to reconsider it. A reviewer accepting a task and an affected person appealing an outcome are different things. A workflow may need both.
 
 ## Separate Enforced Constraints from Fallible Judgments
 
-Consider a policy requiring approval before payment. A correctly implemented gate can prevent execution without the required authorization within the system's defined boundary. It cannot establish that the approver understood the contract or that the payment was fair. Those are further questions, supported by evidence and subject to review.
+Take a rule that says no payment goes out without approval. A correctly built gate can stop the payment until that approval exists, inside the system's defined boundary. That part is mechanical.
 
-The same distinction applies to privacy. A network boundary can restrict a destination. A classifier estimating whether a document contains sensitive information can miss something. The architecture should identify which protections are checked mechanically, which rely on learned judgments, and which assumptions would make either fail.
+The gate cannot tell you the approver understood the contract. It cannot tell you the payment was fair. Those are judgments, and judgments need evidence and review.
 
-Policy itself needs governance. A rule should have an accountable author, a version, and a process for changing it. An operator should not be able to remove a restriction simply because it makes the task inconvenient. Equally, an obsolete or harmful rule should not become unchangeable merely because it was encoded in software.
+Privacy splits the same way. A network boundary can block a destination. A classifier guessing whether a document holds sensitive information can miss something. The architecture should say which protections are checked mechanically, which rest on learned judgments, and which assumptions would break either one.
 
-These controls make responsibility easier to exercise and inspect. They do not settle whose interests the policy should protect. That requires people and institutions with legitimate authority, including ways for affected groups to be heard.
+Rules need governance too. Every rule should have an accountable author, a version and a process for changing it. An operator should not be able to remove a restriction because it is inconvenient. An obsolete or harmful rule should not become permanent because someone encoded it in software.
+
+These controls make responsibility easier to exercise and to inspect. They do not decide whose interests a policy should protect. That takes people and institutions with legitimate authority, and a way for affected groups to be heard.
 
 ## Verify the Verification
 
-A model's stated confidence is not automatically a measured probability of correctness. Calibration asks whether predictions with a particular score are correct at the corresponding rate on relevant examples. A well-calibrated score still describes a distribution of successes and failures; it does not certify an individual action as safe.
+Recall the physician from Part V, looking at a proposed next step tagged "73% confidence." The number looks precise. What does it measure?
 
-Different models and specialist reviewers can bring useful perspectives. They can also share training data, assumptions, or blind spots. Agreement needs evaluation against independently checked outcomes. Adding more judges is not a substitute for measuring whether the combined system improves decisions.
+A model's stated confidence is not automatically a measured probability of being right. Calibration asks a narrower question: on relevant examples, are predictions with that score correct at about that rate? Even a well-calibrated score describes a mix of successes and failures. It does not certify this one action as safe.
 
-Human reviewers are part of that evaluation. Their corrections can help, but their labels can be mistaken or inconsistent. Preserve disagreements, adjudicate important cases, and test whether changes improve performance on held-out examples. Sample some apparently easy cases too, so the system can discover errors that its confidence model is hiding.
+More judges do not fix this on their own. Different models and specialist reviewers bring useful perspectives, but they can share training data, assumptions and blind spots. Their agreement has to be checked against independently verified outcomes.
 
-Thresholds should reflect the task's stakes. A tolerable error rate for organizing draft notes may be unacceptable for denying a service. The decision should consider consequences, reversibility, and cumulative exposure as well as confidence. When the evidence no longer supports the configured autonomy, the workflow needs a way to reduce its scope or stop.
+Human reviewers are part of that test. They are not the answer key. Their corrections help, but their labels can be wrong or inconsistent. Keep the disagreements, adjudicate the important cases, and test changes on held-out examples. Sample some easy-looking cases too, so you find the errors the confidence model is hiding.
+
+Thresholds should match the stakes. An error rate that is fine for organizing draft notes may be unacceptable for denying someone a service. Weigh consequences, reversibility and cumulative exposure alongside confidence. When the evidence stops supporting the autonomy you configured, the workflow needs a way to shrink its scope or stop.
 
 ## A Team That Can Learn
 
-AI can assist with evaluation and planning as well as production. The boundary between tasks assigned to people and machines will move. Human authority should be grounded in responsibility and participation, rather than the assumption that some category of judgment will always be beyond machines.
+AI can help with evaluation and planning as well as production. The line between human tasks and machine tasks will keep moving. Human authority should rest on responsibility and participation, not on a bet that some kind of judgment will always be beyond machines.
 
-People also need opportunities to develop the expertise that oversight requires. Independent practice, explanation, and feedback belong in the operating model. A junior colleague should sometimes work through a problem before receiving the automated answer. A team's short-term throughput should not consume its ability to train the next generation.
+People also need room to build the expertise that oversight requires. A junior colleague should sometimes work through a problem before seeing the automated answer, explain the reasoning and get feedback. Short-term throughput should not eat the team's ability to train the next generation.
 
-The records should help both humans and agents learn while respecting privacy. Retain the evidence needed to investigate consequential decisions, with controlled access and explicit retention periods. Correct errors without concealing the correction history. Do not turn a useful audit trail into a permanent collection of every personal interaction.
+The records should help both people and agents learn while respecting privacy. Keep the evidence needed to investigate consequential decisions, with controlled access and explicit retention periods. Correct errors without hiding the correction history. Do not turn a useful audit trail into a permanent archive of every personal interaction.
 
-A team works when participants can contribute, question, and recover from mistakes. For AceTeam, that means bounded delegation, usable evidence, meaningful review, and an accountable route to remedy. The aim is to make collaboration more dependable while keeping its rules open to examination.
+A team works when its members can contribute, push back and recover from mistakes. For AceTeam, that means bounded delegation, usable evidence, review that can change the outcome and an accountable route to remedy. The rules stay open to question.
 
 ---
 
