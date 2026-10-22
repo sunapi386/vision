@@ -22,6 +22,7 @@ Requires nix installed. Set VISION_NO_NIX=1 to skip the re-exec.
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -724,7 +725,9 @@ def build_manuscript_md() -> str:
             _, body = _split_title(b.read_mdx(path))
             out += [DOCX_PAGE_BREAK, f"# {title}", body]
 
-    return "\n\n".join(out) + "\n"
+    text = "\n\n".join(out) + "\n"
+    # Web navigation links have no meaning in a manuscript.
+    return re.sub(r"^\*?Back to Table of Contents\*?\s*$", "", text, flags=re.MULTILINE | re.IGNORECASE)
 
 
 def make_docx():
@@ -744,7 +747,7 @@ def make_docx():
             run(["pandoc", *args])
         elif shutil.which("nix-shell"):
             print("  sourcing pandoc via nix...", flush=True)
-            inner = "pandoc " + " ".join(f"'{a}'" for a in args)
+            inner = "pandoc " + " ".join(shlex.quote(a) for a in args)
             run(["nix-shell", "-p", "pandoc", "--run", inner])
         else:
             print("  pandoc not found (install pandoc or nix)")

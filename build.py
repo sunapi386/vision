@@ -1032,6 +1032,8 @@ TEMPLATE = """<!DOCTYPE html>
 
   /* --- Responsive --- */
   @media (max-width: 1180px) { .toc { display: none; } }
+  /* screen only: WeasyPrint's 6x9 page is under 640px wide and would clip */
+  @media screen and (max-width: 640px) { .article table { display: block; overflow-x: auto; } }
   @media (max-width: 640px) {
     .article { padding: 0 16px 120px; }
     .chapter-break { padding: 60px 0 20px; margin-top: 40px; }

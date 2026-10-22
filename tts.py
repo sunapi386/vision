@@ -6,7 +6,9 @@ Produces chapter MP3s and per-paragraph timestamps for build.py alignment.
 
 Usage:
     python3 tts.py              # generate audio + timestamps
+    python3 tts.py generate     # same as no argument
     python3 tts.py verify       # verify paragraph extraction matches build.py
+    (add --fabric to generate on the Fabric backend; anything else prints this help)
 """
 
 import re
@@ -127,7 +129,7 @@ def extract_narration_units(chapter_num: int, chapter_slug: str, chapter_title: 
                 # Table row: read the cells in order, skipping cells with no words.
                 cells = [re.sub(r"<[^>]+>", "", c).strip()
                          for c in re.findall(r"<t[hd]\b[^>]*>(.*?)</t[hd]>", content, re.DOTALL)]
-                content = ". ".join(c for c in cells if re.search(r"\w", c))
+                content = ". ".join(c.rstrip(".;:, ") for c in cells if re.search(r"\w", c))
             raw_plain = re.sub(r"<[^>]+>", "", content).strip()
             tts_text = htmllib.unescape(raw_plain)
             if not raw_plain or len(raw_plain) < 3:
@@ -537,6 +539,12 @@ def main():
     if "verify" in args:
         verify_extraction()
         return
+
+    # Generation is expensive (full-book audio); never start it on a typo or --help.
+    unknown = [a for a in args if a not in ("generate", "--fabric")]
+    if unknown:
+        print(__doc__)
+        sys.exit(2)
 
     if "--fabric" in args or os.environ.get("TTS_BACKEND") == "fabric":
         apply_backend("fabric")
