@@ -26,23 +26,23 @@ An organization can keep excellent records while pursuing a harmful goal. A comm
 
 The architecture in this book is a proposal for making delegated work accountable. Its larger purpose is to give people more ability to shape their lives. The second does not follow automatically from the first. So the next design question is who gains the power to decide, and who can challenge that decision.
 
-## Five Possible Futures
+## Pick a Future
 
-The earlier parts of this book suggest five ways the agent economy might develop. Each solves a problem and creates a different dependency. The questions running through them are who holds the records, who can use them, and who can challenge a decision.
+The earlier parts of this book point to five possible futures for the agent economy. I call them the Landlord, Monday Morning Archaeology, the Panopticon, the Patchwork and the Open Ledger. They differ less in technology than in two questions: who holds the records, and who can challenge a decision.
 
 | Future | Who holds the records | Who can challenge a decision | What it gets right | What it costs |
 |--------|----------------------|------------------------------|--------------------|---------------|
-| **Rented Intelligence.** A few providers offer capable agents as a service. | The provider, in its format, under its retention policy. | The customer uses the provider's review and support process. | Fast access to capable systems without operating them. | Customers may struggle to inspect work across providers or leave with usable records. |
-| **Scattered Records.** Teams deploy agents using the logs they already have. | Each vendor and customer keeps a fragment. | A reviewer can inspect individual fragments, if they can obtain them. | Rapid adoption using existing tools. | Reconstructing a cross-company failure may take longer than the response can afford. |
-| **Central Registry.** A public authority receives records of consequential work. | The authority holds a copy, subject to its rules. | Investigators can trace a chain; affected people need a separate right to see and contest it. | A common view can make enforcement faster. | The authority gains access to sensitive records and must itself be accountable. |
-| **The Patchwork.** Each provider builds its own audit system. | Each provider, in its own format. | Within a provider's system, subject to its policies. | Providers can adapt records to the work they know best. | Handoffs between systems remain hard to audit. |
-| **The Open Ledger.** Providers and customers exchange records through an open protocol. | Each party holds its permitted portion and can export it. | Affected people can seek reasons, correction and independent review. | Records can follow work across providers, and customers can test their ability to leave. | Agreement on standards is slow; privacy, verification and appeal still need capable institutions. |
+| **The Landlord.** A few providers rent intelligence by the token. | The provider, in its format, under its retention policy. | The customer files a support ticket and sees whatever the provider's interfaces show. | Access to frontier models, with no infrastructure to run. | Prices only move one way, switching costs compound, and the platform learns from your expertise. |
+| **Monday Morning Archaeology.** Everyone deploys and hopes. | Nobody, as a whole. Fragments sit in scattered logs and billing dashboards. | Nobody can. The chain cannot be traced, and in court the missing record becomes evidence. | Speed. The productivity gains are real and immediate. | Runaway bills found on Monday, untraceable errors, and compliance that fails the first time a regulator asks. |
+| **The Panopticon.** Receipts everywhere, with no limits on them. | Whoever runs the platform keeps everything, indefinitely. | The record is used to watch people. There is no route to appeal. | Every action is attributable. | The audit trail becomes a permanent archive of every personal interaction. |
+| **The Patchwork.** Each vendor bolts on its own compliance, usually after a crisis. | Each vendor, in incompatible formats. | Inside one vendor's walls. The chain breaks at every organizational boundary. | Each platform can show a dashboard. | The compliance equivalent of the browser wars, built in a hurry and at far greater cost. |
+| **The Open Ledger.** Owned and rented compute joined by an open accountability protocol. | Each party holds its portion, carried with the work and exportable when it leaves. | Affected people get reasons, a way to correct the record and an independent reviewer with a deadline. | Organizations can say no and keep working, and decisions can be contested. | The hardest to build. It needs independent implementations, tested exit, operating skill and institutions willing to maintain the standard. |
 
-Which arrangement would you trust with a hospital's discharge workflow? Would your answer change for an invoice or a school assignment?
+Which row would you pick?
 
-I favor the Open Ledger because it gives more than one institution a way to examine work across boundaries. But an open format does not settle who may see a patient's record, whether an appeal reaches someone with authority, or whether a small organization can afford to run the system. A registry may be the better answer for some public duties. Rented services may be the only practical starting point for others. The choices can also coexist, with the hard questions appearing where they meet.
+You know mine. This whole book argues for the Open Ledger. The other four are not straw men, though. Each is where we end up if a particular choice goes unmade. Keep renting and you get the Landlord. Skip the records and you get Monday morning. Keep the records but skip the limits and the appeals, and you get the Panopticon. Wait for the first big failure and you get the Patchwork.
 
-The rest of this chapter asks what any of these arrangements needs to protect the people who live with its decisions.
+The rest of this chapter is about what the Open Ledger asks of us beyond the protocol.
 
 ## Expect an Uneven Transition
 
@@ -92,7 +92,7 @@ In the spring of 2046, Iris Kowal took the Saturday ferry with her daughter, bec
 
 They stood at the rail on the upper deck. The water was grey-green and choppy, and the gulls kept pace with the boat, hanging in the wind an arm's length away as if they had paid for tickets. Wren fed one a corner of her sandwich and was outraged when it took the rest.
 
-Iris was twenty-seven and worked as an auditor. At eight, she had asked her mother why anyone needed a receipt when the computer had already done the work. Now she spent her days reading them.
+Iris was twenty-seven. She was an auditor, which was not the job she would have predicted at eight, and exactly the job her mother had predicted.
 
 Kappa still existed. It had sixty people, about what it had had for a decade, and it did careful work for hospitals. It was solvent. Nobody there was rich. You would not have heard of it. You would have heard of the format.
 
@@ -102,7 +102,7 @@ Owen said it was the best deal he had ever seen and that he still wanted the mon
 
 For years Claire kept a printout taped beside her desk. It was about Tesla opening its electric-car patents in 2014 and its charging plug in 2022, and other carmakers adopting the plug. Underneath she had written: *Open it while they still want it.*
 
-None of it went smoothly. The first open version was clumsy. The second broke in a way that embarrassed everyone involved, including Claire, who said so in public. All three Clouds joined the standards body in its first year. Some of their objections improved the format; others kept their own systems easier to use. A standard that the coalition expected to finish in two years took six.
+None of it went smoothly. The first open version was clumsy. The second broke in a way that embarrassed everyone involved, including Claire, who said so in public. All three Clouds joined the standards body in its first year and spent the next four arguing about field names. A standard that should have taken two years took six. Incumbents rarely lose to a standard. They join it and slow it down.
 
 It shipped anyway. The 2034 rules required run records for high-risk workflows, and regulators could read the open format without asking anyone's permission. By 2036, insurers priced workflows instead of companies. A workflow with a clean, checkable record could cost half as much to insure, and that did more for adoption than any keynote. By the early 2040s, run records were as dull as receipts. Nobody talked about them, the same way nobody talks about the numbers at the bottom of a grocery slip.
 
@@ -130,19 +130,19 @@ Wren had given up on the gulls and found Iris's work badge, which had two overla
 
 "Sort of. When computers do work for people, they write down every step. I read what they wrote, to make sure they did it right."
 
-Wren turned the badge over in her hands. She looked at the rings again.
+Wren looked at her with an expression Iris recognized from her own childhood photos. Then she asked it. Somehow Iris had known she would.
 
-"What if you get it wrong?"
+"But what if the verification is wrong?"
 
-Iris thought of a question her mother had kept on a sticky note for years. She gave Wren the answer she used at work.
+Iris laughed, the way her mother had laughed at a kitchen table nineteen years before, because it was a good question. She had found the sticky note in a box when Claire retired, the ink almost gone, and had kept it in her wallet ever since.
 
-"Someone else checks my work," she said. "I write down what I looked at and why I decided. If they disagree, we go back to the same record."
+"Then we can find out," she said. "When I check something, I write down what I checked. The record gets a seal the moment it's written, so nobody can change it later without breaking the seal. Then copies go to people who don't trust each other. The company keeps one. The insurer keeps one. A public log keeps one. If anybody changes their copy, it stops matching the others."
 
-Wren frowned. "What if they get it wrong too?"
+Wren frowned. "So they'd all have to lie at the same time."
 
-"Then we have to listen to the person it happened to," Iris said. "And we have to be able to change the decision."
+"Right. And they don't like each other enough to manage it."
 
-The technical part was less simple. A sealed record could reveal tampering, and independent holders could compare proofs without publishing the underlying patient or claimant files. Certificate Transparency had used public logs to help check web certificates since 2013. Applying a related idea to work required strict limits on what those logs exposed. Even an intact record could support two different judgments, so Iris had to record disagreements and make sure an affected person could reach someone with power to correct the result. Sometimes that person was her.
+None of that was new. Web certificates had worked much the same way since 2013, when Certificate Transparency started putting them in public logs that anyone could check. What was new was doing it for work. If Iris's check was wrong, someone else could replay the same run from the same sealed record and get a different answer, and the disagreement went on the record too. Then someone had to answer for it. Sometimes that someone was her.
 
 Wren nodded, satisfied, and went back to the gulls.
 
@@ -156,7 +156,7 @@ That was fine. You don't have to read them. You just have to be able to.
 - Trust is earned one task at a time, from evidence. A change in the model, the policy or the data can invalidate it.
 - A gate can be enforced. A judgment can only be measured. Know which one you are relying on.
 - Sovereignty is the ability to say no and keep working, which means being able to leave with your records.
-- Institutions decide who holds records, who may inspect them and who has the authority to correct a decision. The technology can support those choices but cannot make them.
+- The technology does not pick the future. Who holds the records, and who can challenge a decision, decide which row of the table we end up in.
 
 ---
 

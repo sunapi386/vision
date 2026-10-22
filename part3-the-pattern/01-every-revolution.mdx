@@ -90,32 +90,32 @@ But the container standard persists. It persists because it is everyone's standa
 
 ## The Structure of the Pattern
 
-Four cases across five centuries. They differ in purpose and politics, but each needed a way for strangers to coordinate and check one another's work.
+Four instances across five centuries. Different technologies, different industries, different eras. The same pattern.
 
-In each case, people found uses for the capability before they agreed on common methods for recording or verifying it. Merchants traded before standardized books; banks sent cross-border instructions before SWIFT.
+The capability arrives first. Commerce, the internet, international banking, software deployment: each was a revolution in how value was created or exchanged. Each produced enormous economic activity. Each operated, initially, without standardized accountability.
 
-Bookkeeping, TLS, SWIFT and OCI each addressed a different problem: balancing accounts, securing a connection, formatting bank messages and packaging software. They did not create commerce, the internet, banking or deployment. They made particular kinds of exchange easier to check and repeat.
+The accountability layer arrives second. Bookkeeping, TLS, SWIFT, OCI: each was the infrastructure that made the capability trustworthy, auditable, and scalable. None of them created the capability. All of them were necessary for the capability to reach its full potential.
 
-The lasting part is often less visible than the product built on top of it. Browsers, banks and container tools have changed while common methods have continued to serve new participants. That durability is useful, though it is a different measure of value from the work the tools themselves do.
+The accountability layer ends up mattering more than the capability. This is the counterintuitive part. You would expect the capability (the internet, international banking, containerized deployment) to be more important than the infrastructure that tracks it. But the accountability layer compounds while the tools compete. The specific browsers, banks, and container runtimes that implement the capability turn over constantly. The protocols that account for what happened persist for decades.
 
-The reason is partly coordination. A shared format becomes more useful as more participants adopt it, and harder to replace for the same reason. TLS and SWIFT have both changed substantially, but those changes required agreement across many organizations. A standard's durability can support trust; it can also preserve flaws when revision is too slow.
+The reason is structural. A capability needs an ecosystem. An ecosystem needs trust. Trust needs standards. Standards need protocols. The protocol sits at the root of the dependency chain. Everything above it can change: the tools, the platforms, the companies, the business models. The protocol persists because changing it would require coordinated action across every participant in the ecosystem. That coordination cost is so high that it virtually never happens. Instead, the protocol evolves incrementally (TLS 1.0 to 1.3, SWIFT MT to MX), preserving backward compatibility while improving capability.
 
-TCP/IP, SMTP and HTTP have lasted for decades through successive generations of tools. They give us a reason to take standards seriously, without assuming that the next useful standard has already been chosen.
+This is why protocols are the most durable artifacts in technology. TCP/IP is forty years old. SMTP is forty-two years old. HTTP is thirty-five years old. These protocols outlasted every company, every product, and every business model built on top of them. I expect them to outlast whatever replaces the current generation of tools.
 
 ## The Current Moment
 
-AI agents can call tools and other agents, process data and act on behalf of people. As organizations connect them to more work, a single result may depend on systems run by several parties. That makes it harder to say what happened when the result is disputed.
+The agent economy is the revolution. AI agents are software systems that autonomously reason, make decisions, and take actions on behalf of humans and organizations, and they represent a structural change in how work gets done. The agent economy is producing an explosion of autonomous computation, with agents calling other agents, making API requests, processing data, generating conclusions, and executing decisions at a scale that is growing exponentially.
 
-Existing logs and approvals help within individual systems. Across handoffs, the account is often incomplete.
+This revolution is operating without an accountability layer.
 
 When a strategy agent calls a research agent that calls a data processing agent, spanning three organizations with three runtimes and three billing systems, there is no standard for how costs are tracked across that chain. There is no standard for how conclusions are traced back to their sources. There is no standard for how data governance is enforced at each organizational boundary. There is no standard for how the work is audited after the fact.
 
 The pieces exist in isolation. Individual platforms track their own costs. Individual frameworks implement their own safety checks. Individual companies build their own audit logs. But there is no shared protocol (no double-entry bookkeeping, no TLS, no SWIFT, no OCI) that works across organizational boundaries, across agent frameworks, across compute providers.
 
-I expect pressure for shared records to grow. Each of the four cases shows how a common method helped people coordinate at a larger scale. They do not show that agents need one universal protocol, or that the first proposal will meet the needs of every sector.
+I expect this to change. In each of the four cases above, the revolution produced an accountability layer, because it could not reach its full potential without one. Commerce could not scale beyond local trust networks without standardized bookkeeping. The internet could not support commerce without encrypted channels and verified identity. International banking could not operate at global scale without standardized messaging. Software deployment could not be portable and reproducible without standardized container formats.
 
-Organizations deploying agents need to know what the work cost, what data it touched and who authorized each consequential step. Legal duties vary by jurisdiction and use, but regulated work makes the need for a defensible account especially clear. A shared format could help participants compare their records without assuming that one format satisfies every law.
+The agent economy cannot operate at its potential scale without standardized accountability infrastructure. The organizations deploying agents need to know what those agents cost, what they concluded and why, what data they touched and whether it was handled correctly. The regulations emerging in every major jurisdiction, from the EU AI Act to state-level AI laws in the United States to sector-specific requirements in healthcare, finance, and defense, are creating legal mandates for exactly this kind of accountability.
 
-The questions are what should be recorded, who can inspect it, and how different systems can compare their accounts. TLS began with work at Netscape; SWIFT grew from a bank consortium. Both required later revision. Agent accountability will need experiments and negotiation too, ideally before a serious failure sets the terms in haste.
+The only questions are when the accountability layer emerges, and whether it is designed intentionally as a coherent protocol or cobbled together from incompatible patches after the first major failures force the issue. History suggests both outcomes are possible. TLS was designed intentionally by a small team at Netscape before the crisis. SWIFT was designed intentionally by a consortium of banks before the Telex system collapsed. But the history of technology also includes many cases where the accountability layer was assembled retroactively, painfully, and at far greater cost than if it had been designed up front.
 
-There is still room to test shared approaches while deployment patterns are forming. That room narrows as organizations build around incompatible records, so the work is worth starting now.
+The agent economy is in the window where intentional design is still possible. The revolution is underway but has not yet reached the scale where incompatible patches become entrenched. The protocols can still be designed before they must be negotiated. That window will close. In every case above, it did.
