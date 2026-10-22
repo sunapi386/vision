@@ -4,7 +4,9 @@ title: "What Work Looks Like"
 
 # What Work Looks Like
 
-The most common question about AI and work is "which jobs will be replaced?" It's the wrong question. The right question is: what does work look like when the full infrastructure stack exists, when accountability, compute, exchange, trust, enforcement, identity, and marketplace layers all function together? Not the chatbot version, where a user types a question and gets a plausible answer. The complete version, where AI systems execute multi-step professional workflows with the same paperwork, the same audit trails, and the same governance boundaries that human professionals have always maintained.
+Everyone asks which jobs AI will replace. It's the wrong question.
+
+The better question: what does work look like when the full infrastructure stack exists, with accountability, compute, exchange, trust, enforcement, identity and marketplace layers all working together? Not the chatbot version, where you type a question and get a plausible answer. The complete version, where AI systems run multi-step professional workflows with the same paperwork, the same audit trails and the same governance boundaries that human professionals have always kept.
 
 The difference between the chatbot version and the complete version is the difference between a demo and a deployable system. The demo impresses. The deployable system satisfies the regulator, the auditor, the insurer, and the client. Most industries are stuck at the demo stage, not because the AI isn't good enough, but because the infrastructure around it isn't. The accountability layer doesn't exist. The governance boundaries aren't enforced. The cost attribution is invisible. The provenance chains are missing.
 
@@ -16,11 +18,11 @@ These things are very cool demo-wise. But in terms of actually using them in a p
 
 The pattern that keeps emerging in conversations with government CIOs, procurement officers, and compliance teams is that institutional AI adoption rests on three legs: people, policy, and architecture. People means training and certifications so staff know what they are governing. Policy means compliance checklists (SOC 2, FedRAMP, PIPEDA) so the legal framework is satisfied. Architecture means sovereign software that enforces trust by design, not by promise. Most vendors offer one or two legs. Almost nobody offers all three.
 
-The architecture leg is the one that changes everything, because it moves trust from a contractual obligation to a structural guarantee. If the platform is designed so that data cannot leave the organization's infrastructure, you do not need to trust a vendor's privacy policy. If every agent action produces an auditable receipt, you do not need to trust that someone is watching. If governance boundaries are enforced at the protocol level, violations become impossible rather than merely detectable. The system does not rely on good behavior. It makes bad behavior structurally unachievable.
+The architecture leg is the one that changes everything, because it moves trust from a contractual promise to a structural property you can test. If the platform keeps data on the organization's infrastructure unless the organization sends it somewhere, you are no longer relying on a vendor's privacy policy. If every agent action produces an auditable receipt, you do not need to trust that someone is watching. If governance boundaries are enforced at the protocol level, a rule the system can check, such as "this class of data never goes to that destination," is blocked before it happens instead of discovered afterward. For the rules it can check, the system stops relying on good behavior. For the judgments it can't check, it measures them and routes them to a person.
 
 This is also why the best way to sell AI infrastructure is to never lead with "AI." The organizations that need this most (police departments, procurement offices, school districts) do not think of themselves as AI buyers. They think of themselves as organizations with paperwork problems, compliance burdens, and capacity constraints. The technology is the mechanism. The outcome is what matters: recovered capacity, stronger audit trails, faster turnaround, lower risk. Lead with the outcome. Let the technology be the boring part.
 
-Here is what changes when the full stack exists.
+Here is what changes when the full stack exists. Five workplaces, one pattern.
 
 ## The Law Firm
 
@@ -28,9 +30,9 @@ A junior associate at a mid-market law firm spends ten hours reviewing a stack o
 
 This work has been done the same way for decades. It's high-volume, high-precision reading that requires legal training to do correctly and attention to detail to do completely. It is also exactly the kind of work that a well-constructed AI workflow handles at near-human quality, not because language models are smarter than lawyers, but because the task is pattern matching at scale, which is what language models are built for.
 
-Now consider the same work with the full infrastructure stack in place.
+Now run the same work through the full stack.
 
-The workflow begins when the client uploads the contracts to a secure ingestion endpoint. The documents never leave the firm's infrastructure. They are processed on a local compute node under the firm's physical control. No privacy feature bolted onto a cloud service can promise this. It's a compute architecture: the hardware sits in the firm's server room, owned by the firm, subject to no external terms of service. The data sovereignty question ("where does the data go?") has a one-word answer: nowhere.
+The workflow begins when the client uploads the contracts to a secure ingestion endpoint. The documents never leave the firm's infrastructure. They are processed on a local compute node under the firm's physical control. No privacy feature bolted onto a cloud service can promise this. It's a compute architecture: the hardware sits in the firm's server room, owned by the firm, subject to no external terms of service. The data sovereignty question ("where does the data go?") has a short answer: the contracts stay in the firm's server room, and only the finished memo leaves, on a path the firm controls.
 
 The first stage of the workflow is extraction. An agent reads each contract and extracts structured data: party names, effective dates, renewal terms, indemnification provisions, limitation of liability clauses, assignment restrictions, governing law, notice requirements. This is structured extraction against a defined schema, not free-text summarization. Each extracted field carries metadata: the source page and paragraph, the confidence score of the extraction, and the model version that performed it.
 
@@ -52,13 +54,13 @@ An officer in a mid-size Canadian police service responds to a domestic disturba
 
 Officers spend an estimated 40% of their shift on administrative documentation. For a fifty-officer service, that represents roughly twenty officer-equivalents doing paperwork instead of policing. At fully-loaded cost, the administrative burden runs $2-3 million per year for a single mid-size department.
 
-The infrastructure-complete version looks different.
+Now picture the same call with the full stack in place.
 
 The officer speaks into a phone or a body-worn device. The voice recording is transcribed locally, on a device in the police service's own facility, not on a server in Virginia or California. Canadian data sovereignty is a legal requirement here, not a marketing feature. Incident data, victim information, suspect identifiers: none of it can leave Canadian infrastructure without creating compliance violations under PIPEDA and provincial privacy legislation. The compute is local. The data stays local.
 
 The transcription feeds into an extraction workflow. The agent parses the narrative and populates structured fields: date, time, location, involved parties, offence codes, statute citations. Each field carries a confidence score. The address extraction is 95% confident because the officer mentioned "147 Main Street" clearly. The statute citation is 72% confident: the officer described the offence in colloquial terms and the agent mapped it to the closest Criminal Code section, but the mapping is ambiguous.
 
-This is the difference between a system that generates text and a system that knows what it doesn't know. Confidence calibration, developed through research partnerships with university labs specializing in calibrated extraction, means the system never silently guesses. High-confidence fields are presented cleanly. Low-confidence fields are flagged, highlighted, and routed for human verification. The officer reviews a draft with five or six flagged items instead of writing the entire report from scratch.
+This is the difference between a system that generates text and a system that knows what it doesn't know. Confidence calibration, developed through research partnerships with university labs specializing in calibrated extraction, means every field arrives with a score, and the department's rules decide what a low score triggers. High-confidence fields are presented cleanly. Low-confidence fields are flagged, highlighted, and routed for human verification. A calibrated score can still be wrong, so supervisors also spot-check fields the system was sure about. The officer reviews a draft with five or six flagged items instead of writing the entire report from scratch.
 
 The supervisor receives the flagged items. The workflow routes them according to the department's own policies (a configuration step, not a software limitation). Some departments want all statute citations reviewed regardless of confidence. Some want supervisor sign-off on any report involving a minor. The routing rules encode institutional knowledge about what matters and what doesn't.
 
@@ -68,11 +70,11 @@ Total time from end of call to completed report: ten minutes. Down from forty-fi
 
 The officer's role in report-writing shifts from author to editor. The expertise required doesn't decrease; it concentrates. The officer still needs to know the statute codes, still needs to verify the facts, still needs to exercise judgment about what to include and how to characterize events. But the mechanical work of translating spoken observations into typed, formatted, correctly-cited documentation is handled by the infrastructure.
 
-Two things must be true for this to work in practice, and both are non-trivial. First, the technology must be genuinely reliable, not demo-reliable but reliable enough that officers trust it after weeks of daily use. Confidence calibration is the mechanism that builds that trust: the system earns credibility by accurately reporting its own uncertainty. Second, the institutional adoption must be managed carefully. Officers who feel that AI is monitoring or evaluating them will resist, and their resistance will be justified. The framing matters: this is a drafting tool that saves time, not a surveillance tool that second-guesses judgment. The chiefs who get this distinction right will see adoption. The ones who don't will see the devices sitting unused in cruisers.
+Two things must be true for this to work, and neither is easy. First, the technology must be genuinely reliable, not demo-reliable but reliable enough that officers trust it after weeks of daily use. Confidence calibration is the mechanism that builds that trust: the system earns credibility by accurately reporting its own uncertainty. Second, the institutional adoption must be managed carefully. Officers who feel that AI is monitoring or evaluating them will resist, and their resistance will be justified. The framing matters: this is a drafting tool that saves time, not a surveillance tool that second-guesses judgment. The chiefs who get this distinction right will see adoption. The ones who don't will see the devices sitting unused in cruisers.
 
 ## The Government Department
 
-Federal procurement in Canada is a process designed for thoroughness and fairness, which in practice means it is slow, expensive, and paper-intensive. A typical Request for Proposals for a technology project generates twenty to forty vendor submissions, each running fifty to two hundred pages. Evaluation committees spend weeks reading, scoring, and comparing these submissions against weighted criteria published in the RFP.
+Federal procurement in Canada is a process designed for thoroughness and fairness, which means it is slow, expensive, and paper-intensive. A typical Request for Proposals for a technology project generates twenty to forty vendor submissions, each running fifty to two hundred pages. Evaluation committees spend weeks reading, scoring, and comparing these submissions against weighted criteria published in the RFP.
 
 The process is slow because it must be fair. Every submission must be evaluated against the same criteria by the same committee. Every score must be defensible. Every decision must be documented in case of a vendor challenge. The documentation requirements exist because public money is at stake and losing bidders have legal standing to challenge the process. That is the cost of accountability in public spending, not bureaucratic waste.
 
@@ -144,7 +146,7 @@ The progression from manual work to governed AI pipeline in three sessions is on
 
 ## What Changed and What Didn't
 
-Five industries. Five transformations. The same pattern in each.
+Five workplaces. Five transformations. The same pattern in each.
 
 The work didn't disappear. It restructured. The lawyer still reviews contracts, but reviews flagged exceptions instead of reading every page. The officer still writes reports, but edits AI drafts instead of typing from scratch. The procurement evaluator still makes judgment calls, but works from structured comparisons instead of reading binders. The office manager still processes invoices, but handles exceptions instead of manual data entry. The student still evaluates candidates, but governs an AI pipeline instead of screening resumes.
 

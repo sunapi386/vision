@@ -406,6 +406,7 @@ BOOK_EN = {
     "abstract_id": "abstract",
     "abstract_label": "Abstract",
     "preface_label": "Preface",
+    "prelude_label": "Prelude",
     "abstract_paragraphs": ABSTRACT_PARAGRAPHS,
     "fm_tag_limit": None,                      # tag every front-matter paragraph
     "front_matter_dir": FRONT_MATTER_DIR,
@@ -442,6 +443,7 @@ BOOK_ZH = {
     "abstract_id": "摘要",
     "abstract_label": "摘要",
     "preface_label": "前言",
+    "prelude_label": "序章",                   # used only if zh/front-matter/prelude.mdx exists
     "abstract_paragraphs": ABSTRACT_PARAGRAPHS_ZH,
     # The Chinese audiobook has no front-matter narration; only the first
     # abstract paragraph keeps an anchor id (parity with the original build).
@@ -534,9 +536,11 @@ def build_content(cfg=BOOK_EN) -> tuple[str, list[dict], dict]:
     return '\n'.join(sections_html), toc_entries, chapter_paras
 
 
-def build_toc_html(entries: list[dict], back_matter_entries: list[dict] = None, cfg=BOOK_EN) -> str:
+def build_toc_html(entries: list[dict], back_matter_entries: list[dict] = None, cfg=BOOK_EN, has_prelude: bool = False) -> str:
     items = [f'<a href="#{cfg["abstract_id"]}" class="toc-chapter">{cfg["abstract_label"]}</a>']
     items.append(f'<a href="#preface" class="toc-chapter">{cfg["preface_label"]}</a>')
+    if has_prelude:
+        items.append(f'<a href="#prelude" class="toc-chapter">{cfg["prelude_label"]}</a>')
     for entry in entries:
         cls = "toc-chapter" if entry["level"] == 0 else "toc-section"
         items.append(f'<a href="#{entry["id"]}" class="{cls}">{entry["title"]}</a>')
@@ -1028,6 +1032,8 @@ TEMPLATE = """<!DOCTYPE html>
 
   /* --- Responsive --- */
   @media (max-width: 1180px) { .toc { display: none; } }
+  /* screen only: WeasyPrint's 6x9 page is under 640px wide and would clip */
+  @media screen and (max-width: 640px) { .article table { display: block; overflow-x: auto; } }
   @media (max-width: 640px) {
     .article { padding: 0 16px 120px; }
     .chapter-break { padding: 60px 0 20px; margin-top: 40px; }
@@ -1159,6 +1165,7 @@ TEMPLATE = """<!DOCTYPE html>
 </nav>
 
 <article class="article" id="article">
+{prelude}
 {content}
 <div class="back-matter">
 {backmatter}
@@ -1647,9 +1654,28 @@ def build_preface(cfg=BOOK_EN) -> str:
     return html
 
 
-def build_front_matter(cfg=BOOK_EN) -> tuple[str, str, list[str]]:
-    """Build abstract + preface with ab-0-{idx} paragraph tagging.
-    Returns (abstract_html, preface_html, para_texts).
+def build_prelude_raw(cfg=BOOK_EN) -> tuple[str, str]:
+    """Return (title, html) for front-matter/prelude.mdx, or ("", "") if absent.
+    The first H1 is the story title; the rest is converted with the same
+    extensions as the preface so tts.py can mirror the paragraph tagging."""
+    prelude_file = cfg["front_matter_dir"] / "prelude.mdx"
+    if not prelude_file.exists():
+        return "", ""
+    text = read_mdx(prelude_file)
+    title = ""
+    first_heading = re.search(r'^#\s+(.+)$', text, re.MULTILINE)
+    if first_heading:
+        title = first_heading.group(1).strip()
+        text = text[:first_heading.start()] + text[first_heading.end():]
+    md = markdown.Markdown(extensions=['smarty'])
+    return title, md.convert(text.strip())
+
+
+def build_front_matter(cfg=BOOK_EN) -> tuple[str, str, list[str], str]:
+    """Build abstract + preface + prelude with ab-0-{idx} paragraph tagging.
+    Returns (abstract_html, preface_html, para_texts, prelude_html).
+    The prelude is narrated in the front-matter audio track, so its
+    paragraphs continue the ab-0-* numbering after the preface.
 
     cfg["fm_tag_limit"] caps how many front-matter paragraphs get ab-0-* ids
     (None = all). The Chinese edition has no front-matter audio and tags only
@@ -1684,7 +1710,22 @@ def build_front_matter(cfg=BOOK_EN) -> tuple[str, str, list[str]]:
     else:
         preface_html = preface_raw
 
-    return abstract_html, preface_html, paras
+    prelude_html = ""
+    prelude_title, prelude_raw = build_prelude_raw(cfg)
+    if prelude_raw:
+        if limit is None:
+            prelude_raw = re.sub(r'<p>(.*?)</p>', tag_fm, prelude_raw, flags=re.DOTALL)
+        prelude_html = '\n'.join([
+            '<section class="chapter-break" id="prelude">',
+            f'<div class="chapter-number">{cfg["prelude_label"]}</div>',
+            f'<h1>{prelude_title}</h1>' if prelude_title else '',
+            '</section>',
+            '<section class="subsection fade-in" id="prelude--story">',
+            prelude_raw,
+            '</section>',
+        ])
+
+    return abstract_html, preface_html, paras, prelude_html
 
 
 def build_back_matter(cfg=BOOK_EN) -> tuple[str, list[dict]]:
@@ -1726,7 +1767,8 @@ def build_chapters_js(cfg=BOOK_EN) -> str:
 
     entries = []
     if cfg["front_matter_audio"]:
-        entries.append("{ part: 0, title: 'Abstract \\u0026 Preface', file: '%s/part00-front-matter.mp3', duration: %.1f, sectionId: '%s' }" % (cfg["audio_dir"], durations.get(0, 0), cfg["abstract_id"]))
+        fm_title = 'Abstract, Preface \\u0026 Prelude' if build_prelude_raw(cfg)[1] else 'Abstract \\u0026 Preface'
+        entries.append("{ part: 0, title: '%s', file: '%s/part00-front-matter.mp3', duration: %.1f, sectionId: '%s' }" % (fm_title, cfg["audio_dir"], durations.get(0, 0), cfg["abstract_id"]))
     for i, (ch_slug, title) in enumerate(cfg["chapters"], 1):
         audio_slug = AUDIO_SLUGS[ch_slug]
         dur = durations.get(i, 0)
@@ -2034,13 +2076,13 @@ def build_book(cfg, shared_css: str, shared_js: str) -> int:
     content, toc_entries, chapter_paras = build_content(cfg)
 
     print("Building front matter...")
-    abstract_html, preface_html, fm_paras = build_front_matter(cfg)
+    abstract_html, preface_html, fm_paras, prelude_html = build_front_matter(cfg)
     chapter_paras[0] = fm_paras
 
     print("Building back matter...")
     backmatter_html, backmatter_toc = build_back_matter(cfg)
 
-    toc_html = build_toc_html(toc_entries, backmatter_toc, cfg)
+    toc_html = build_toc_html(toc_entries, backmatter_toc, cfg, has_prelude=bool(prelude_html))
 
     print("Building audio player chapters...")
     chapters_js = build_chapters_js(cfg)
@@ -2068,6 +2110,7 @@ def build_book(cfg, shared_css: str, shared_js: str) -> int:
         .replace("{preface}", preface_html)
         .replace("{toc}", toc_html)
         .replace("{chapters_js}", chapters_js)
+        .replace("{prelude}", prelude_html)
         .replace("{content}", content)
         .replace("{backmatter}", backmatter_html)
         .replace("{colophon}", cfg["colophon_html"])

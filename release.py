@@ -9,6 +9,7 @@ Usage:
     python3 release.py verify       # check paragraph IDs, timestamps, audio sync
     python3 release.py stats        # fetch and summarize analytics
     python3 release.py print        # build + generate print-ready PDF for KDP
+    python3 release.py docx         # generate book.docx (English manuscript, via pandoc)
     python3 release.py setup        # install dependencies with uv
     python3 release.py clean        # convert stale WAVs to OGG, remove temp files
 
@@ -21,6 +22,7 @@ Requires nix installed. Set VISION_NO_NIX=1 to skip the re-exec.
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -660,6 +662,102 @@ def print_pdf():
     print(f"  Written to {out} ({size_mb:.1f} MB)")
 
 
+DOCX_PAGE_BREAK = '```{=openxml}\n<w:p><w:r><w:br w:type="page"/></w:r></w:p>\n```'
+
+
+def _html_to_md(html: str) -> str:
+    """Abstract paragraphs live in build.py as HTML; keep bold/italic only."""
+    html = re.sub(r"</?strong>", "**", html)
+    html = re.sub(r"</?em>", "*", html)
+    return re.sub(r"<[^>]+>", "", html)
+
+
+def _shift_headings(text: str, by: int) -> str:
+    return re.sub(r"^(#+)(?=\s)", lambda m: "#" * min(len(m.group(1)) + by, 6), text, flags=re.MULTILINE)
+
+
+def _split_title(text: str) -> tuple[str, str]:
+    """Pop the first H1; return (title, rest)."""
+    m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
+    if not m:
+        return "", text
+    return m.group(1).strip(), (text[:m.start()] + text[m.end():]).strip()
+
+
+def build_manuscript_md() -> str:
+    """Assemble the English book, in reading order, as one pandoc-markdown file.
+
+    Same sources and order as build.py: abstract, preface, prelude, the six
+    parts (index.mdx intro, then numbered sections), back matter. Web-only
+    extras (interstitials, visuals, pull quotes) are left out.
+    """
+    import build as b
+
+    out = ["# Abstract", "\n\n".join(_html_to_md(p) for p in b.ABSTRACT_PARAGRAPHS)]
+
+    preface = b.FRONT_MATTER_DIR / "preface.mdx"
+    if preface.exists():
+        _, body = _split_title(b.read_mdx(preface))
+        out += [DOCX_PAGE_BREAK, "# Preface", body]
+
+    prelude = b.FRONT_MATTER_DIR / "prelude.mdx"
+    if prelude.exists():
+        title, body = _split_title(b.read_mdx(prelude))
+        out += [DOCX_PAGE_BREAK, f"# Prelude: {title}" if title else "# Prelude", body]
+
+    for num, (slug, part_title) in enumerate(b.CHAPTERS, 1):
+        part_dir = b.VISION_DIR / slug
+        if not part_dir.exists():
+            continue
+        out += [DOCX_PAGE_BREAK, f"# Part {num}: {part_title}"]
+        index = part_dir / "index.mdx"
+        if index.exists():
+            _, intro = _split_title(b.read_mdx(index))
+            if intro:
+                out.append(_shift_headings(intro, 1))
+        for section in sorted(part_dir.glob("[0-9]*.mdx")):
+            title, body = _split_title(b.read_mdx(section))
+            out += [f"## {title or section.stem}", _shift_headings(body, 1)]
+
+    for filename, title in b.BACK_MATTER_FILES:
+        path = b.BACK_MATTER_DIR / filename
+        if path.exists():
+            _, body = _split_title(b.read_mdx(path))
+            out += [DOCX_PAGE_BREAK, f"# {title}", body]
+
+    text = "\n\n".join(out) + "\n"
+    # Web navigation links have no meaning in a manuscript.
+    return re.sub(r"^\*?Back to Table of Contents\*?\s*$", "", text, flags=re.MULTILINE | re.IGNORECASE)
+
+
+def make_docx():
+    """Generate book.docx (English manuscript) with pandoc, sourced via nix if absent."""
+    print("\n--- DOCX ---")
+    md_path = VISION_DIR / "book-manuscript.md"
+    out = VISION_DIR / "book.docx"
+    md_path.write_text(build_manuscript_md())
+    args = [
+        str(md_path), "-f", "markdown", "-o", str(out),
+        "--toc", "--toc-depth=2",
+        "--metadata", "title=Trust at Scale",
+        "--metadata", "author=Jason Sun",
+    ]
+    try:
+        if shutil.which("pandoc"):
+            run(["pandoc", *args])
+        elif shutil.which("nix-shell"):
+            print("  sourcing pandoc via nix...", flush=True)
+            inner = "pandoc " + " ".join(shlex.quote(a) for a in args)
+            run(["nix-shell", "-p", "pandoc", "--run", inner])
+        else:
+            print("  pandoc not found (install pandoc or nix)")
+            sys.exit(1)
+    finally:
+        md_path.unlink(missing_ok=True)
+    size_kb = out.stat().st_size / 1024
+    print(f"  Written to {out} ({size_kb:.0f} KB)")
+
+
 def deploy():
     print("\n--- Deploy ---")
     host = resolve_host()
@@ -706,6 +804,8 @@ def main():
     elif mode == "print":
         build()
         print_pdf()
+    elif mode == "docx":
+        make_docx()
     elif mode == "setup":
         setup()
     elif mode == "clean":

@@ -4,8 +4,6 @@ title: "The Accountability Void"
 
 # The Accountability Void
 
-Here's an analogy that captures the problem.
-
 A management consulting firm hires a strategy specialist to work on a client project. The specialist hires a market research sub-contractor. The sub-contractor hires a data analyst. The data analyst purchases a dataset from a third-party provider.
 
 In the human world, every one of these transactions has paperwork. The consulting firm has an engagement letter with the client. The specialist has a subcontract with the firm. The sub-contractor has an agreement with the specialist. The data analyst has a license agreement for the dataset. At every layer, there's a contract, an invoice, an NDA, a deliverable specification, and a paper trail.
@@ -26,7 +24,7 @@ The agent economy is running without paperwork.
 
 ## The Three Missing Pieces
 
-The accountability void has three components, and all three need solutions simultaneously. Solving one without the others leaves the system fundamentally ungoverned.
+The accountability void has three components, and all three need solutions simultaneously. Solving one without the others leaves the system ungoverned.
 
 ### Cost Attribution
 
@@ -34,7 +32,7 @@ When a human team works on a project, every hour is tracked. Time sheets, billin
 
 When an AI system processes a workflow, the cost is either a single number on a monthly invoice (aggregating thousands or millions of individual API calls) or it's invisible entirely, buried in infrastructure expenses that nobody attributes to specific work products.
 
-Which API calls served which client? Which steps consumed the most tokens? Which prompts are inefficient? Where is the workflow burning budget on unnecessary processing? These questions are answerable in principle, since the data exists somewhere in API logs and billing dashboards, but in practice, no organization can reconstruct the cost tree for a complex multi-agent workflow from the raw materials available to them.
+Which API calls served which client? Which steps consumed the most tokens? Which prompts are inefficient? Where is the workflow burning budget on unnecessary processing? These questions are answerable in principle, since the data exists somewhere in API logs and billing dashboards, but no organization can reconstruct the cost tree for a complex multi-agent workflow from the raw materials available to them.
 
 The problem compounds in multi-agent systems. When an orchestrator delegates to a research agent that calls an extraction model that queries a vector database, the cost is distributed across multiple services, APIs, and potentially multiple organizations. Each service has its own billing model. Some charge per token, some per query, some per second of compute time, and some charge nothing but consume internal resources that have an amortized cost. Assembling a complete cost picture requires reconciling billing data across every service involved, a task that's impractical manually and for which no automated tooling exists.
 
@@ -110,13 +108,13 @@ PII leaks across organizational boundaries. When customer data passes through AI
 
 Costs go unattributed. Organizations routinely discover that their AI spending is 3-5x what they budgeted, because the per-token costs accumulate invisibly across dozens of workflows and hundreds of daily operations. Without per-workflow cost attribution, the only signal is the monthly invoice, and by then, the spending has already occurred.
 
-And compliance fails by default. Organizations subject to HIPAA, GDPR, SOX, or other regulatory frameworks are deploying AI systems that cannot produce the records these frameworks require. They're betting that regulators won't ask for AI-specific audit trails yet. When the regulators do ask (and the seven forces described in the previous chapter guarantee they will), the organizations will discover that the records don't exist and can't be reconstructed.
+And compliance fails by default. Organizations subject to HIPAA, GDPR, SOX, or other regulatory frameworks are deploying AI systems that cannot produce the records these frameworks require. They're betting that regulators won't ask for AI-specific audit trails yet. If the regulators ask (and the seven forces described in the previous chapter make that likely), the organizations will discover that the records don't exist and can't be reconstructed.
 
 The accountability void is a structural gap in the infrastructure, and it will widen as AI adoption accelerates; the market will not resolve it on its own. More agents, more cross-org workflows, more data flowing across more boundaries, with the same absence of tracking, attribution, and governance at every step.
 
 The human world has centuries of accumulated infrastructure for accountability: double-entry bookkeeping, contracts, professional licensing, regulatory frameworks, audit standards, insurance, and courts. The agent economy has none of it.
 
-And the people being asked to adopt AI see this clearly, even if they can't articulate it in infrastructure terms. A CIO at a Colorado municipality built a zoning permit chatbot on her own time using OpenAI's API. It worked. Her security team killed it. She said publicly: "I really hope some vendor comes here and builds this so that we can do it for real." She wasn't asking for a better model. She was asking for the accountability layer that would let her security team say yes.
+And the people being asked to adopt AI see this clearly, even if they can't articulate it in infrastructure terms. The Colorado CIO from the opening of this part, whose security team killed her zoning chatbot, wasn't asking for a better model. She was asking for the accountability layer that would let her security team say yes.
 
 A police department in Ontario has three full-time employees whose job is to scan officer notes, manually redact PII with a black marker, re-scan the pages, and send them to the Crown prosecutor. They do this for body camera footage, dash cam video, and internal reports. They know AI could do this in seconds. They also know that one leaked Social Security number ends careers. Without verifiable redaction with an audit trail, the status quo (three people with markers) is the rational choice.
 

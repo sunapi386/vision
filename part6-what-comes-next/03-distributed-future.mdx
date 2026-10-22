@@ -4,39 +4,41 @@ title: "The Distributed Architecture"
 
 # The Distributed Architecture
 
-In January 2025, OpenAI and its partners announced Stargate, with a [plan to invest $500 billion over four years](https://openai.com/index/announcing-the-stargate-project/) in US AI infrastructure. The figure describes an announced plan, not completed spending. It makes the ownership question hard to ignore.
+In January 2025, OpenAI and its partners announced Stargate, with a [plan to invest $500 billion over four years](https://openai.com/index/announcing-the-stargate-project/) in US AI infrastructure. That is an announced plan, not money already spent. Either way, it makes one question hard to ignore: who will own the machines the agents run on?
 
-I am betting on distributed ownership with interoperable protocols. Hospitals, firms, schools, and individuals should be able to own useful AI capability and choose when to buy more. Centralized services will have a place. The future I want gives their customers the power to refuse terms and take their essential work elsewhere.
+I am betting on distributed ownership with interoperable protocols. Hospitals, firms, schools and individuals should be able to own useful AI capability and choose when to buy more. Centralized services will have a place. The future I want gives their customers the power to refuse terms and take their essential work elsewhere.
 
-That ambition puts a demanding obligation on the architecture: make ownership usable, make dependence visible, and make exit work. A server under the desk is only the beginning.
+That bet puts a demanding obligation on the architecture: make ownership usable, make dependence visible and make exit work. A server under the desk is only the beginning.
 
 ## The Hardware Trajectory
 
-Local inference makes some forms of ownership practical, while model quality, memory, throughput, energy, and operating effort determine which workloads fit. A small specialized model may be sufficient for a bounded classification task and unsuitable for an unfamiliar reasoning problem. The comparison should use the quality and total operating cost required by the actual workload.
+The office manager's $5,000 appliance from the first chapter works because her task is bounded. Read an invoice, check it against the vendor list, flag the odd ones. A small specialized model can do that well. Hand the same box an unfamiliar reasoning problem and it may not cope.
 
-Training and inference have different resource patterns, but neither has a single permanent architecture. Models are updated and retrained. Inference can range from a small local operation to a demanding distributed service. A forecast about cheaper chips does not by itself establish that every enterprise workload will fit on an appliance by a particular year.
+That is the honest shape of local inference. It makes some forms of ownership practical today. Model quality, memory, throughput, energy and operating effort decide which workloads fit. Compare options on the quality and total operating cost the actual workload needs.
 
-The useful direction is to reduce the effort of owning and operating appropriate capability. A local appliance can manage model loading, routing, evaluation, and maintenance for well-defined tasks. Organizations still need plans for updates, hardware failure, security, and the cases the local system cannot handle.
+Training and inference use resources differently, and neither has a single permanent architecture. Models get updated and retrained. Inference ranges from a small local operation to a demanding distributed service. A forecast about cheaper chips does not, by itself, show that every enterprise workload will fit on an appliance by a particular year.
 
-Distillation and compact adapters are candidate ways to make specialized workloads cheaper. They require evaluation against the intended task and deployment conditions. Encoding a policy in model weights can change behavior; it does not turn a learned judgment into an unbreakable rule. Independent permissions and approval mechanisms remain necessary.
+So the useful direction is to make owning and operating the right capability less work. A local appliance can manage model loading, routing, evaluation and maintenance for well-defined tasks. The organization still needs plans for updates, hardware failure, security and the cases the local system cannot handle.
 
-A hybrid architecture lets an organization compare these options without rebuilding its workflows around each provider. The accountability record should identify where an operation ran and which permissions allowed it, whether the compute was owned, rented, or borrowed.
+Distillation and compact adapters are candidate ways to make specialized workloads cheaper. Test them on the intended task under real deployment conditions. Encoding a policy in model weights changes behavior, but it does not turn a learned judgment into an unbreakable rule. Separate permissions and approval mechanisms are still necessary.
+
+A hybrid architecture lets an organization compare these options without rebuilding its workflows around each provider. Either way, the accountability record should say where each operation ran and which permissions allowed it, whether the compute was owned, rented or borrowed.
 
 ## The Mesh Network
 
-If every organization runs its own AI compute, the natural question is: what do you lose? Cloud providers offer scale, redundancy, and managed services. Running your own hardware means managing your own hardware. The solo practitioner with a server under the desk is sovereign, but also fragile. If the box dies, so does the AI capability.
+Here is the catch with the box under the desk. If it dies, so does the AI capability. Cloud providers offer scale, redundancy and managed services. Run your own hardware and you manage your own hardware. The solo practitioner with a server under the desk is sovereign, and also fragile.
 
-A mesh can connect independently operated nodes, with explicit rules for collaboration. Its resilience depends on the control plane, identity services, routing, and recovery mechanisms as well as the number of machines. A central dependency can remain even when the hardware is geographically distributed.
+Sovereign doesn't have to mean isolated. A mesh connects independently operated nodes under explicit rules. Picture a law firm that processes contracts during business hours and offers its idle capacity overnight to a hospital running diagnostic workloads, under defined terms, with defined governance and full accountability tracking. The mesh handles the routing, the billing and the data isolation. The two organizations interact through protocol, not through trust.
 
-Distributed networks offer a useful precedent: work can continue through some failures when routes, capacity, and authority are available elsewhere. That capability has to be tested. A network partition, shared software defect, or compromised update can affect many otherwise independent nodes.
+Whether that works comes down to the details.
 
-Each participating organization should control its permitted workloads, data access, and external connections. It also needs authority over updates and a way to operate when a provider is unavailable. Owning the hardware alone does not provide those controls or remove applicable institutional obligations.
+A mesh is only as resilient as its control plane, identity services, routing and recovery. Counting machines tells you little. A central dependency can survive even when the hardware is spread across a country. Distributed networks show that work can continue through some failures when routes, capacity and authority exist elsewhere. That has to be tested. A network partition, a shared software defect or a compromised update can hit many otherwise independent nodes at once.
 
-But sovereign doesn't mean isolated. Nodes in the mesh can collaborate. An organization with excess compute capacity can accept workloads from other organizations, under defined terms, with defined governance, with full accountability tracking. A law firm processing contracts during business hours might offer its idle capacity to a hospital running diagnostic workloads overnight. The mesh handles the routing, the billing, and the data isolation. The organizations interact through protocol, not through trust.
+Each participating organization should control its permitted workloads, data access and external connections. It also needs authority over updates and a way to keep operating when a provider is unavailable. Owning the hardware does not provide those controls by itself, and it does not remove the organization's legal and institutional obligations.
 
-Recovery must respect the original permissions. A workload cannot be moved to another region merely because capacity is available there. If no authorized destination can run it, the system should pause or seek a new grant. Reliability includes preserving constraints during failure, rather than keeping work running at any cost.
+Recovery must respect the original permissions. Spare capacity in another region is not permission to move a workload there. If no authorized destination can run it, the system should pause or ask for a new grant. Reliability means keeping the constraints during a failure, not keeping the work running at any cost.
 
-Location-aware scheduling can enforce specified destination restrictions when node identity and location are verified and all relevant paths are controlled. Data-derived outputs, logs, backups, and support access must be included in that analysis. Residency is one component of governance, not a substitute for it.
+Location-aware scheduling can enforce destination restrictions when node identity and location are verified and every relevant path is controlled. That analysis has to include outputs derived from the data, logs, backups and support access. Residency is one part of governance. It does not replace the rest.
 
 ## The Marketplace as Ecosystem
 
@@ -46,7 +48,7 @@ Consider what the App Store did for mobile computing. Before the App Store, buil
 
 The workflow marketplace does the same thing for professional expertise.
 
-An immigration lawyer who has processed five thousand TN visa applications knows things that no language model knows: which supporting documents the adjudicator at a specific port of entry looks for, which phrasing in the support letter triggers additional scrutiny, which qualifications map cleanly to NAFTA profession codes and which ones require creative interpretation. This knowledge is hard-won. It took years to accumulate. It lives in the lawyer's head, in a filing cabinet, in a set of templates that the lawyer has refined over a decade.
+An immigration lawyer who has processed five thousand TN visa applications knows things that no language model knows: which supporting documents the adjudicator at a specific port of entry looks for, which phrasing in the support letter triggers additional scrutiny, which qualifications map cleanly to the USMCA (formerly NAFTA) profession codes and which ones require creative interpretation. This knowledge is hard-won. It took years to accumulate. It lives in the lawyer's head, in a filing cabinet, in a set of templates that the lawyer has refined over a decade.
 
 The workflow marketplace lets this lawyer encode that knowledge into an executable pipeline. Document intake. Eligibility screening against profession codes. Supporting letter analysis. Application assembly. Form generation. Human review at three checkpoints. Filing package production. The pipeline doesn't replace the lawyer's expertise; it is the lawyer's expertise, captured in executable form.
 
@@ -62,7 +64,7 @@ The economic structure reinforces the distribution model. Every workflow executi
 
 Project forward ten years. Inference hardware is ubiquitous. Mesh networks connect millions of sovereign nodes. Marketplaces distribute hundreds of thousands of specialized workflows. What does the economy look like?
 
-When millions of agents transact across thousands of organizations, the accountability infrastructure becomes the fabric of the economy itself: the fundamental substrate on which agent commerce operates, not a product feature or a compliance add-on.
+When millions of agents transact across thousands of organizations, the accountability infrastructure becomes the fabric of the economy itself: the substrate on which agent commerce operates, not a product feature or a compliance add-on.
 
 The analogy is financial infrastructure. SWIFT doesn't process payments; it provides the messaging protocol that banks use to communicate about payments. SWIFT doesn't hold money. It doesn't decide who can transact. It provides the standard that makes transactions between 11,000 financial institutions in 200 countries possible. Without SWIFT, international banking would require bilateral agreements between every pair of banks. With SWIFT, any bank can transact with any other bank by following the protocol.
 
@@ -78,21 +80,23 @@ Pricing equilibrium emerges. If an SR&ED filing workflow costs $300 and a compet
 
 ## The Sovereignty Question
 
-Sovereignty means being able to exercise control, not simply having a server nearby. Who can change the policy? Who can revoke a credential? Can the organization preserve its work and evidence when it changes providers? Can it keep operating if the vendor disappears?
+Remember Alberta's Pronghorn from Part V: a government platform for sovereign AI, deployed on Render, a US company's cloud. The government had the ambition and the design talent. The control sat with someone else.
 
-The same questions apply to marketplaces and reputation services. Distributed compute can coexist with concentrated control over discovery, pricing, and identity. Open specifications need independent implementations, usable exports, transparent decisions, and routes to challenge exclusion. Otherwise the dependency has moved rather than diminished.
+Sovereignty means being able to exercise control. Having a server nearby is not enough. Ask four questions. Who can change the policy? Who can revoke a credential? Can the organization keep its work and evidence when it changes providers? Can it keep operating if the vendor disappears?
 
-Local processing can reduce exposure to external providers. It does not make privacy or security automatic. Administrators, software updates, permitted outputs, and physical access remain part of the system. Guarantees should state their assumptions and be tested against the full path data can take.
+The same questions apply to marketplaces and reputation services. Compute can be distributed while discovery, pricing and identity stay concentrated. Open specifications need independent implementations, usable exports, transparent decisions and a route to challenge exclusion. Otherwise the dependency has moved. It has not shrunk.
 
-The business should benefit when organizations choose its service because it works well. Their accumulated labels, policy history, and permitted calibration evidence should remain accessible and portable. The right to leave is a practical test of the sovereignty argument.
+Local processing can reduce exposure to outside providers. It does not make privacy or security automatic. Administrators, software updates, permitted outputs and physical access are still part of the system. Every guarantee should state its assumptions and be tested against the full path the data can take.
+
+The business should win when organizations choose its service because it works well. Their accumulated labels, policy history and permitted calibration evidence should stay accessible and portable. The right to leave is the practical test of the sovereignty argument.
 
 ## The Question of Whether
 
-The transition does not depend on a particular date for general intelligence. Existing capabilities already give organizations choices about how work is performed. What remains uncertain is the speed, reach, and distribution of their effects.
+None of this waits on a date for general intelligence. The capabilities that exist today already give organizations choices about how work gets done. What remains uncertain is how fast, how far and who benefits.
 
-A plausible future combines local capability, shared infrastructure, and specialized external services. Its quality depends on whether people can understand and influence those arrangements. Ownership can increase their options; interoperability and accountable institutions are needed to preserve them.
+A plausible future mixes local capability, shared infrastructure and specialized outside services. Whether it is a good one depends on whether people can understand and influence those arrangements. Ownership widens their options. Interoperability and accountable institutions keep those options open.
 
-The design task is to make delegation useful without making dependence irreversible. That requires a workable path through ordinary operations, disagreement, failure, recovery, and exit. The protocol should be judged by how well it supports those paths.
+The design task is to make delegation useful without making dependence irreversible. That means a workable path through ordinary operations, disagreement, failure, recovery and exit. Judge the protocol by how well it handles those paths.
 
 ---
 

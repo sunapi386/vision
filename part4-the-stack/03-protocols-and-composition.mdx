@@ -4,9 +4,9 @@ title: "Protocols, Platforms, and the Composition Problem"
 
 # Protocols, Platforms, and the Composition Problem
 
-The seven-layer stack is a blueprint. Sovereignty is the foundation. But a blueprint and a foundation do not answer the question that matters most to the people who will actually build and operate this infrastructure: how do the layers compose in practice?
+The seven-layer stack is a blueprint. Sovereignty is the foundation. But a blueprint and a foundation do not answer the question that matters most to the people who will actually build and operate this infrastructure: how do the layers compose when real work runs through them?
 
-This chapter walks through a concrete cross-organizational scenario, follows the data and decisions through every boundary, and then addresses the fundamental architectural question: should this infrastructure be a proprietary platform or an open protocol?
+So follow one workflow across three organizations, boundary by boundary, and watch what has to happen at each. Then comes the architectural question that matters most: should this infrastructure be a proprietary platform or an open protocol?
 
 ## The Three-Organization Scenario
 
@@ -91,7 +91,7 @@ The envelope is the structural unit that makes the seven layers composable. With
 
 ## Why This Must Be an Open Protocol
 
-There is a temptation, at this point, to think of the seven-layer stack as a platform: a product that one company builds, operates, and sells access to. This would be a mistake. A fundamental, structural mistake.
+There is a temptation, at this point, to think of the seven-layer stack as a platform: a product that one company builds, operates, and sells access to. That would be a mistake, and a structural one.
 
 The accountability infrastructure for the agent economy must be an open protocol, not a proprietary platform. The reasoning follows from the historical pattern established in Part III, and from the specific requirements of cross-organizational interoperability.
 
@@ -139,4 +139,12 @@ This is what the accountability infrastructure for the agent economy looks like 
 
 The protocol that achieves this will not be glamorous. It will not attract breathless press coverage. It will not be the subject of conference keynotes or venture capital bidding wars. It will be the infrastructure that everything else depends on: the bookkeeping system of the agent economy, the TLS of autonomous AI, the SWIFT of machine-to-machine commerce.
 
-And it will outlast the tools it accounts for.
+If history is a guide, it will outlast the tools it accounts for.
+
+## The Bottom Line
+
+- The stack has seven responsibilities: accountability, compute, exchange, trust, enforcement, agency and marketplace. They share interfaces. They are not a build order.
+- Context flows down and results flow up. Budgets and permissions travel out with each delegation; costs, evidence and enforcement records come back with each result.
+- A delegated agent may narrow the authority it receives. It must not widen it without a separate grant, and checks outside the agent have to enforce that.
+- Sovereignty is the ability to say no and keep working: refuse new terms, block an unwanted update, leave with your records.
+- It has to be an open protocol, because three organizations in one workflow are unlikely to all buy from the same vendor.
